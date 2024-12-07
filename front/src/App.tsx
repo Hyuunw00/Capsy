@@ -1,21 +1,27 @@
 import { Route, Routes } from "react-router";
-import Main from "./pages/Main";
-import Write from "./pages/Write";
-import Event from "./pages/Event";
-import MyPage from "./pages/MyPage";
-import Login from "./pages/Login";
 import RootLayout from "./layouts/RootLayout";
+import MainPage from "./pages/main/MainPage";
+import EditorPage from "./pages/editor/EditorPage";
+import PostDetailPage from "./pages/post/PostDetailPage";
+import Event from "./pages/event/Event";
+import Login from "./pages/login/LoginPage";
+import MyPage from "./pages/mypage/MyPage";
+import SignUpPage from "./pages/signup/SignUpPage";
+import PasswordPage from "./pages/password/PasswordPage";
 
 export default function App() {
   return (
     <>
       <Routes>
         <Route element={<RootLayout />}>
-          <Route path="/" element={<Main />} />
-          <Route path="/write" element={<Write />} />
+          <Route path="/" element={<MainPage />} />
+          <Route path="/editor" element={<EditorPage />} />
+          <Route path="/detail/:postId" element={<PostDetailPage />} />
           <Route path="/event" element={<Event />} />
-          <Route path="/mypage" element={<MyPage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/password" element={<PasswordPage />} />
         </Route>
       </Routes>
     </>
