@@ -1,31 +1,28 @@
-import { NavLink, Outlet } from "react-router";
+import { Outlet } from "react-router";
+import { useLocation } from "react-router-dom";
+
+import Header from "../components/Header";
+import PageHeader from "../components/PageHeader";
+import Footer from "../components/Footer";
 
 export default function RootLayout() {
+  const location = useLocation();
+
+  const renderHeader = () => {
+    if (location.pathname === "/editor") {
+      return <PageHeader />;
+    }
+
+    return <Header />;
+  };
+
   return (
-    <>
-      <nav>
-        <ul className="flex gap-2 underline text-blue-500">
-          <li>
-            <NavLink to="/">Main</NavLink>
-          </li>
-          <li>
-            <NavLink to="/write">Write</NavLink>
-          </li>
-          <li>
-            <NavLink to="/event">Event</NavLink>
-          </li>
-          <li>
-            <NavLink to="/mypage">My Page</NavLink>
-          </li>
-          <li>
-            <NavLink to="/login">Login</NavLink>
-          </li>
-          <li>
-            <NavLink to="/signup">Signup</NavLink>
-          </li>
-        </ul>
-      </nav>
-      <Outlet />
-    </>
+    <div className="relative" style={{ width: "600px", height: "100vh", margin: "0 auto" }}>
+      {renderHeader()}
+      <div className="flex-grow">
+        <Outlet />
+      </div>
+      <Footer />
+    </div>
   );
 }
