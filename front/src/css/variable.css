@@ -1,0 +1,56 @@
+/* Google Fonts - Noto Sans KR */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap");
+
+/* Pretendard 폰트 import */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+
+:root {
+  /* Object Color */
+  --color-primary: #674EFF;  /* 보라색 */
+  --color-secondary: #7CF335; /* 네온색 */
+
+  /* white */
+  /* --white: #fefefe; */
+  --white: #ffffff;
+
+  /* gray */
+  --gray100: #f7f7f5;
+  --gray200: #d9d9d9; /* default gray색 */
+  --gray300: #9b9a97;
+  --gray400: #5f5e5b;
+  --gray500: #37352f; /* input message */
+  --gray600: #1d1b16;
+  --gray700: #0f0f0f;
+
+  /* background */
+  --bg100: rgba(0, 0, 0, 0.04);
+  --bg200: rgba(0, 0, 0, 0.08);
+
+  /* black */
+  /* --black: #0f0f0f; */
+  --black: #000000;
+
+  /* box-shadow */
+  --box-shadow300: 0 4px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 4px -1px rgba(0, 0, 0, 0.2);
+
+  font-family:
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Helvetica,
+    "Apple Color Emoji",
+    Arial,
+    sans-serif,
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Sans KR",
+    "Apple SD Gothic Neo",
+    "맑은 고딕",
+    "Malgun Gothic";
+}
+
+.dark {
+  --color-primary: #7CF335;
+  --color-secondary: #674EFF;
+}

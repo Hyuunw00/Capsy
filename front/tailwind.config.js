@@ -1,13 +1,59 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  darkMode: 'class',
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#674EFF', // 보라색
+          dark: '#7CF335'
+        },
+        secondary: {
+          DEFAULT: '#7CF335', // 네온색
+          dark: '#674EFF'
+        },
+        white: '#FFFFFF',
+        gray: {
+          100: '#F7F7F5',
+          200: '#D9D9D9', // default gray색
+          300: '#9B9A97',
+          400: '#5F5E5B',
+          500: '#37352F', // input message
+          600: '#1D1B16',
+          700: '#0F0F0F'
+        },
+        bg: {
+          100: 'rgba(0, 0, 0, 0.04)',
+          200: 'rgba(0, 0, 0, 0.08)'
+        },
+        black: '#000000'
+      },
+      boxShadow: {
+        '300': '0 4px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 4px -1px rgba(0, 0, 0, 0.2)'
+      },
+      fontFamily: {
+        sans: [
+          'Pretendard',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          'Helvetica',
+          '"Apple Color Emoji"',
+          'Arial',
+          'sans-serif',
+          '"Segoe UI Emoji"',
+          '"Segoe UI Symbol"',
+          '"Noto Sans KR"',
+          '"Apple SD Gothic Neo"',
+          '"맑은 고딕"',
+          '"Malgun Gothic"'
+        ]
+      }
+    },
   },
   plugins: [],
-
-  //  모바일에선 hover 스타일 막기
   future: {
     hoverOnlyWhenSupported: true,
   },
-};
+ };
