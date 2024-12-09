@@ -6,8 +6,8 @@
 
 :root {
   /* Object Color */
-  --color-primary: #674EFF;  /* 보라색 */
-  --color-secondary: #7CF335; /* 네온색 */
+  --color-primary: #674eff; /* 보라색 */
+  --color-secondary: #7cf335; /* 네온색 */
 
   /* white */
   /* --white: #fefefe; */
@@ -51,6 +51,6 @@
 }
 
 .dark {
-  --color-primary: #7CF335;
-  --color-secondary: #674EFF;
+  --color-primary: #7cf335;
+  --color-secondary: #674eff;
 }
