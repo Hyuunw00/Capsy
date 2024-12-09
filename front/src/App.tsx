@@ -8,6 +8,7 @@ import Login from "./pages/login/LoginPage";
 import MyPage from "./pages/mypage/MyPage";
 import SignUpPage from "./pages/signup/SignUpPage";
 import PasswordPage from "./pages/password/PasswordPage";
+import SignUpSuccessPage from "./pages/signup/SignUpSuccessPage";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/signupsuccess" element={<SignUpSuccessPage />} />
           <Route path="/password" element={<PasswordPage />} />
         </Route>
       </Routes>
