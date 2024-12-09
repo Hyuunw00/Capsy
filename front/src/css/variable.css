@@ -6,8 +6,8 @@
 
 :root {
   /* Object Color */
-  --color-primary: #674EFF;
-  --color-secondary: #7CF335;
+  --color-primary: #674EFF;  /* 보라색 */
+  --color-secondary: #7CF335; /* 네온색 */
 
   /* white */
   /* --white: #fefefe; */
@@ -15,19 +15,20 @@
 
   /* gray */
   --gray100: #f7f7f5;
-  --gray200: #d9d9d9;
+  --gray200: #d9d9d9; /* default gray색 */
+  --gray300: #9b9a97;
+  --gray400: #5f5e5b;
+  --gray500: #37352f; /* input message */
+  --gray600: #1d1b16;
+  --gray700: #0f0f0f;
 
   /* background */
   --bg100: rgba(0, 0, 0, 0.04);
   --bg200: rgba(0, 0, 0, 0.08);
 
   /* black */
-  --black100: #9b9a97;
-  --black200: #5f5e5b;
-  --black300: #37352f;
-  --black400: #1d1b16;
-  /* --black500: #0f0f0f; */
-  --black500: #000000;
+  /* --black: #0f0f0f; */
+  --black: #000000;
 
   /* box-shadow */
   --box-shadow300: 0 4px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 4px -1px rgba(0, 0, 0, 0.2);
