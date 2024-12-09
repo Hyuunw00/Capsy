@@ -15,6 +15,10 @@
     @apply flex items-center justify-between min-h-screen;
   }
 
+  .item-row {
+    @apply flex flex-col justify-between items-center;
+  }
+
   .font-inter {
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
