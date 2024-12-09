@@ -31,7 +31,7 @@ export default function Footer() {
   );
 
   return (
-    <footer className="absolute bottom-0 w-full bg-black flex items-center px-[25px]" style={{ height: "55px" }}>
+    <footer className="absolute bottom-0 flex items-center w-full px-8 py-2 bg-black" >
       <nav className="w-full">
         <ul className="flex items-center justify-around text-white">
           <NavItem
