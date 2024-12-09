@@ -14,7 +14,7 @@ export default function Footer() {
         to={to}
         className={({ isActive }) =>
           isActive
-            ? "no-underline text-[#7CF335] flex flex-col items-center"
+            ? "no-underline text-secondary flex flex-col items-center"
             : "no-underline text-white flex flex-col items-center"
         }
       >
@@ -23,7 +23,7 @@ export default function Footer() {
             <svg width="24" height="24" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill={isActive ? "#7CF335" : "white"} d={iconPath} />
             </svg>
-            <span className="text-sm mt-1">{label}</span>
+            <span className="mt-1 text-sm">{label}</span>
           </>
         )}
       </NavLink>
@@ -45,7 +45,7 @@ export default function Footer() {
             label="작성"
           />
           <li className="flex flex-col items-center">
-            <img src={logo_white} alt="Logo" className="w-25 h-10" />
+            <img src={logo_white} alt="Logo" className="h-10 w-25" />
           </li>
           <NavItem
             to="/event"
