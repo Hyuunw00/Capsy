@@ -13,14 +13,15 @@ import { useSignupStore } from "../../store/signupStore";
 // 비밀번호 유효성검사
 
 export default function PasswordConfirmInput() {
-  const { passwordConfirm, setPassword, password, isPasswordValid, setIsPasswordValid } = useSignupStore();
+  const { password, passwordConfirm, setPasswordConfirm, isPasswordConfirmValid, setIsPasswordConfirmValid } =
+    useSignupStore();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value;
-    setPassword(newPassword);
+    setPasswordConfirm(newPassword);
 
-    if (password === passwordConfirm) setIsPasswordValid(true);
-    else setIsPasswordValid(false);
+    if (password === newPassword) setIsPasswordConfirmValid(true);
+    else setIsPasswordConfirmValid(false);
   };
 
   return (
@@ -35,9 +36,9 @@ export default function PasswordConfirmInput() {
           value={passwordConfirm}
           placeholder="비밀번호 확인"
           onChange={handleChange}
-          className=" w-full  h-[48px] px-[12px] py-[14px] rounded-[6px] border"
+          className={`w-full  h-[48px] px-[12px] py-[14px] rounded-[6px] border ${isPasswordConfirmValid ? "border-gray-300" : "border-red-500"}`}
         />
-        <span className="text-[12px] text-red-500">{isPasswordValid ? "" : "비밀번호 동일"}</span>
+        <span className="text-[12px] text-gray-500">{isPasswordConfirmValid ? "비밀번호 동일!" : ""}</span>
       </div>
     </div>
   );

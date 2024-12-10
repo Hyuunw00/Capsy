@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: 'https://5th.fe.dev-cos.com:5003',
   headers: {
-    'Content-Type': 'application/json',
-  }
+    "Content-Type": "application/json",
+  },
 });
 
 // 요청 인터셉터
@@ -19,7 +19,7 @@ axiosInstance.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // 응답 인터셉터
@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
       // 로그아웃 처리 또는 토큰 갱신 로직
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;
