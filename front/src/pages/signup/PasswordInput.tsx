@@ -34,7 +34,8 @@ export default function PasswordInput() {
           value={password}
           placeholder="비밀번호"
           onChange={handleChange}
-          className=" w-full  h-[48px] px-[12px] py-[14px] rounded-[6px] border"
+          className={`w-full h-[48px] px-[12px] py-[14px] rounded-[6px] 
+            border ${isPasswordValid ? "border-gray-300" : "border-red-500"} `}
         />
         <span className="text-[12px] text-red-500">
           {isPasswordValid ? "" : "대/소문자, 특수문자, 숫자 포함 8자리 이상"}

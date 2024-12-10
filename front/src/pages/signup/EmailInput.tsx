@@ -4,29 +4,40 @@ export default function EmailInput() {
   const { email, setEmail, isEmailValid, setIsEmailValid } = useSignupStore();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  console.log(isEmailValid, email);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
     setEmail(newEmail); // 상태 업데이트
-    setIsEmailValid(emailRegex.test(newEmail));
+  };
+  const handleCheckEmail = () => {
+    setIsEmailValid(emailRegex.test(email));
   };
 
   return (
-    <div className="flex flex-col w-full">
-      <label htmlFor="email" className="text-[10px] mb-[5px]">
-        이메일
-      </label>
-      <div className="flex flex-col  gap-[10px] ">
+    <div className="flex items-center gap-2 w-full">
+      <div className="flex-1">
+        <label htmlFor="email" className="text-[10px] mb-[5px]">
+          이메일
+        </label>
         <input
           id="email"
           type="email"
           value={email}
           placeholder="이메일"
           onChange={handleChange}
-          className=" w-full  h-[48px] px-[12px] py-[14px] rounded-[6px] border"
+          className={`w-full  h-[48px] px-[12px] py-[14px] rounded-[6px] border  ${!isEmailValid && "border-red-500 "}`}
         />
-        <span className="text-[12px] text-red-500">{isEmailValid ? "" : "이메일 형식"}</span>
+        <span className={`text-[12px] h-[16px]  ${isEmailValid ? "text-gray-500 " : "text-red-500 "}`}>
+          {isEmailValid ? "유효한 이메일입니다!" : "이메일 형식"}
+        </span>
+      </div>
+
+      <div className="flex items-center">
+        <button
+          onClick={handleCheckEmail}
+          className="bg-primary text-[#ffffff] text-center w-[68px] h-[48px] py-[13px] px-[21px] text-[14px] rounded-[6px] flex items-center justify-center"
+        >
+          확인
+        </button>
       </div>
     </div>
   );
