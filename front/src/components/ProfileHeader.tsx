@@ -1,5 +1,7 @@
+import { useState } from "react";
 import profileImgEditIcon from "../assets/profile-img-edit-icon.svg";
 import profileImgSample from "../assets/profile-img-sample.jpg";
+import ProfileForm from "../pages/mypage/modal/ProfileForm";
 
 export default function ProfileHeader() {
   const username = "@caapsy_human";
@@ -7,6 +9,16 @@ export default function ProfileHeader() {
   const followers = 99;
   const following = 99;
   const nickname = "캡시햄찌";
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="px-[30px] py-6 mb-[30px]">
@@ -62,7 +74,10 @@ export default function ProfileHeader() {
         {/* 프로필 편집과 프로필 공유 버튼 */}
         <div className="flex space-x-[5px] mt-6">
           {/* 프로필 편집 버튼 */}
-          <button className="flex-1 py-3 text-white text-[14px] font-normal bg-primary rounded-[10px]">
+          <button
+            className="flex-1 py-3 text-white text-[14px] font-normal bg-primary rounded-[10px]"
+            onClick={openModal}
+          >
             프로필 편집
           </button>
           {/* 프로필 공유 버튼 */}
@@ -71,6 +86,9 @@ export default function ProfileHeader() {
           </button>
         </div>
       </div>
+
+      {/* 모달이 열릴 때만 ProfileForm을 표시 */}
+      {isModalOpen && <ProfileForm onClose={closeModal} />}
     </div>
   );
 }

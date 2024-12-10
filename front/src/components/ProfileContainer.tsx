@@ -12,9 +12,14 @@ const alarmCount = 6;
 
 function ProfileContainer() {
   const [selectedTab, setSelectedTab] = useState("capsules");
+  const [showAllCapsules, setShowAllCapsules] = useState(false);
 
   const handleTabClick = (tab: string) => {
     setSelectedTab(tab);
+  };
+
+  const handleShowAll = () => {
+    setShowAllCapsules(!showAllCapsules);
   };
 
   return (
@@ -66,22 +71,42 @@ function ProfileContainer() {
           <span className="text-[14px] font-regular font-pretendard">예약글</span>
         </div>
       </div>
-
       {/* Tab Content */}
       <div className="tab-content">
         {selectedTab === "capsules" && (
-          <div className="text-[14px] font-regular font-pretendard">
-            공개완료 <span className="ml-1">{capsuleCount}</span>
-          </div>
-        )}{" "}
-        {selectedTab === "articles" && (
-          <div className="text-[14px] font-regular font-pretendard">
-            공개완료 <span className="ml-1">{articleCount}</span>
+          <div className="flex justify-between items-center text-[14px] font-pretendard">
+            <div className="flex items-center">
+              <span className="font-regular">공개완료</span>
+              <span className="ml-1 font-semibold">{capsuleCount}</span>
+            </div>
+
+            {/* 전체보기 버튼을 오른쪽 끝에 배치 */}
+            <span className="font-regular font-pretendard underline cursor-pointer" onClick={handleShowAll}>
+              {showAllCapsules ? "상세페이지목록" : "전체보기"}
+            </span>
           </div>
         )}
+
+        {selectedTab === "articles" && (
+          <div className="flex justify-between items-center text-[14px] font-pretendard">
+            <div className="flex items-center">
+              <span className="font-regular">일반글</span>
+              <span className="ml-1 font-semibold">{articleCount}</span>
+            </div>
+          </div>
+        )}
+
         {selectedTab === "alarms" && (
-          <div className="text-[14px] font-regular font-pretendard">
-            공개완료 <span className="ml-1">{alarmCount}</span>
+          <div className="flex justify-between items-center text-[14px] font-pretendard">
+            <div className="flex items-center">
+              <span className="font-regular">공개완료</span>
+              <span className="ml-1 font-semibold">{alarmCount}</span>
+            </div>
+
+            {/* 전체보기 버튼을 오른쪽 끝에 배치 */}
+            <span className="font-regular font-pretendard underline cursor-pointer" onClick={handleShowAll}>
+              {showAllCapsules ? "상세페이지목록" : "전체보기"}
+            </span>
           </div>
         )}
       </div>
