@@ -22,7 +22,7 @@ export function InputWithLabel({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className={`w-full p-2 border rounded ${
+        className={`w-full p-2 border rounded placeholder:text-gray-300 ${
           isError ? 'border-red-500' : 'border-gray-300'
         }`}
         {...props}

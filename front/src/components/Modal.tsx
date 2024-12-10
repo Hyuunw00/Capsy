@@ -10,7 +10,7 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
   return (
     <>
       <div 
-        className="fixed inset-0 z-40 bg-black/30"
+        className="fixed bottom-0 left-0 right-0 mx-auto max-w-[600px] inset-0 z-40 bg-black/30"
         onClick={onClose}
       />
       <div className="fixed bottom-0 left-0 right-0 mx-auto max-w-[600px]
