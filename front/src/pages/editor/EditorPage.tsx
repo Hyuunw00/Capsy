@@ -9,7 +9,7 @@ export default function EditorPage() {
   const [activeTab, setActiveTab] = useState("general");
   const [showModal, setShowModal] = useState(false);
   const [saveModal, setSaveModal] = useState(false);
-  const [text, setText] = useState(""); // 텍스트 입력값 상태 추가
+  const [text, setText] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 업로드 받은 이미지 상태
