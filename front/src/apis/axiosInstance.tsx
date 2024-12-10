@@ -1,7 +1,8 @@
 import axios from "axios";
+import { tokenService } from "../utils/token";
 
 const axiosInstance = axios.create({
-  baseURL: 'https://5th.fe.dev-cos.com:5003',
+  baseURL: "https://5th.fe.dev-cos.com:5003",
   headers: {
     "Content-Type": "application/json",
   },
@@ -10,8 +11,7 @@ const axiosInstance = axios.create({
 // 요청 인터셉터
 axiosInstance.interceptors.request.use(
   (config) => {
-    // 토큰이 필요한 경우
-    const token = sessionStorage.getItem('token');
+    const token = tokenService.getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -28,9 +28,8 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    // 401 에러 처리 (토큰 만료 등)
     if (error.response?.status === 401) {
-      // 로그아웃 처리 또는 토큰 갱신 로직
+      tokenService.clearAll();
     }
     return Promise.reject(error);
   },

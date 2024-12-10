@@ -23,11 +23,16 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
 
   const validateInput = (name: string, value: string) => {
     const numValue = parseInt(value);
-
+    const today = new Date();
+    const currentYear = today.getFullYear();
+  
     switch (name) {
       case "year":
         if (!/^\d{4}$/.test(value)) {
           return "연도는 4자리 숫자여야 합니다";
+        }
+        if (numValue < currentYear) {
+          return "현재 연도보다 이전의 연도는 선택할 수 없습니다";
         }
         break;
       case "month":
@@ -47,6 +52,35 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
         }
         break;
     }
+  
+    // 날짜가 모두 입력된 경우 전체 날짜 유효성 검사
+    if (date.year && date.month && date.day) {
+      const selectedDate = new Date(
+        parseInt(date.year),
+        parseInt(date.month) - 1,
+        parseInt(date.day)
+      );
+      
+      // 선택된 날짜가 오늘보다 이전인 경우
+      if (selectedDate < today) {
+        switch(name) {
+          case "year":
+            return "미래의 날짜를 선택해주세요";
+          case "month":
+            if (parseInt(date.year) === currentYear) {
+              return "미래의 날짜를 선택해주세요";
+            }
+            break;
+          case "day":
+            if (parseInt(date.year) === currentYear && 
+                parseInt(date.month) === (today.getMonth() + 1)) {
+              return "미래의 날짜를 선택해주세요";
+            }
+            break;
+        }
+      }
+    }
+  
     return "";
   };
 
