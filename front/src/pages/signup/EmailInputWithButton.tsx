@@ -3,7 +3,7 @@ import axiosInstance from "../../apis/axiosInstance";
 import { useSignupStore } from "../../store/signupStore";
 import NotificationModal from "../../components/NotificationModal";
 
-export default function EmailInput() {
+export default function EmailInputWithButton() {
   const { email, setEmail, isEmailValid, setIsEmailValid } = useSignupStore();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

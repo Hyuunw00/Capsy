@@ -4,10 +4,11 @@ import NotificationModal from "../../components/NotificationModal";
 import loginLogo from "../../assets/login-logo.svg";
 import { useSignupStore } from "../../store/signupStore";
 import PasswordInput from "./PasswordInput";
-import IdInput from "./IdInput";
-import EmailInput from "./EmailInput";
+
 import PasswordConfirmInput from "./PasswordConfirmInput";
 import axiosInstance from "../../apis/axiosInstance";
+import IdInputWithButton from "./IdInputWithButton";
+import EmailInputWithButton from "./EmailInputWithButton";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
@@ -50,8 +51,8 @@ export default function SignUpPage() {
           </div>
 
           <div className="flex flex-col gap-[10px]">
-            <IdInput />
-            <EmailInput />
+            <IdInputWithButton />
+            <EmailInputWithButton />
             <PasswordInput />
             <PasswordConfirmInput />
             <button
