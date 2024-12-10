@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const axiosInstance = axios.create({
   baseURL: 'https://5th.fe.dev-cos.com:5003',
-  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   }
@@ -12,7 +11,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // 토큰이 필요한 경우
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

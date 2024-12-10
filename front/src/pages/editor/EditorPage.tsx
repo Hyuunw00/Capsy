@@ -1,11 +1,11 @@
 import { useState } from "react";
 import pictureIcon from "../../assets/pick-picture-icon.svg";
 import dateIcon from "../../assets/pick-date-icon.svg";
-import NoticeModal from "../../components/NoticeModal";
+import EditModal from "./EditModal";
 
 export default function EditorPage() {
   const [activeTab, setActiveTab] = useState("general");
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);  // 모달 상태를 상위 컴포넌트로 이동
 
   return (
     <div className="relative flex flex-col h-dvh">
@@ -29,7 +29,6 @@ export default function EditorPage() {
           </button>
         </div>
       </nav>
-
       <nav className="flex items-center justify-between px-4 py-3 border-b border-b-gray-100">
         <div className="flex items-center gap-4">
           <button className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded">
@@ -48,7 +47,6 @@ export default function EditorPage() {
           <button className="px-4 py-1 text-sm text-white bg-black rounded">저장</button>
         </div>
       </nav>
-
       <main className="flex-1 px-4 py-4 h-3/5">
         <textarea
           className="flex-1 w-full h-full mt-2 text-gray-600 placeholder-gray-300 resize-none focus:outline-none"
@@ -59,12 +57,7 @@ export default function EditorPage() {
           }
         />
       </main>
-
-      {showModal && (
-        <NoticeModal title="날짜 지정 안내" onClose={() => setShowModal(false)}>
-          타임캡슐 공개 날짜를 지정해주세요.
-        </NoticeModal>
-      )}
+      {showModal && <EditModal onClose={() => setShowModal(false)} />}
     </div>
   );
 }
