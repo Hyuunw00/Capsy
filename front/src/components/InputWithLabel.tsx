@@ -1,33 +1,32 @@
-type InputWithLabelProps = {
+interface InputWithLabelProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder?: string;
-  error?: string;
-};
+  placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isError?: boolean;
+}
 
-export const InputWithLabel = ({ 
+export function InputWithLabel({
   label,
+  placeholder,
   value,
   onChange,
-  placeholder,
-  error
-}: InputWithLabelProps) => {
+  isError,
+  ...props
+}: InputWithLabelProps) {
   return (
-    <div className="w-full mb-4">
-      <label className="block mb-1 ml-1 text-sm text-gray-700">
-        {label}
-      </label>
+    <div>
+      <label className="text-sm text-gray-600">{label}</label>
       <input
         type="text"
+        placeholder={placeholder}
         value={value}
         onChange={onChange}
-        placeholder={placeholder}
-        className="w-full h-10 px-4 rounded border text-sm placeholder:text-[#acacac]"
+        className={`w-full p-2 border rounded ${
+          isError ? 'border-red-500' : 'border-gray-300'
+        }`}
+        {...props}
       />
-      {error && (
-        <p className="mt-1 text-sm text-red-500">{error}</p>
-      )}
     </div>
   );
-};
+}
