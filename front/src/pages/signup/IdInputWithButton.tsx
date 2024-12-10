@@ -3,7 +3,7 @@ import axiosInstance from "../../apis/axiosInstance";
 import { useSignupStore } from "../../store/signupStore";
 import NotificationModal from "../../components/NotificationModal";
 
-export default function IdInput() {
+export default function IdInputWithButton() {
   const { id, setId, isIdValid, setIsIdValid } = useSignupStore();
   const idRegex = /^[A-Za-z0-9]{4,12}$/;
 
