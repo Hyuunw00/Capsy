@@ -8,7 +8,7 @@ import { InputWithLabel } from "../../components/InputWithLabel";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
 
-export default function LoginPage() {
+export default function PasswordResetPage() {
   const navigate = useNavigate();
   const {
     email,
@@ -34,7 +34,7 @@ export default function LoginPage() {
       login(data.token);
       setIsEmailValid(true);
       setIsPasswordValid(true);
-      navigate(`/`);
+      navigate(`/newpassword`);
     } catch (error) {
       console.error(error);
       setIsOpen(true);
@@ -54,8 +54,8 @@ export default function LoginPage() {
         </NoticeModal>
       )}
       <form onSubmit={handleSubmit}>
-        <Logo>로그인</Logo>
-        <div className="flex flex-col ">
+        <Logo>비밀번호 재설정</Logo>
+        <div className="flex flex-col gap-[12px]">
           <InputWithLabel
             label="이메일"
             type="email"
@@ -77,7 +77,7 @@ export default function LoginPage() {
           />
 
           <Button className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] text-[12px] rounded-[6px] mt-[20px]">
-            로그인
+            비밀번호 재설정
           </Button>
           <Link to="/signup" className="text-center mt-[16px]  text-[#475569] underline">
             회원가입 바로가기

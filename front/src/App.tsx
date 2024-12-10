@@ -7,8 +7,9 @@ import Event from "./pages/event/Event";
 import Login from "./pages/login/LoginPage";
 import MyPage from "./pages/mypage/MyPage";
 import SignUpPage from "./pages/signup/SignUpPage";
-import PasswordPage from "./pages/password/PasswordPage";
 import SignUpSuccessPage from "./pages/signup/SignUpSuccessPage";
+import PasswordResetPage from "./pages/password/PasswordResetPage";
+import NewPasswordPage from "./pages/password/NewPasswordPage";
 
 export default function App() {
   return (
@@ -23,7 +24,8 @@ export default function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/signupsuccess" element={<SignUpSuccessPage />} />
-          <Route path="/password" element={<PasswordPage />} />
+          <Route path="/resetpassword" element={<PasswordResetPage />} />
+          <Route path="/newpassword" element={<NewPasswordPage />} />
         </Route>
       </Routes>
     </>

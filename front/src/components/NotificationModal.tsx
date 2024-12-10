@@ -3,6 +3,7 @@ type ModalProps = {
   title: string | null;
 };
 
+//  알림 창()
 export default function NotificationModal({ title, onClose }: ModalProps) {
   return (
     <>
