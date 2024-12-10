@@ -27,14 +27,22 @@ export default function PasswordResetPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const { data } = await axiosInstance.post("/login", {
+      const response = await axiosInstance.post("/login", {
         email: email,
         password: password,
       });
-      login(data.token);
-      setIsEmailValid(true);
-      setIsPasswordValid(true);
-      navigate(`/newpassword`);
+      const { user, status } = response.data;
+
+      // 해당 사용자가 아닐 경우 return
+      if (user.email !== email) {
+        console.log("사용자가 아닙니다!");
+        return;
+      }
+
+      // 로그인 요청이 성공(사용자 인증 성공)
+      if (status === 200) {
+        navigate(`/newpassword`);
+      }
     } catch (error) {
       console.error(error);
       setIsOpen(true);

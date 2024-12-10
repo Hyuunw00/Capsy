@@ -7,6 +7,7 @@ import NoticeModal from "../../components/NoticeModal";
 import { InputWithLabel } from "../../components/InputWithLabel";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
+import { tokenService } from "../../utils/token";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -24,22 +25,29 @@ export default function LoginPage() {
 
   const [isOpen, setIsOpen] = useState(false);
 
+  console.log(email, password);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const { data } = await axiosInstance.post("/login", {
+      const response = await axiosInstance.post("/login", {
         email: email,
         password: password,
       });
-      login(data.token);
-      setIsEmailValid(true);
-      setIsPasswordValid(true);
+      const { token, user } = response.data;
+      tokenService.setToken(token);
+      tokenService.setUser(user);
+
+      login(token);
+      // setIsEmailValid(true);
+      // setIsPasswordValid(true);
       navigate(`/`);
     } catch (error) {
       console.error(error);
       setIsOpen(true);
-      setIsEmailValid(false);
-      setIsPasswordValid(false);
+      // setIsEmailValid(false);
+      // setIsPasswordValid(false);
+    } finally {
       setPassword("");
       setEmail("");
     }

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-
 import { useLoginStore } from "../../store/loginStore";
 import axiosInstance from "../../apis/axiosInstance";
 import NoticeModal from "../../components/NoticeModal";
@@ -21,12 +20,8 @@ export default function NewPasswordPage() {
     setPasswordConfirm,
     setIsPasswordValid,
     setIsPasswordConfirmValid,
-    isLoggedIn,
-    accessToken,
   } = useLoginStore();
   const logout = useLoginStore((state) => state.logout);
-
-  console.log(isLoggedIn, accessToken);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -43,6 +38,7 @@ export default function NewPasswordPage() {
         password: password,
       });
       logout();
+      // tokenService.clearAll();
       navigate(`/login`);
     } catch (error) {
       console.error(error);
@@ -55,7 +51,8 @@ export default function NewPasswordPage() {
   return (
     <>
       {isOpen && (
-        <NoticeModal onClose={() => setIsOpen(false)} title="비밀번호가 다릅니다.">
+        <NoticeModal onClose={() => setIsOpen(false)} title="알림">
+          <p>비밀번호가 다릅니다.</p>
           <p>다시 입력해주세요.</p>
         </NoticeModal>
       )}
