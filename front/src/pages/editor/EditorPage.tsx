@@ -1,11 +1,15 @@
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import pictureIcon from "../../assets/pick-picture-icon.svg";
 import dateIcon from "../../assets/pick-date-icon.svg";
 import EditModal from "./EditModal";
 import EditPreview from "./EditPreview";
 import EditComplete from "./EditComplete";
+import { createPost } from "../../apis/apis";
+import { CHANNEL_ID_TIMECAPSULE, CHANNEL_ID_POST } from "../../apis/apis";
 
 export default function EditorPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("general");
   const [showModal, setShowModal] = useState(false);
   const [saveModal, setSaveModal] = useState(false);
@@ -23,13 +27,14 @@ export default function EditorPage() {
   });
 
   // 저장 버튼 클릭 시 유효성 검사
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
+    // 텍스트 입력 검증
     if (!text.trim()) {
       alert("텍스트를 입력해주세요.");
       return;
     }
-    
-    // 타임캡슐인 경우 추가 검증
+  
+    // 타임캡슐 작성 시 필수 항목 검증
     if (activeTab === "timeCapsule") {
       if (uploadedImages.length === 0) {
         alert("타임캡슐에는 이미지 첨부가 필수입니다.");
@@ -40,33 +45,66 @@ export default function EditorPage() {
         return;
       }
     }
-
-    setSaveModal(true);
+  
+    try {
+      let response;
+      const channelId = activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST;
+      
+      // 이미지가 있는 경우와 없는 경우를 구분하여 API 호출
+      if (uploadedImages.length > 0) {
+        const formData = new FormData();
+        formData.append('title', text);
+        formData.append('channelId', channelId);
+        
+        // 모든 이미지 파일 추가
+        uploadedImages.forEach((image, _) => {
+          formData.append('image', image);
+        });
+  
+        response = await createPost(formData);
+      } else {
+        // 이미지가 없는 경우
+        response = await createPost({
+          title: text,
+          channelId: channelId
+        });
+      }
+  
+      console.log('게시물 생성 성공:', response);
+      setSaveModal(true);
+      
+      // 성공 후 상세 페이지로 이동
+      if (response?._id) {
+        navigate(`/post/${response._id}`);
+      }
+  
+    } catch (error) {
+      console.error('게시물 생성 실패:', error);
+      alert('게시물 작성에 실패했습니다.');
+    }
   };
-
+  
   // 프리뷰에서 선택한 사진을 배열에서 제거하는 함수
   const handleDeleteFile = (indexToDelete: number) => {
     setUploadedImages((prev) => prev.filter((_, index) => index !== indexToDelete));
   };
 
-  // 파일 크기와 형식을 검사하는 함수
   const validateFile = (file: File): { isValid: boolean; error?: string } => {
-    const videoMaxSize = 4 * 1024 * 1024 * 1024; // 4GB
-    const imageMaxSize = 30 * 1024 * 1024; // 30MB
+    const VIDEO_MAX_SIZE = 4 * 1024 * 1024 * 1024; // 4GB
+    const IMG_MAX_SIZE = 30 * 1024 * 1024; // 30MB
 
     if (file.type.startsWith("video/")) {
       if (!["video/mp4", "video/quicktime"].includes(file.type)) {
         return { isValid: false, error: "비디오는 MP4 또는 MOV 형식만 가능합니다." };
       }
-      if (file.size > videoMaxSize) {
+      if (file.size > VIDEO_MAX_SIZE) {
         return { isValid: false, error: "비디오 크기는 4GB 이하여야 합니다." };
       }
-    }
-    else if (file.type.startsWith("image/")) {
+    } else if (file.type.startsWith("image/")) {
       if (!["image/jpeg", "image/png"].includes(file.type)) {
         return { isValid: false, error: "이미지는 JPG 또는 PNG 형식만 가능합니다." };
       }
-      if (file.size > imageMaxSize) {
+      if (file.size > IMG_MAX_SIZE) {
         return { isValid: false, error: "이미지 크기는 30MB 이하여야 합니다." };
       }
     } else {
@@ -103,6 +141,7 @@ export default function EditorPage() {
     setSelectedDate(date);
     setShowModal(false);
   };
+
 
   return (
     <div className="relative flex flex-col h-dvh">
@@ -149,10 +188,7 @@ export default function EditorPage() {
           )}
         </div>
         <div className="flex items-center gap-4">
-          <button 
-            onClick={handleSaveClick}
-            className="px-4 py-1 text-sm text-white bg-black rounded"
-          >
+          <button onClick={handleSaveClick} className="px-4 py-1 text-sm text-white bg-black rounded">
             저장
           </button>
         </div>
