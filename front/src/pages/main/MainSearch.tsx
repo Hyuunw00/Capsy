@@ -90,7 +90,7 @@ export default function MainSearch() {
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
   return (
-    <div className="px-8">
+    <div className="px-8 mt-2">
       {isFocused ? <Tab2 setIsFocused={setIsFocused} /> : <Tab1 setIsFocused={setIsFocused} />}
     </div>
   );
