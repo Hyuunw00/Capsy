@@ -20,7 +20,7 @@ interface LoginState {
   setIsPasswordValid: (isValid: boolean) => void;
   setIsPasswordConfirmValid: (isValid: boolean) => void;
 
-  login: (accessToken: string) => void;
+  login: (accessToken: string | null) => void;
   logout: () => void;
 }
 
@@ -42,6 +42,6 @@ export const useLoginStore = create<LoginState>((set) => ({
   setIsPasswordValid: (isValid: boolean) => set({ isPasswordValid: isValid }),
   setIsPasswordConfirmValid: (isValid: boolean) => set({ isPasswordConfirmValid: isValid }),
 
-  login: (accessToken: string) => set({ isLoggedIn: true, accessToken: accessToken }),
+  login: (accessToken: string | null) => set({ isLoggedIn: true, accessToken: accessToken }),
   logout: () => set({ isLoggedIn: false, accessToken: null }),
 }));

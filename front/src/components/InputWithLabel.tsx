@@ -28,7 +28,7 @@ export const InputWithLabel = ({
               value={value}
               placeholder={placeholder}
               onChange={(e) => handleChange(e.target.value)}
-              className={`w-full  h-[48px] px-[12px] py-[14px] rounded-[6px] border  text-[14px]
+              className={`w-full  h-[48px] px-[12px] py-[14px] rounded-[6px] border text-[16px]
                 ${!isValid && "border-red-500"}  `}
             />
           </label>
