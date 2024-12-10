@@ -3,13 +3,13 @@ import pictureIcon from "../../assets/pick-picture-icon.svg";
 import dateIcon from "../../assets/pick-date-icon.svg";
 import EditModal from "./EditModal";
 import EditPreview from "./EditPreview";
-import NotificationModal from "../../components/NotificationModal";
-import NoticeModal from "../../components/NoticeModal";
+import EditComplete from "./EditComplete";
 
 export default function EditorPage() {
   const [activeTab, setActiveTab] = useState("general");
   const [showModal, setShowModal] = useState(false);
   const [saveModal, setSaveModal] = useState(false);
+  const [text, setText] = useState(""); // 텍스트 입력값 상태 추가
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 업로드 받은 이미지 상태
@@ -22,6 +22,28 @@ export default function EditorPage() {
     day: "",
   });
 
+  // 저장 버튼 클릭 시 유효성 검사
+  const handleSaveClick = () => {
+    if (!text.trim()) {
+      alert("텍스트를 입력해주세요.");
+      return;
+    }
+    
+    // 타임캡슐인 경우 추가 검증
+    if (activeTab === "timeCapsule") {
+      if (uploadedImages.length === 0) {
+        alert("타임캡슐에는 이미지 첨부가 필수입니다.");
+        return;
+      }
+      if (!selectedDate.year || !selectedDate.month || !selectedDate.day) {
+        alert("타임캡슐에는 날짜 지정이 필수입니다.");
+        return;
+      }
+    }
+
+    setSaveModal(true);
+  };
+
   // 프리뷰에서 선택한 사진을 배열에서 제거하는 함수
   const handleDeleteFile = (indexToDelete: number) => {
     setUploadedImages((prev) => prev.filter((_, index) => index !== indexToDelete));
@@ -29,10 +51,9 @@ export default function EditorPage() {
 
   // 파일 크기와 형식을 검사하는 함수
   const validateFile = (file: File): { isValid: boolean; error?: string } => {
-    const videoMaxSize = 4 * 1024 * 1024 * 1024; // 4GB //1 GB (기가바이트) = 1024 MB = 1024 * 1024 * 1024 bytes
+    const videoMaxSize = 4 * 1024 * 1024 * 1024; // 4GB
     const imageMaxSize = 30 * 1024 * 1024; // 30MB
 
-    // 비디오 파일 검사
     if (file.type.startsWith("video/")) {
       if (!["video/mp4", "video/quicktime"].includes(file.type)) {
         return { isValid: false, error: "비디오는 MP4 또는 MOV 형식만 가능합니다." };
@@ -41,7 +62,6 @@ export default function EditorPage() {
         return { isValid: false, error: "비디오 크기는 4GB 이하여야 합니다." };
       }
     }
-    // 이미지 파일 검사
     else if (file.type.startsWith("image/")) {
       if (!["image/jpeg", "image/png"].includes(file.type)) {
         return { isValid: false, error: "이미지는 JPG 또는 PNG 형식만 가능합니다." };
@@ -72,12 +92,8 @@ export default function EditorPage() {
       }
     }
 
-    // 유효성 통과하면 파일을 상태에 추가하기
     setUploadedImages((prev) => [...prev, ...files]);
 
-    console.log("선택된 파일 목록", files);
-
-    // 파일 선택 초기화 (같은 파일 다시 선택 가능하도록)
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -118,7 +134,7 @@ export default function EditorPage() {
             className="hidden"
             accept="image/jpeg,image/png,video/mp4,video/quicktime"
             onChange={handleFileChange}
-            multiple // 다중 파일 선택 가능하도록 설정
+            multiple
           />
           <button onClick={handlePictureClick} className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded">
             <img src={pictureIcon} alt="사진 선택 아이콘" />
@@ -133,11 +149,18 @@ export default function EditorPage() {
           )}
         </div>
         <div className="flex items-center gap-4">
-          <button className="px-4 py-1 text-sm text-white bg-black rounded">저장</button>
+          <button 
+            onClick={handleSaveClick}
+            className="px-4 py-1 text-sm text-white bg-black rounded"
+          >
+            저장
+          </button>
         </div>
       </nav>
       <main className="flex-1 px-4 py-4 h-2/5">
         <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
           className="flex-1 w-full mt-2 overflow-scroll text-gray-600 placeholder-gray-300 resize-none h-96 focus:outline-none"
           placeholder={
             activeTab === "general"
@@ -153,11 +176,13 @@ export default function EditorPage() {
         />
       </main>
       {showModal && <EditModal onClose={() => setShowModal(false)} onSubmit={handleDateSubmit} />}
-      {saveModal && 
-        <NoticeModal title="타임캡슐은 수정할 수 없습니다" onClose={() => setSaveModal(false)}>타임캡슐은 지정한 날짜가 도래하기 전까지
-        내용을 수정할 수 없습니다.
-        정말 작성을 완료하시겠습니까?</NoticeModal>
-      }
+      {saveModal && (
+        <EditComplete
+          isOpen={saveModal}
+          onClose={() => setSaveModal(false)}
+          isTimeCapsule={activeTab === "timeCapsule"}
+        />
+      )}
     </div>
   );
 }

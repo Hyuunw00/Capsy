@@ -1,17 +1,34 @@
-type ModalProps = {
-  onClose?: () => void;
-  title: string | null;
-};
+interface NotificationModalProps {
+  isOpen: boolean;
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}
 
-export default function NotificationModal({ title, onClose }: ModalProps) {
+export default function NotificationModal ({ 
+  isOpen, 
+  title, 
+  description, 
+  children 
+}: NotificationModalProps) {
+  if (!isOpen) return null;
+
   return (
     <>
-      <div className="absolute top-32 left-12 shadow-md z-50 w-[80%] p-4 bg-white rounded-lg">
-        <h5 className="mb-3 text-primary">{title}</h5>
-        <button onClick={onClose} className="w-full py-2 text-white rounded bg-primary">
-          확인
-        </button>
+      <div className="fixed inset-0 z-40 bg-black/30" />
+      <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div className="w-full max-w-md p-6 bg-white rounded-lg">
+          <h2 className="mb-4 text-xl font-medium text-center">
+            {title}
+          </h2>
+          <p className="mb-6 text-center text-gray-600 whitespace-pre-line">
+            {description}
+          </p>
+          <div className="flex flex-col gap-2">
+            {children}
+          </div>
+        </div>
       </div>
     </>
   );
-}
+};
