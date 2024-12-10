@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 import { useLoginStore } from "../../store/loginStore";
-import axiosInstance from "../../apis/axiosInstance";
 import NoticeModal from "../../components/NoticeModal";
 import { InputWithLabel } from "../../components/InputWithLabel";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
 import { tokenService } from "../../utils/token";
+import { loginAuth } from "../../apis/auth";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -30,14 +30,10 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axiosInstance.post("/login", {
-        email: email,
-        password: password,
-      });
-      const { token, user } = response.data;
+      const { data, status } = await loginAuth(email, password);
+      const { token, user } = data;
       tokenService.setToken(token);
       tokenService.setUser(user);
-
       login(token);
       // setIsEmailValid(true);
       // setIsPasswordValid(true);

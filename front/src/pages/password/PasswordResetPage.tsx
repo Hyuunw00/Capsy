@@ -7,6 +7,7 @@ import NoticeModal from "../../components/NoticeModal";
 import { InputWithLabel } from "../../components/InputWithLabel";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
+import { loginAuth } from "../../apis/auth";
 
 export default function PasswordResetPage() {
   const navigate = useNavigate();
@@ -24,14 +25,16 @@ export default function PasswordResetPage() {
 
   const [isOpen, setIsOpen] = useState(false);
 
+  console.log(email, password);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axiosInstance.post("/login", {
-        email: email,
-        password: password,
-      });
-      const { user, status } = response.data;
+      const response = await loginAuth(email, password);
+      const { data, status } = response;
+      const { user } = data;
+
+      console.log(user.email, email, status);
 
       // 해당 사용자가 아닐 경우 return
       if (user.email !== email) {
@@ -56,7 +59,7 @@ export default function PasswordResetPage() {
   return (
     <>
       {isOpen && (
-        <NoticeModal onClose={() => setIsOpen(false)} title="다시 시도해주세요">
+        <NoticeModal onClose={() => setIsOpen(false)} title="알림">
           <p>아이디 또는 비밀번호를</p>
           <p>잘못 입력했습니다.</p>
         </NoticeModal>

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axiosInstance from "../../apis/axiosInstance";
 import { useSignupStore } from "../../store/signupStore";
-import NotificationModal from "../../components/NotificationModal";
+import NoticeModal from "../../components/NoticeModal";
+import { userLists } from "../../apis/auth";
 
 export default function EmailInputWithButton() {
   const { email, setEmail, isEmailValid, setIsEmailValid } = useSignupStore();
@@ -14,24 +14,22 @@ export default function EmailInputWithButton() {
     setEmail(newEmail); // 상태 업데이트
   };
   const handleCheckEmail = async () => {
-    try {
-      const { data } = await axiosInstance.get("/users/get-users");
-      const isExist = data.find((user: UserLists) => user.email === email);
-      if (isExist) {
-        setIsOpen(true);
-        setIsEmailValid(false);
-        return;
-      }
-      setIsEmailValid(emailRegex.test(email));
-    } catch (error) {
-      console.error(error);
+    const { data } = await userLists();
+    const isExist = data.find((user: UserLists) => user.email === email);
+    if (isExist) {
+      setIsOpen(true);
+      setIsEmailValid(false);
+      return;
     }
+    setIsEmailValid(emailRegex.test(email));
   };
 
   return (
     <>
       {isOpen && (
-        <NotificationModal title="이미 존재하는 이메일입니다!" onClose={() => setIsOpen(false)}></NotificationModal>
+        <NoticeModal title="알림" onClose={() => setIsOpen(false)}>
+          <p>이미 존재하는 이메일입니다.</p>
+        </NoticeModal>
       )}
       <div className="flex items-center gap-2 w-full">
         <div className="flex-1">

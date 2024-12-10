@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useLoginStore } from "../../store/loginStore";
-import axiosInstance from "../../apis/axiosInstance";
 import NoticeModal from "../../components/NoticeModal";
 import { InputWithLabel } from "../../components/InputWithLabel";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
+import { passwordChangeAuth } from "../../apis/auth";
+import { tokenService } from "../../utils/token";
 
 export default function NewPasswordPage() {
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,16}$/;
@@ -27,25 +28,18 @@ export default function NewPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      if (!passwordRegex.test(password) || password !== passwordConfirm) {
-        setIsPasswordValid(false);
-        setIsPasswordConfirmValid(false);
-        setIsOpen(true);
-        return;
-      }
-      await axiosInstance.put("/settings/update-password", {
-        password: password,
-      });
-      logout();
-      // tokenService.clearAll();
-      navigate(`/login`);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setPassword("");
-      setPasswordConfirm("");
+    if (!passwordRegex.test(password) || password !== passwordConfirm) {
+      setIsPasswordValid(false);
+      setIsPasswordConfirmValid(false);
+      setIsOpen(true);
+      return;
     }
+    await passwordChangeAuth(password);
+    logout();
+    tokenService.clearAll();
+    setPassword("");
+    setPasswordConfirm("");
+    navigate(`/login`);
   };
 
   return (

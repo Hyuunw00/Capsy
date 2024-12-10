@@ -5,10 +5,10 @@ import { useSignupStore } from "../../store/signupStore";
 import PasswordInput from "./PasswordInput";
 
 import PasswordConfirmInput from "./PasswordConfirmInput";
-import axiosInstance from "../../apis/axiosInstance";
 import IdInputWithButton from "./IdInputWithButton";
 import EmailInputWithButton from "./EmailInputWithButton";
 import NoticeModal from "../../components/NoticeModal";
+import { signupAuth } from "../../apis/auth";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
@@ -22,23 +22,16 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    try {
-      if (!isIdValid || !isEmailValid || !isPasswordValid || !isPasswordConfirmValid) {
-        setContents("입력 값을 확인해주세요!");
-        setIsOpen(true);
-        return;
-      }
-      await axiosInstance.post("/signup", {
-        email: email,
-        fullName: id,
-        password: password,
-      });
+
+    if (!isIdValid || !isEmailValid || !isPasswordValid || !isPasswordConfirmValid) {
+      setContents("입력 값을 확인해주세요!");
       setIsOpen(true);
-      setContents("로그인 성공!");
-      navigate("/signupsuccess");
-    } catch (error) {
-      console.error(error);
+      return;
     }
+    await signupAuth(email, id, password);
+    setIsOpen(true);
+    setContents("로그인 성공!");
+    navigate("/signupsuccess");
   };
 
   return (
@@ -46,7 +39,6 @@ export default function SignUpPage() {
       {isOpen && (
         <NoticeModal title="알림" onClose={() => setIsOpen(false)}>
           {contents}
-          setContents{" "}
         </NoticeModal>
       )}
       <div>
