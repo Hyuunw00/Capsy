@@ -1,17 +1,5 @@
 import { useSignupStore } from "../../store/signupStore";
 
-// interface AuthInputProps {
-//   name: string;
-//   id: string;
-//   type: string;
-//   isValid: boolean;
-//   value: string;
-//   setValue: (value: string) => void;
-//   setIsValid: (isValid: boolean) => void;
-//   placeholder: string;
-// }
-// 비밀번호 유효성검사
-
 export default function PasswordConfirmInput() {
   const { password, passwordConfirm, setPasswordConfirm, isPasswordConfirmValid, setIsPasswordConfirmValid } =
     useSignupStore();

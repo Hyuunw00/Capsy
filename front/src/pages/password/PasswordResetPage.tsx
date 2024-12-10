@@ -7,9 +7,8 @@ import NoticeModal from "../../components/NoticeModal";
 import { InputWithLabel } from "../../components/InputWithLabel";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
-import { tokenService } from "../../utils/token";
 
-export default function LoginPage() {
+export default function PasswordResetPage() {
   const navigate = useNavigate();
   const {
     email,
@@ -25,8 +24,6 @@ export default function LoginPage() {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log(email, password);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -34,20 +31,23 @@ export default function LoginPage() {
         email: email,
         password: password,
       });
-      const { token, user } = response.data;
-      tokenService.setToken(token);
-      tokenService.setUser(user);
+      const { user, status } = response.data;
 
-      login(token);
-      // setIsEmailValid(true);
-      // setIsPasswordValid(true);
-      navigate(`/`);
+      // 해당 사용자가 아닐 경우 return
+      if (user.email !== email) {
+        console.log("사용자가 아닙니다!");
+        return;
+      }
+
+      // 로그인 요청이 성공(사용자 인증 성공)
+      if (status === 200) {
+        navigate(`/newpassword`);
+      }
     } catch (error) {
       console.error(error);
       setIsOpen(true);
-      // setIsEmailValid(false);
-      // setIsPasswordValid(false);
-    } finally {
+      setIsEmailValid(false);
+      setIsPasswordValid(false);
       setPassword("");
       setEmail("");
     }
@@ -62,8 +62,8 @@ export default function LoginPage() {
         </NoticeModal>
       )}
       <form onSubmit={handleSubmit}>
-        <Logo>로그인</Logo>
-        <div className="flex flex-col ">
+        <Logo>비밀번호 재설정</Logo>
+        <div className="flex flex-col gap-[12px]">
           <InputWithLabel
             label="이메일"
             type="email"
@@ -85,7 +85,7 @@ export default function LoginPage() {
           />
 
           <Button className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] text-[12px] rounded-[6px] mt-[20px]">
-            로그인
+            비밀번호 재설정
           </Button>
           <Link to="/signup" className="text-center mt-[16px]  text-[#475569] underline">
             회원가입 바로가기

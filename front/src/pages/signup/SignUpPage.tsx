@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import NotificationModal from "../../components/NotificationModal";
 import loginLogo from "../../assets/login-logo.svg";
 import { useSignupStore } from "../../store/signupStore";
 import PasswordInput from "./PasswordInput";
@@ -9,10 +8,11 @@ import PasswordConfirmInput from "./PasswordConfirmInput";
 import axiosInstance from "../../apis/axiosInstance";
 import IdInputWithButton from "./IdInputWithButton";
 import EmailInputWithButton from "./EmailInputWithButton";
+import NoticeModal from "../../components/NoticeModal";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
-  const [success, setSuccess] = useState<string | null>(null);
+  const [contents, setContents] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const { isIdValid, isEmailValid, isPasswordValid, isPasswordConfirmValid } = useSignupStore();
@@ -24,7 +24,7 @@ export default function SignUpPage() {
     e.preventDefault();
     try {
       if (!isIdValid || !isEmailValid || !isPasswordValid || !isPasswordConfirmValid) {
-        setSuccess("입력 값을 확인해주세요!");
+        setContents("입력 값을 확인해주세요!");
         setIsOpen(true);
         return;
       }
@@ -34,7 +34,7 @@ export default function SignUpPage() {
         password: password,
       });
       setIsOpen(true);
-      setSuccess("로그인 성공!");
+      setContents("로그인 성공!");
       navigate("/signupsuccess");
     } catch (error) {
       console.error(error);
@@ -43,7 +43,12 @@ export default function SignUpPage() {
 
   return (
     <>
-      {isOpen && <NotificationModal title={success} onClose={() => setIsOpen(false)}></NotificationModal>}
+      {isOpen && (
+        <NoticeModal title="알림" onClose={() => setIsOpen(false)}>
+          {contents}
+          setContents{" "}
+        </NoticeModal>
+      )}
       <div>
         <div className="w-[600px] h-[441px] px-[19px]">
           <div className="mt-[160px] mb-[26px]">
@@ -55,6 +60,7 @@ export default function SignUpPage() {
             <EmailInputWithButton />
             <PasswordInput />
             <PasswordConfirmInput />
+
             <button
               onClick={handleSubmit}
               className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] text-[12px] rounded-[6px]"
