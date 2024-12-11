@@ -1,4 +1,3 @@
-import { useState } from "react";
 import img_search from "../../assets/Search.svg";
 import img_left from "../../assets/Left.svg";
 import img_close from "../../assets/purple-close.svg";
@@ -47,12 +46,16 @@ const Tab2 = ({ setIsFocused }: Tab2Props) => {
       setIsFocused(false);
     }
   };
-
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (e.relatedTarget === null || e.relatedTarget.tagName === "BUTTON") {
+    const clickedElement = e.relatedTarget as HTMLElement;
+
+    if (e.relatedTarget === null || clickedElement?.tagName === "BODY" || clickedElement?.tagName === "HTML") {
       return;
     }
-    setIsFocused(false);
+    if (clickedElement.tagName === "BUTTON") {
+      return;
+    }
+    // setIsFocused(false);
   };
 
   const handleClose = () => {
