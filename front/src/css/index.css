@@ -4,3 +4,11 @@
 * {
   box-sizing: border-box;
 }
+
+body {
+  max-width: 600px;
+  margin: 0 auto;
+  height: 100%;
+  position: relative;
+  overflow-y: scroll;
+}

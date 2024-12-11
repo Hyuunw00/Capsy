@@ -4,15 +4,19 @@
 
 @layer components {
   .item-middle {
-    @apply flex items-center justify-center min-h-screen;
+    @apply flex items-center justify-center;
   }
 
   .item-around {
-    @apply flex items-center justify-around min-h-screen;
+    @apply flex items-center justify-around;
   }
 
   .item-between {
-    @apply flex items-center justify-between min-h-screen;
+    @apply flex items-center justify-between;
+  }
+
+  .item-row {
+    @apply flex flex-col justify-between items-center;
   }
 
   .font-inter {

@@ -1,23 +1,23 @@
-type ModalProps = {
-    isOpen: boolean;
-    onClose?: () => void;
-    children: React.ReactNode;
-  };
+interface NotificationModalProps {
+  isOpen: boolean;
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}
 
-export default function NotificationModal({isOpen,onClose,children}:ModalProps) {
- 
+export default function NotificationModal({ isOpen, title, description, children }: NotificationModalProps) {
   if (!isOpen) return null;
+
   return (
     <>
-    {isOpen &&<div className="fixed inset-0 z-40 bg-black/30" onClick={()=>onClose}>
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 rounded-md flex flex-col justify-between items-center bg-white w-[350px]   ">
-            <div className="py-[24px] px-[16px]">
-                {children}
-            </div>
+      <div className="fixed inset-0 z-40 bg-black/30" />
+      <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div className="w-full max-w-md p-6 bg-white rounded-lg">
+          <h2 className="mb-4 text-xl font-medium text-center">{title}</h2>
+          <p className="mb-6 text-center text-gray-600 whitespace-pre-line">{description}</p>
+          <div className="flex flex-col gap-2">{children}</div>
         </div>
-    </div>
-    }
-  
-</>
-  )
+      </div>
+    </>
+  );
 }
