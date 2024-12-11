@@ -27,31 +27,45 @@ export default function NewPasswordPage() {
 
   useEffect(() => {
     if (passwordRegex.test(password)) setIsPasswordValid(true);
-    if (passwordConfirm === password) setIsPasswordConfirmValid(true);
+    if (password.length > 0 && passwordConfirm === password) setIsPasswordConfirmValid(true);
+    return () => {
+      setIsPasswordValid(false);
+      setIsPasswordConfirmValid(false);
+    };
   }, [password, passwordConfirm]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // 1. 비밀번호 유효성 검사와 비밀번호 값 비교
     if (!passwordRegex.test(password) || password !== passwordConfirm) {
-      setIsPasswordValid(false);
-      setIsPasswordConfirmValid(false);
       setIsOpen(true);
+      setPassword("");
+      setPasswordConfirm("");
       return;
     }
-    await passwordChangeAuth(password);
-    logout();
-    tokenService.clearAll();
-    setPassword("");
-    setPasswordConfirm("");
-    navigate(`/login`);
+
+    // 2. 비밀번호 변경 API 호출
+    try {
+      await passwordChangeAuth(password);
+      logout();
+      tokenService.clearAll();
+      navigate(`/login`);
+    } catch (error) {
+      console.error(error);
+      setIsOpen(true);
+    } finally {
+      setPassword("");
+      setPasswordConfirm("");
+    }
   };
 
   return (
     <>
       {isOpen && (
         <NoticeModal onClose={() => setIsOpen(false)} title="알림">
-          <p>비밀번호가 다릅니다.</p>
-          <p>다시 입력해주세요.</p>
+          비밀번호가 다릅니다. <br />
+          다시 입력해주세요.
         </NoticeModal>
       )}
       <form onSubmit={handleSubmit}>
@@ -76,7 +90,7 @@ export default function NewPasswordPage() {
             value={passwordConfirm}
             handleChange={setPasswordConfirm}
             placeholder="새 비밀번호 확인"
-            error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
+            error="동일한 비밀번호 입력"
             isValid={isPasswordConfirmValid}
           />
 
