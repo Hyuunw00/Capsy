@@ -5,13 +5,7 @@ import { useEffect } from "react";
 export default function MyPage2() {
   const navigate = useNavigate();
   const isLoggedIn = useLoginStore((state) => state.isLoggedIn);
-  const accessToken = useLoginStore((state) => state.accessToken);
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate("/login");
-    }
-  }, []);
   return (
     <>
       <h1>My Page</h1>

@@ -30,9 +30,9 @@ export const useLoginStore = create<LoginState>((set) => ({
   password: "",
   passwordConfirm: "",
   isLoggedIn: false,
-  isEmailValid: true,
-  isPasswordValid: true,
-  isPasswordConfirmValid: true,
+  isEmailValid: false,
+  isPasswordValid: false,
+  isPasswordConfirmValid: false,
 
   setEmail: (email: string) => set({ email }),
   setPassword: (password: string) => set({ password }),

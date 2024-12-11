@@ -7,7 +7,7 @@ interface EditModalProps {
   onSubmit: (date: { year: string; month: string; day: string }) => void;
 }
 
-interface ValidationErrors {
+interface ValidationisErrors {
   year?: string;
   month?: string;
   day?: string;
@@ -19,7 +19,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
     month: "",
     day: "",
   });
-  const [errors, setErrors] = useState<ValidationErrors>({});
+  const [isErrors, setisErrors] = useState<ValidationisErrors>({});
 
   const validateInput = (name: string, value: string) => {
     const numValue = parseInt(value);
@@ -95,44 +95,44 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
 
     setDate((prev) => ({ ...prev, [name]: value }));
 
-    const error = validateInput(name, value);
-    setErrors((prev) => ({
+    const isError = validateInput(name, value);
+    setisErrors((prev) => ({
       ...prev,
-      [name]: error,
+      [name]: isError,
     }));
   };
 
   const handleSubmit = () => {
-    const newErrors: ValidationErrors = {};
-    let hasErrors = false;
+    const newisErrors: ValidationisErrors = {};
+    let hasisErrors = false;
 
     Object.entries(date).forEach(([name, value]) => {
-      const error = validateInput(name, value);
-      if (error) {
-        newErrors[name as keyof ValidationErrors] = error;
-        hasErrors = true;
+      const isError = validateInput(name, value);
+      if (isError) {
+        newisErrors[name as keyof ValidationisErrors] = isError;
+        hasisErrors = true;
       }
     });
 
     if (!date.year || !date.month || !date.day) {
-      hasErrors = true;
-      if (!date.year) newErrors.year = "연도를 입력해주세요";
-      if (!date.month) newErrors.month = "월을 입력해주세요";
-      if (!date.day) newErrors.day = "일을 입력해주세요";
+      hasisErrors = true;
+      if (!date.year) newisErrors.year = "연도를 입력해주세요";
+      if (!date.month) newisErrors.month = "월을 입력해주세요";
+      if (!date.day) newisErrors.day = "일을 입력해주세요";
     }
 
-    setErrors(newErrors);
+    setisErrors(newisErrors);
 
-    if (!hasErrors) {
+    if (!hasisErrors) {
       onClose();
       onSubmit(date);
     }
   };
 
   // 첫 번째 에러 메시지 가져오기
-  const getErrorMessage = () => {
-    const errorMessages = Object.values(errors).filter((error) => error);
-    return errorMessages[0] || "";
+  const getisErrorMessage = () => {
+    const isErrorMessages = Object.values(isErrors).filter((isError) => isError);
+    return isErrorMessages[0] || "";
   };
 
   return (
@@ -151,7 +151,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
                 placeholder="year"
                 value={date.year}
                 onChange={(e) => handleInputChange("year", e.target.value)}
-                error={Boolean(errors.year)}
+                isError={Boolean(isErrors.year)}
               />
             </div>
             <span className="text-lg text-gray-400">/</span>
@@ -161,7 +161,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
                 placeholder="month"
                 value={date.month}
                 onChange={(e) => handleInputChange("month", e.target.value)}
-                error={Boolean(errors.month)}
+                isError={Boolean(isErrors.month)}
               />
             </div>
             <span className="text-lg text-gray-400">/</span>
@@ -171,14 +171,14 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
                 placeholder="day"
                 value={date.day}
                 onChange={(e) => handleInputChange("day", e.target.value)}
-                error={Boolean(errors.day)}
+                isError={Boolean(isErrors.day)}
               />
             </div>
             <button onClick={handleSubmit} className="px-4 py-2 text-white rounded w-fit bg-primary">
               확인
             </button>
           </div>
-          {getErrorMessage() && <div className="text-sm text-red-500">{getErrorMessage()}</div>}
+          {getisErrorMessage() && <div className="text-sm text-red-500">{getisErrorMessage()}</div>}
         </div>
       </div>
     </div>
