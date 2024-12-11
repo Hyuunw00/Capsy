@@ -87,9 +87,15 @@ export default function EditorPage() {
 
   // 저장 버튼 클릭 시 유효성 검사
   const handleSaveClick = async () => {
+    // 제목 입력 검증 추가
+    if (!title.trim()) {
+      alert("제목을 입력해주세요.");
+      return;
+    }
+
     // 텍스트 입력 검증
     if (!text.trim()) {
-      alert("텍스트를 입력해주세요.");
+      alert("내용을 입력해주세요.");
       return;
     }
 
@@ -107,14 +113,14 @@ export default function EditorPage() {
 
     try {
       const channelId = activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST;
-      
+
       // 커스텀 데이터 생성
       const customData = {
-        title: title || "제목 없음",
-        body: text,
+        title: title,
+        content: text,
         ...(activeTab === "timeCapsule" && {
-          closeAt: `${selectedDate.year}-${selectedDate.month.padStart(2, '0')}-${selectedDate.day.padStart(2, '0')}`
-        })
+          closeAt: `${selectedDate.year}-${selectedDate.month.padStart(2, "0")}-${selectedDate.day.padStart(2, "0")}`,
+        }),
       };
 
       // FormData 생성
@@ -195,8 +201,8 @@ export default function EditorPage() {
       </nav>
       <main className="flex-1 px-4 py-4 h-2/5">
         <h2 className="text-lg font-semibold h-fit">
-          <textarea 
-            placeholder="제목 없음" 
+          <textarea
+            placeholder="제목 없음"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full text-gray-600 placeholder-gray-300 resize-none h-7 focus:outline-none"
