@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import img_search from "../../assets/Search.svg";
 import { useMainSearchStore } from "../../store/mainSearchStore";
-import MainSearchPrac from "./MainSearchPrac";
 import axiosInstance from "../../apis/axiosInstance";
+import img_search from "../../assets/Search.svg";
 
-export default function MainSearchResult() {
+export default function MainSearchModal() {
   const searchInput = useMainSearchStore((state) => state.searchInput);
 
   const [users, setUsers] = useState<UserLists[]>([]);
@@ -24,7 +23,6 @@ export default function MainSearchResult() {
   }, [searchInput]);
   return (
     <>
-      <MainSearchPrac />
       <div className="px-8 max-w-[600px] h-full ">
         <div className="w-[157px] mt-5  ml-5">
           {/* 고정- 검색 keyword */}

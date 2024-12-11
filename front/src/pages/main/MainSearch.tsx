@@ -2,6 +2,7 @@ import { useState } from "react";
 import img_search from "../../assets/Search.svg";
 import img_left from "../../assets/Left.svg";
 import img_close from "../../assets/purple-close.svg";
+import { useMainSearchStore } from "../../store/mainSearchStore";
 
 type Tab1Props = {
   setIsFocused: (value: boolean) => void;
@@ -26,7 +27,8 @@ type Tab2Props = {
 };
 
 const Tab2 = ({ setIsFocused }: Tab2Props) => {
-  const [searchInput, setSearchInput] = useState<string>("");
+  const searchInput = useMainSearchStore((state) => state.searchInput);
+  const setSearchInput = useMainSearchStore((state) => state.setSearchInput);
 
   const handleSearch = () => {
     if (searchInput.trim() === "") {
@@ -87,7 +89,8 @@ const Tab2 = ({ setIsFocused }: Tab2Props) => {
 };
 
 export default function MainSearch() {
-  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const isFocused = useMainSearchStore((state) => state.isFocused);
+  const setIsFocused = useMainSearchStore((state) => state.setIsFocused);
 
   return (
     <div className="px-8 mt-2">
