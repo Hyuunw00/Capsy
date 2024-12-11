@@ -6,14 +6,7 @@ interface InputWithLabelProps extends React.InputHTMLAttributes<HTMLInputElement
   isError?: boolean;
 }
 
-export function InputWithLabel({
-  label,
-  placeholder,
-  value,
-  onChange,
-  isError,
-  ...props
-}: InputWithLabelProps) {
+export function InputWithLabel({ label, placeholder, value, onChange, isError, ...props }: InputWithLabelProps) {
   return (
     <div>
       <label className="text-sm text-gray-600">{label}</label>
@@ -23,7 +16,7 @@ export function InputWithLabel({
         value={value}
         onChange={onChange}
         className={`w-full p-2 border rounded placeholder:text-gray-300 ${
-          isError ? 'border-red-500' : 'border-gray-300'
+          isError ? "border-red-500" : "border-gray-300"
         }`}
         {...props}
       />

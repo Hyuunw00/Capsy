@@ -5,26 +5,15 @@ import { useLoginStore } from "../../store/loginStore";
 import NoticeModal from "../../components/NoticeModal";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
+import { loginAuth } from "../../apis/auth";
 import { LoginInput } from "../../components/LoginInput";
-import axiosInstance from "../../apis/axiosInstance";
 import { tokenService } from "../../utils/token";
 import { emailRegex, passwordRegex } from "../../utils/regex";
-import { loginAuth } from "../../apis/auth";
 
-export default function LoginPage() {
+export default function PasswordResetPage() {
   const navigate = useNavigate();
-  const {
-    email,
-    password,
-    isEmailValid,
-    isPasswordValid,
-    setEmail,
-    setPassword,
-    setIsEmailValid,
-    setIsPasswordValid,
-    login,
-  } = useLoginStore();
-
+  const { email, password, isEmailValid, isPasswordValid, setEmail, setPassword, setIsEmailValid, setIsPasswordValid } =
+    useLoginStore();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -34,21 +23,25 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      // loginAuth 호출하여 로그인 처리
-      const response = await loginAuth(email, password);
-      const { token } = response.data;
 
-      login(token); // 로그인 상태 업데이트
-      navigate(`/`); // 홈으로 이동
-    } catch (error) {
-      setIsOpen(true); // 로그인 실패 시 모달 표시
-    } finally {
-      // 입력값 초기화
-      setPassword("");
+    const userEmail = tokenService.getUser().email;
+
+    // 1. 해당 사용자 이메일이 아닐 경우 return
+    if (userEmail !== email) {
+      setIsOpen(true);
       setEmail("");
-      setIsEmailValid(false);
-      setIsPasswordValid(false);
+      setPassword("");
+      return;
+    }
+    // 2. 해당 사용자의 이메일, 비밀번호가 회원가입 돼있어야함
+    const response = await loginAuth(email, password);
+    const { status } = response;
+
+    // 로그인 인증 통과시
+    if (status === 200) {
+      setEmail("");
+      setPassword("");
+      navigate(`/newpassword`);
     }
   };
 
@@ -56,13 +49,12 @@ export default function LoginPage() {
     <>
       {isOpen && (
         <NoticeModal onClose={() => setIsOpen(false)} title="알림">
-          아이디 또는 비밀번호를
-          <br />
+          아이디 또는 비밀번호를 <br />
           잘못 입력했습니다.
         </NoticeModal>
       )}
       <form onSubmit={handleSubmit}>
-        <Logo>로그인</Logo>
+        <Logo>사용자 인증</Logo>
         <div className="flex flex-col ">
           <LoginInput
             label="이메일"
@@ -85,7 +77,7 @@ export default function LoginPage() {
           />
 
           <Button className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] text-[12px] rounded-[6px] mt-[20px]">
-            로그인
+            인증
           </Button>
           <Link to="/signup" className="text-center mt-[16px]  text-[#475569] underline">
             회원가입 바로가기

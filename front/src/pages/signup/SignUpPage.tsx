@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import NotificationModal from "../../components/NotificationModal";
 import loginLogo from "../../assets/login-logo.svg";
 import { useSignupStore } from "../../store/signupStore";
 import PasswordInput from "./PasswordInput";
 
 import PasswordConfirmInput from "./PasswordConfirmInput";
-import axiosInstance from "../../apis/axiosInstance";
 import IdInputWithButton from "./IdInputWithButton";
 import EmailInputWithButton from "./EmailInputWithButton";
+import NoticeModal from "../../components/NoticeModal";
+import { signupAuth } from "../../apis/auth";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
-  const [success, setSuccess] = useState<string | null>(null);
+  const [contents, setContents] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const { isIdValid, isEmailValid, isPasswordValid, isPasswordConfirmValid } = useSignupStore();
@@ -22,28 +22,25 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    try {
-      if (!isIdValid || !isEmailValid || !isPasswordValid || !isPasswordConfirmValid) {
-        setSuccess("입력 값을 확인해주세요!");
-        setIsOpen(true);
-        return;
-      }
-      await axiosInstance.post("/signup", {
-        email: email,
-        fullName: id,
-        password: password,
-      });
+
+    if (!isIdValid || !isEmailValid || !isPasswordValid || !isPasswordConfirmValid) {
+      setContents("입력 값을 확인해주세요!");
       setIsOpen(true);
-      setSuccess("로그인 성공!");
-      navigate("/signupsuccess");
-    } catch (error) {
-      console.error(error);
+      return;
     }
+    await signupAuth(email, id, password);
+    setIsOpen(true);
+    setContents("로그인 성공!");
+    navigate("/signupsuccess");
   };
 
   return (
     <>
-      {isOpen && <NotificationModal title={success} onClose={() => setIsOpen(false)}></NotificationModal>}
+      {isOpen && (
+        <NoticeModal title="알림" onClose={() => setIsOpen(false)}>
+          {contents}
+        </NoticeModal>
+      )}
       <div>
         <div className="w-[600px] h-[441px] px-[19px]">
           <div className="mt-[160px] mb-[26px]">
@@ -55,6 +52,7 @@ export default function SignUpPage() {
             <EmailInputWithButton />
             <PasswordInput />
             <PasswordConfirmInput />
+
             <button
               onClick={handleSubmit}
               className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] text-[12px] rounded-[6px]"
