@@ -40,3 +40,13 @@ export const getUserPosts = async (authorId:string) => {
     throw error;
   }
 }
+
+// 특정 포스트 조회 API
+export const getPostDetail = async (postId : string) => {
+  try {
+    const response = await axiosInstance.get(`/post/${postId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
