@@ -11,6 +11,8 @@ import img_noti from "../../assets/Notification-white.svg";
 import img_fillNoti from "../../assets/Notification-fill.svg";
 // import img_noti_disable from "../../assets/Notification-disabled.svg";
 import img_scroll from "../../assets/scroll-icon.svg";
+import { useMainSearchStore } from "../../store/mainSearchStore";
+import MainSearchModal from "./MainSearchModal";
 
 interface Like {
   _id: string;
@@ -211,6 +213,17 @@ export default function MainPage() {
     console.log("filterData", filterData);
     console.log("userData", userData);
   }, [data, filterData]);
+
+  const isFocused = useMainSearchStore((state) => state.isFocused);
+
+  if (isFocused) {
+    return (
+      <>
+        <MainSearch />
+        <MainSearchModal />
+      </>
+    );
+  }
 
   return (
     <>
