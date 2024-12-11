@@ -22,8 +22,9 @@ export default function App() {
   // 새로고침할때마다 session storage에서 token 받아와서 로그인
   const login = useLoginStore((state) => state.login);
   const isLoggedIn = useLoginStore((state) => state.isLoggedIn);
+  const { email, password } = useLoginStore();
 
-  console.log(isLoggedIn);
+  console.log(isLoggedIn, email, password);
 
   const getUser = async () => {
     try {

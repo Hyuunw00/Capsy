@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axiosInstance from "../../apis/axiosInstance";
 import { useSignupStore } from "../../store/signupStore";
-import NotificationModal from "../../components/NotificationModal";
+import NoticeModal from "../../components/NoticeModal";
+import { userLists } from "../../apis/auth";
 
 export default function IdInputWithButton() {
   const { id, setId, isIdValid, setIsIdValid } = useSignupStore();
@@ -15,24 +15,22 @@ export default function IdInputWithButton() {
   };
 
   const handleCheckId = async () => {
-    try {
-      const { data } = await axiosInstance.get("/users/get-users");
-      const isExist = data.find((user: UserLists) => user.fullName === id);
-      if (isExist) {
-        setIsOpen(true);
-        setIsIdValid(false);
-        return;
-      }
-      setIsIdValid(idRegex.test(id));
-    } catch (error) {
-      console.error(error);
+    const { data } = await userLists();
+    const isExist = data.find((user: UserLists) => user.fullName === id);
+    if (isExist) {
+      setIsOpen(true);
+      setIsIdValid(false);
+      return;
     }
+    setIsIdValid(idRegex.test(id));
   };
 
   return (
     <>
       {isOpen && (
-        <NotificationModal title="이미 존재하는 아이디입니다!" onClose={() => setIsOpen(false)}></NotificationModal>
+        <NoticeModal title="알림" onClose={() => setIsOpen(false)}>
+          <p>이미 존재하는 아이디입니다!</p>
+        </NoticeModal>
       )}
       <div className="flex items-center gap-2 w-full">
         <div className="flex-1 ">
