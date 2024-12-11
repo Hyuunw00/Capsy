@@ -170,7 +170,7 @@ export default function PostDetailPage() {
       </div>
 
       {/*댓글 리스트 */}
-      <section aria-label="Comment List" className="px-[20px] mt-[40px] pb-[100px] text-sm">
+      <section aria-label="Comment List" className="px-[20px] mt-[20px] pb-[100px] text-sm">
         <ul className="flex flex-col gap-[12px]">
           {comments.map((comment) => (
             <CommentItem key={comment.id} userId={comment.userId} content={comment.content} />
