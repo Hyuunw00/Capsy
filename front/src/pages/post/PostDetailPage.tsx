@@ -193,7 +193,7 @@ export default function PostDetailPage() {
               e.target.style.height = `${newHeight}px`;
             }}
             placeholder="댓글을 입력해주세요"
-            className="flex-1 outline-none border border-[#8E8E93] rounded-[4px] px-3 py-2.5 placeholder:text-gray300 resize-none min-h-[45px] max-h-[120px] overflow-y-auto scrollbar-hide"
+            className="flex-1 outline-none border border-[#8E8E93] rounded-[4px] px-3 py-2.5 placeholder:text-gray300 resize-none h-[45px] min-h-[45px] max-h-[120px] overflow-y-auto scrollbar-hide"
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
