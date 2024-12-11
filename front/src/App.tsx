@@ -17,6 +17,7 @@ import Private from "./layouts/Private";
 import NonPrivate from "./layouts/NonPrivate";
 import MyPage2 from "./pages/mypage/MyPage2";
 import Loading from "./components/Loading";
+import MainSearchResult from "./pages/main/MainSearchResult";
 
 export default function App() {
   // 새로고침할때마다 session storage에서 token 받아와서 로그인
@@ -47,7 +48,7 @@ export default function App() {
       <Routes>
         <Route element={<RootLayout />}>
           <Route path="/" element={<MainPage />} />
-
+          <Route path="/mainsearchresult" element={<MainSearchResult />} />
           <Route element={<Private />}>
             <Route path="/editor" element={<EditorPage />} />
             <Route path="/detail/:postId" element={<PostDetailPage />} />

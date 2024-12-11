@@ -5,9 +5,9 @@ interface UserLists {
   coverImage: string;
   image: string;
   role: string;
-  emailVerified: true;
-  banned: true;
-  isOnline: true;
+  emailVerified: boolean;
+  banned: boolean;
+  isOnline: boolean;
   posts: [
     {
       likes: [
