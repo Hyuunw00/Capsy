@@ -11,9 +11,14 @@ interface InputWithLabelProps extends React.InputHTMLAttributes<HTMLInputElement
   isValid: boolean;
 }
 export const LoginInput = ({ label, placeholder, value, handleChange, error, type, isValid }: InputWithLabelProps) => {
-  const { setIsEmailValid, setIsPasswordValid, setIsPasswordConfirmValid } = useLoginStore();
+  const { setEmail, setPassword, setPasswordConfirm, setIsEmailValid, setIsPasswordValid, setIsPasswordConfirmValid } =
+    useLoginStore();
 
   useEffect(() => {
+    setEmail("");
+    setPassword("");
+    setPasswordConfirm("");
+
     setIsEmailValid(false);
     setIsPasswordValid(false);
     setIsPasswordConfirmValid(false);
