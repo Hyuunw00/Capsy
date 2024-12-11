@@ -16,13 +16,13 @@ function MySlideContainer({ items, uniqueKey }: MySlideContainerProps) {
   return (
     <div className="relative w-full overflow-hidden px-[30px]">
       <Swiper
-        key={uniqueKey} // 고유한 키로 각 슬라이더 인스턴스를 구분
+        key={uniqueKey}
         modules={[Navigation]}
         spaceBetween={10}
         slidesPerView={3}
         navigation={{
-          prevEl: `.swiper-button-prev-${uniqueKey}`, // 고유한 이전 버튼
-          nextEl: `.swiper-button-next-${uniqueKey}`, // 고유한 다음 버튼
+          prevEl: `.swiper-button-prev-${uniqueKey}`,
+          nextEl: `.swiper-button-next-${uniqueKey}`,
         }}
         style={{ width: "100%", height: "auto" }}
       >
@@ -40,13 +40,13 @@ function MySlideContainer({ items, uniqueKey }: MySlideContainerProps) {
 
       {/* 커스텀 화살표 버튼 */}
       <button
-        className={`absolute left-0 top-1/2 transform -translate-y-1/2 bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-prev-${uniqueKey}`}
+        className={`absolute left-0 top-1/2 transform -translate-y-[100%] bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-prev-${uniqueKey}`}
         aria-label="Previous slide"
       >
         <img src={leftArrowCircle} className="w-[24px] h-[24px]" />
       </button>
       <button
-        className={`absolute right-0 top-1/2 transform -translate-y-1/2 bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-next-${uniqueKey}`}
+        className={`absolute right-0 top-1/2 transform -translate-y-[100%] bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-next-${uniqueKey}`}
         aria-label="Next slide"
       >
         <img src={rightArrowCircle} className="w-[24px] h-[24px]" />
