@@ -11,21 +11,20 @@ import SignUpSuccessPage from "./pages/signup/SignUpSuccessPage";
 import PasswordResetPage from "./pages/password/PasswordResetPage";
 import NewPasswordPage from "./pages/password/NewPasswordPage";
 import { useLoginStore } from "./store/loginStore";
-import { useEffect } from "react";
-import axiosInstance from "./apis/axiosInstance";
+import { useEffect, useState } from "react";
 import { tokenService } from "./utils/token";
 import Private from "./layouts/Private";
 import NonPrivate from "./layouts/NonPrivate";
 import MyPage2 from "./pages/mypage/MyPage2";
+import Loading from "./components/Loading";
 
 export default function App() {
   // 새로고침할때마다 session storage에서 token 받아와서 로그인
   const login = useLoginStore((state) => state.login);
   const isLoggedIn = useLoginStore((state) => state.isLoggedIn);
-  const { email, password } = useLoginStore();
 
-  console.log(isLoggedIn, email, password);
-
+  // 처음에 렌더링될때 isLoggedIn이 false가 되는것을 방지
+  const [isLoading, setIsLoading] = useState(true);
   const getUser = async () => {
     try {
       if (tokenService.getToken()) {
@@ -33,17 +32,23 @@ export default function App() {
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
   useEffect(() => {
     getUser();
   }, []);
+
+  if (isLoading) return <Loading />;
+
   return (
     <>
       <Routes>
         <Route element={<RootLayout />}>
+          <Route path="/" element={<MainPage />} />
+
           <Route element={<Private />}>
-            <Route path="/" element={<MainPage />} />
             <Route path="/editor" element={<EditorPage />} />
             <Route path="/detail/:postId" element={<PostDetailPage />} />
             <Route path="/event" element={<Event />} />

@@ -1,20 +1,8 @@
 import { useSignupStore } from "../../store/signupStore";
-
-// interface AuthInputProps {
-//   name: string;
-//   id: string;
-//   type: string;
-//   isValid: boolean;
-//   value: string;
-//   setValue: (value: string) => void;
-//   setIsValid: (isValid: boolean) => void;
-//   placeholder: string;
-// }
-// 비밀번호 유효성검사
+import { passwordRegex } from "../../utils/regex";
 
 export default function PasswordInput() {
   const { password, setPassword, isPasswordValid, setIsPasswordValid } = useSignupStore();
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,16}$/;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value;
