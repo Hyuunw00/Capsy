@@ -7,6 +7,7 @@ import Button from "../../components/Button";
 import Logo from "../../components/Logo";
 import { passwordChangeAuth } from "../../apis/auth";
 import { tokenService } from "../../utils/token";
+import { LoginInput } from "../../components/LoginInput";
 
 export default function NewPasswordPage() {
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,16}$/;
@@ -56,23 +57,23 @@ export default function NewPasswordPage() {
           <p>새로운 비밀번호를 설정해주세요.</p>
         </Logo>
         <div className="flex flex-col gap-[12px]">
-          <InputWithLabel
+          <LoginInput
             label="새 비밀번호"
             type="password"
             value={password}
             handleChange={setPassword}
             placeholder="새 비밀번호"
-            error="비밀번호 형식"
+            error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
             isValid={isPasswordValid}
           />
 
-          <InputWithLabel
+          <LoginInput
             label="새 비밀번호 확인"
             type="password"
             value={passwordConfirm}
             handleChange={setPasswordConfirm}
             placeholder="새 비밀번호 확인"
-            error="비밀번호 형식"
+            error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
             isValid={isPasswordConfirmValid}
           />
 

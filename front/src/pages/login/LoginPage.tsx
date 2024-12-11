@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 import { useLoginStore } from "../../store/loginStore";
@@ -6,8 +6,10 @@ import NoticeModal from "../../components/NoticeModal";
 import { InputWithLabel } from "../../components/InputWithLabel";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
-import { tokenService } from "../../utils/token";
 import { loginAuth } from "../../apis/auth";
+import { LoginInput } from "../../components/LoginInput";
+import axiosInstance from "../../apis/axiosInstance";
+import { tokenService } from "../../utils/token";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -25,27 +27,27 @@ export default function LoginPage() {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log(email, password);
+  // useEffect(() => {
+  //   setEmail("");
+  //   setPassword("");
+  // }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const { data, status } = await loginAuth(email, password);
-      const { token, user } = data;
+      const response = await axiosInstance.post("/login", { email, password });
+      const { token, user } = response.data;
       tokenService.setToken(token);
       tokenService.setUser(user);
       login(token);
-      // setIsEmailValid(true);
-      // setIsPasswordValid(true);
       navigate(`/`);
     } catch (error) {
-      console.error(error);
       setIsOpen(true);
-      // setIsEmailValid(false);
-      // setIsPasswordValid(false);
-    } finally {
       setPassword("");
       setEmail("");
+      setIsEmailValid(false);
+      setIsPasswordValid(false);
+      throw error;
     }
   };
 
@@ -60,7 +62,7 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit}>
         <Logo>로그인</Logo>
         <div className="flex flex-col ">
-          <InputWithLabel
+          <LoginInput
             label="이메일"
             type="email"
             value={email}
@@ -70,7 +72,7 @@ export default function LoginPage() {
             isValid={isEmailValid}
           />
 
-          <InputWithLabel
+          <LoginInput
             label="비밀번호"
             type="password"
             value={password}

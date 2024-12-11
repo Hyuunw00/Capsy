@@ -2,58 +2,41 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 import { useLoginStore } from "../../store/loginStore";
-import axiosInstance from "../../apis/axiosInstance";
 import NoticeModal from "../../components/NoticeModal";
-import { InputWithLabel } from "../../components/InputWithLabel";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
 import { loginAuth } from "../../apis/auth";
+import { LoginInput } from "../../components/LoginInput";
+import { tokenService } from "../../utils/token";
 
 export default function PasswordResetPage() {
   const navigate = useNavigate();
-  const {
-    email,
-    password,
-    isEmailValid,
-    isPasswordValid,
-    setEmail,
-    setPassword,
-    setIsEmailValid,
-    setIsPasswordValid,
-    login,
-  } = useLoginStore();
+  const { email, password, isEmailValid, isPasswordValid, setEmail, setPassword, setIsEmailValid, setIsPasswordValid } =
+    useLoginStore();
+
+  //
+  const [email2, setEmail2] = useState("");
+  const [password2, setPassword2] = useState("");
+
+  console.log(email, password);
+  console.log(email2, password2);
 
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log(email, password);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const response = await loginAuth(email, password);
-      const { data, status } = response;
-      const { user } = data;
 
-      console.log(user.email, email, status);
+    const userEmail = tokenService.getUser().email;
 
-      // 해당 사용자가 아닐 경우 return
-      if (user.email !== email) {
-        console.log("사용자가 아닙니다!");
-        return;
-      }
-
-      // 로그인 요청이 성공(사용자 인증 성공)
-      if (status === 200) {
-        navigate(`/newpassword`);
-      }
-    } catch (error) {
-      console.error(error);
+    // 해당 사용자가 아닐 경우 return
+    if (userEmail !== email2) {
       setIsOpen(true);
-      setIsEmailValid(false);
-      setIsPasswordValid(false);
-      setPassword("");
       setEmail("");
+      setPassword("");
+      return;
     }
+
+    navigate(`/newpassword`);
   };
 
   return (
@@ -66,24 +49,24 @@ export default function PasswordResetPage() {
       )}
       <form onSubmit={handleSubmit}>
         <Logo>비밀번호 재설정</Logo>
-        <div className="flex flex-col gap-[12px]">
-          <InputWithLabel
+        <div className="flex flex-col ">
+          <LoginInput
             label="이메일"
             type="email"
-            value={email}
-            handleChange={setEmail}
+            value={email2}
+            handleChange={setEmail2}
             placeholder="이메일"
             error="이메일 형식"
             isValid={isEmailValid}
           />
 
-          <InputWithLabel
+          <LoginInput
             label="비밀번호"
             type="password"
-            value={password}
-            handleChange={setPassword}
+            value={password2}
+            handleChange={setPassword2}
             placeholder="비밀번호"
-            error="비밀번호 형식"
+            error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
             isValid={isPasswordValid}
           />
 
