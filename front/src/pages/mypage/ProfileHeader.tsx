@@ -1,7 +1,7 @@
 import { useState } from "react";
-import profileImgEditIcon from "../assets/profile-img-edit-icon.svg";
-import profileImgSample from "../assets/profile-img-sample.jpg";
-import ProfileForm from "../pages/mypage/modal/ProfileForm";
+import profileImgEditIcon from "../../assets/profile-img-edit-icon.svg";
+import profileImgSample from "../../assets/profile-img-sample.jpg";
+import ProfileForm from "./modal/ProfileForm";
 
 export default function ProfileHeader() {
   const username = "@caapsy_human";

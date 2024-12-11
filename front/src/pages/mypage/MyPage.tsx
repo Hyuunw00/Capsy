@@ -1,12 +1,9 @@
-import ProfileimageForm from "./modal/ProfileImageForm";
-
-import ProfileHeader from "../../components/ProfileHeader";
-import ProfileContainer from "../../components/ProfileContainer";
+import ProfileHeader from "./ProfileHeader";
+import ProfileContainer from "./ProfileContainer";
 
 export default function MyPage() {
   return (
     <>
-      <ProfileimageForm />
       <ProfileHeader />
       <ProfileContainer />
     </>
