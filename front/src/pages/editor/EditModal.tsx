@@ -151,7 +151,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
                 placeholder="year"
                 value={date.year}
                 onChange={(e) => handleInputChange("year", e.target.value)}
-                isError={Boolean(errors.year)}
+                error={Boolean(errors.year)}
               />
             </div>
             <span className="text-lg text-gray-400">/</span>
@@ -161,7 +161,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
                 placeholder="month"
                 value={date.month}
                 onChange={(e) => handleInputChange("month", e.target.value)}
-                isError={Boolean(errors.month)}
+                error={Boolean(errors.month)}
               />
             </div>
             <span className="text-lg text-gray-400">/</span>
@@ -171,7 +171,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
                 placeholder="day"
                 value={date.day}
                 onChange={(e) => handleInputChange("day", e.target.value)}
-                isError={Boolean(errors.day)}
+                error={Boolean(errors.day)}
               />
             </div>
             <button onClick={handleSubmit} className="px-4 py-2 text-white rounded w-fit bg-primary">
