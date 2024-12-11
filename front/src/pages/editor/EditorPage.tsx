@@ -87,13 +87,17 @@ export default function EditorPage() {
 
   // 저장 버튼 클릭 시 유효성 검사
   const handleSaveClick = async () => {
-    // 텍스트 입력 검증
-    if (!text.trim()) {
-      alert("텍스트를 입력해주세요.");
+
+    if (!title.trim()) {
+      alert("제목을 입력해주세요.");
       return;
     }
-
-    // 타임캡슐 작성 시 필수 항목 검증
+  
+    if (!text.trim()) {
+      alert("내용을 입력해주세요.");
+      return;
+    }
+  
     if (activeTab === "timeCapsule") {
       if (uploadedImages.length === 0) {
         alert("타임캡슐에는 이미지 첨부가 필수입니다.");
@@ -104,42 +108,37 @@ export default function EditorPage() {
         return;
       }
     }
-
+  
     try {
       const channelId = activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST;
-      
-      // 커스텀 데이터 생성
+  
+      // 커스텀 데이터 만들기
       const customData = {
-        title: title || "제목 없음",
-        body: text,
+        title: title,
+        content: text,
         ...(activeTab === "timeCapsule" && {
-          closeAt: `${selectedDate.year}-${selectedDate.month.padStart(2, '0')}-${selectedDate.day.padStart(2, '0')}`
-        })
+          closeAt: `${selectedDate.year}-${selectedDate.month.padStart(2, "0")}-${selectedDate.day.padStart(2, "0")}`,
+        }),
       };
-
-      // FormData 생성
+  
       const formData = new FormData();
       formData.append("title", JSON.stringify(customData));
       formData.append("channelId", channelId);
-
-      // 이미지가 있는 경우 추가
+      
       if (uploadedImages.length > 0) {
         uploadedImages.forEach((image) => {
           formData.append("image", image);
         });
       }
-
+  
       const response = await createPost(formData);
-      console.log("게시물 생성 성공:", response);
       setSaveModal(true);
-
-      // 성공 후 상태 페이지로 이동
+  
       if (response?._id) {
         navigate(`/post/${response._id}`);
       }
     } catch (error) {
       console.error("게시물 생성 실패:", error);
-      alert("게시물 작성에 실패했습니다.");
     }
   };
 
@@ -195,8 +194,8 @@ export default function EditorPage() {
       </nav>
       <main className="flex-1 px-4 py-4 h-2/5">
         <h2 className="text-lg font-semibold h-fit">
-          <textarea 
-            placeholder="제목 없음" 
+          <textarea
+            placeholder="제목 없음"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full text-gray-600 placeholder-gray-300 resize-none h-7 focus:outline-none"
