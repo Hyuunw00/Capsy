@@ -11,6 +11,7 @@ export default function ProfileHeader() {
   const nickname = "캡시햄찌";
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -18,6 +19,18 @@ export default function ProfileHeader() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleShareProfile = async () => {
+    const profileUrl = `https://mywebsite.com/${username}`;
+
+    try {
+      await navigator.clipboard.writeText(profileUrl); // 클립보드에 텍스트 복사
+      setIsCopied(true); // 복사 성공 상태 변경
+      setTimeout(() => setIsCopied(false), 2000); // 2초 후 복사 알림 초기화
+    } catch (error) {
+      console.error("Failed to copy: ", error);
+    }
   };
 
   return (
@@ -81,10 +94,16 @@ export default function ProfileHeader() {
             프로필 편집
           </button>
           {/* 프로필 공유 버튼 */}
-          <button className="flex-1 py-3 text-white text-[14px] font-normal bg-primary rounded-[10px]">
+          <button
+            className="flex-1 py-3 text-white text-[14px] font-normal bg-primary rounded-[10px]"
+            onClick={handleShareProfile}
+          >
             프로필 공유
           </button>
         </div>
+
+        {/* 복사 알림 */}
+        {isCopied && <div className="mt-4 text-primary font-pretendard font-regular text-center">copied</div>}
       </div>
 
       {/* 모달이 열릴 때만 ProfileForm을 표시 */}

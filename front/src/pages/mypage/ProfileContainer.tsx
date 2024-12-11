@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import capsuleBlack from "../../assets/profile-capsule-black.svg";
 import capsulePurple from "../../assets/profile-capsule-purple.svg";
 import articleBlack from "../../assets/profile-article-black.svg";
@@ -6,24 +7,29 @@ import articlePurple from "../../assets/profile-article-purple.svg";
 import alarmBlack from "../../assets/profile-alarm-black.svg";
 import alarmPurple from "../../assets/profile-alarm-purple.svg";
 import MySlideHeader from "../../components/MySlideHeader";
-import MySlideContainer from "../../components/MyslideContainer";
+import MySlideContainer from "../../components/MySlideContainer";
 
-const openCapsuleCount = 6;
-const closeCapsuleCount = 4;
-const articleCount = 9;
-const openAlarmCount = 6;
-const closeAlarmCount = 4;
-
-const openCapsuleItems = Array.from({ length: 8 }, (_, i) => `캡슐 ${i + 1}`);
-const closeCapsuleItems = Array.from({ length: 8 }, (_, i) => `캡슐 ${i + 1}`);
-const openAlarmItems = Array.from({ length: 8 }, (_, i) => `알람 ${i + 1}`);
-const closeAlarmItems = Array.from({ length: 8 }, (_, i) => `알람 ${i + 1}`);
+// 공개 완료 아이템 예시
+const openCapsuleItems = Array.from({ length: 20 }, (_, i) => `오픈된 캡슐 ${i + 1}`);
+// 공개 대기 아이템 예시
+const closeCapsuleItems = Array.from({ length: 10 }, (_, i) => `대기 중 캡슐 ${i + 1}`);
 
 function ProfileContainer() {
   const [selectedTab, setSelectedTab] = useState("capsules");
-  const [showAllCapsules, setShowAllCapsules] = useState(false);
+  const navigate = useNavigate();
 
-  const handleTabClick = (tab: string) => setSelectedTab(tab);
+  const handleTabClick = (tab: string) => {
+    setSelectedTab(tab);
+  };
+
+  const handleShowAllClick = (type: "open" | "close") => {
+    const state =
+      type === "open"
+        ? { title: "공개 완료", items: openCapsuleItems }
+        : { title: "공개 대기", items: closeCapsuleItems };
+
+    navigate("/capsule-list", { state });
+  };
 
   return (
     <div className="profile-container">
@@ -36,9 +42,7 @@ function ProfileContainer() {
         ].map(({ tab, iconBlack, iconPurple, label }) => (
           <div
             key={tab}
-            className={`tab flex flex-col items-center cursor-pointer ${
-              selectedTab === tab ? "text-primary" : "text-black"
-            }`}
+            className={`tab flex flex-col items-center cursor-pointer ${selectedTab === tab ? "text-primary" : "text-black"}`}
             onClick={() => handleTabClick(tab)}
           >
             <img src={selectedTab === tab ? iconPurple : iconBlack} alt={label} className="w-[25px] h-[25px] mb-2" />
@@ -51,42 +55,59 @@ function ProfileContainer() {
       <div className="tab-content">
         {selectedTab === "capsules" && (
           <>
+            {/* 공개완료 슬라이드 */}
             <MySlideHeader
-              title="공개완료"
-              count={openCapsuleCount}
-              showAllText={showAllCapsules ? "상세페이지목록" : "전체보기"}
-              onShowAllClick={() => setShowAllCapsules(!showAllCapsules)}
+              title="공개 완료"
+              count={6}
+              showAllText="전체보기"
+              onShowAllClick={() => handleShowAllClick("open")}
             />
-            <MySlideContainer items={openCapsuleItems} />
-            <MySlideHeader
-              title="공개대기"
-              count={closeCapsuleCount}
-              showAllText={showAllCapsules ? "상세페이지목록" : "전체보기"}
-              onShowAllClick={() => setShowAllCapsules(!showAllCapsules)}
-            />
-            <MySlideContainer items={closeCapsuleItems} />
+            <MySlideContainer key="open" uniqueKey="open" items={openCapsuleItems.slice(0, 8)} />
+
+            {/* 공개대기 슬라이드 */}
+            <div className="mt-8">
+              <MySlideHeader
+                title="공개 대기"
+                count={closeCapsuleItems.length}
+                showAllText="전체보기"
+                onShowAllClick={() => handleShowAllClick("close")}
+              />
+              <MySlideContainer key="close" uniqueKey="close" items={closeCapsuleItems.slice(0, 8)} />
+            </div>
           </>
         )}
 
-        {selectedTab === "articles" && <MySlideHeader title="일반글" count={articleCount} showAllText="전체보기" />}
+        {/* 다른 탭의 콘텐츠 */}
+        {selectedTab === "articles" && (
+          <div className="px-4">
+            <h2 className="text-xl font-bold">내 일반글</h2>
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              {openCapsuleItems.slice(0, 10).map((item, index) => (
+                <div
+                  key={index}
+                  className="w-full aspect-[1] bg-gray-200 rounded-[10px] flex justify-center items-center"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {selectedTab === "alarms" && (
-          <>
-            <MySlideHeader
-              title="공개완료"
-              count={openAlarmCount}
-              showAllText={showAllCapsules ? "상세페이지목록" : "전체보기"}
-              onShowAllClick={() => setShowAllCapsules(!showAllCapsules)}
-            />
-            <MySlideContainer items={openAlarmItems} />
-            <MySlideHeader
-              title="공개대기"
-              count={closeAlarmCount}
-              showAllText={showAllCapsules ? "상세페이지목록" : "전체보기"}
-              onShowAllClick={() => setShowAllCapsules(!showAllCapsules)}
-            />
-            <MySlideContainer items={closeAlarmItems} />
-          </>
+          <div className="px-4">
+            <h2 className="text-xl font-bold">예약글</h2>
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              {closeCapsuleItems.slice(0, 10).map((item, index) => (
+                <div
+                  key={index}
+                  className="w-full aspect-[1] bg-gray-200 rounded-[10px] flex justify-center items-center"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     </div>
