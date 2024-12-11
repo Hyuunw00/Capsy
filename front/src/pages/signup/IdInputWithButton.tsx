@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useSignupStore } from "../../store/signupStore";
 import NoticeModal from "../../components/NoticeModal";
 import { userLists } from "../../apis/auth";
+import { idRegex } from "../../utils/regex";
 
 export default function IdInputWithButton() {
   const { id, setId, isIdValid, setIsIdValid } = useSignupStore();
-  const idRegex = /^[A-Za-z0-9]{4,12}$/;
 
   const [isOpen, setIsOpen] = useState(false);
 

@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useSignupStore } from "../../store/signupStore";
 import NoticeModal from "../../components/NoticeModal";
 import { userLists } from "../../apis/auth";
+import { emailRegex } from "../../utils/regex";
 
 export default function EmailInputWithButton() {
   const { email, setEmail, isEmailValid, setIsEmailValid } = useSignupStore();
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const [isOpen, setIsOpen] = useState(false);
 

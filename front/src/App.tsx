@@ -23,9 +23,8 @@ export default function App() {
   const login = useLoginStore((state) => state.login);
   const isLoggedIn = useLoginStore((state) => state.isLoggedIn);
 
+  // 처음에 렌더링될때 isLoggedIn이 false가 되는것을 방지
   const [isLoading, setIsLoading] = useState(true);
-
-  console.log(isLoggedIn);
   const getUser = async () => {
     try {
       if (tokenService.getToken()) {

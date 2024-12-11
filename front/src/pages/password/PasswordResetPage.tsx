@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 import { useLoginStore } from "../../store/loginStore";
@@ -8,12 +8,18 @@ import Logo from "../../components/Logo";
 import { loginAuth } from "../../apis/auth";
 import { LoginInput } from "../../components/LoginInput";
 import { tokenService } from "../../utils/token";
+import { emailRegex, passwordRegex } from "../../utils/regex";
 
 export default function PasswordResetPage() {
   const navigate = useNavigate();
   const { email, password, isEmailValid, isPasswordValid, setEmail, setPassword, setIsEmailValid, setIsPasswordValid } =
     useLoginStore();
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (emailRegex.test(email)) setIsEmailValid(true);
+    if (passwordRegex.test(password)) setIsPasswordValid(true);
+  }, [email, password]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
