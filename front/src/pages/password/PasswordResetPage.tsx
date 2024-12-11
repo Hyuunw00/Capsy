@@ -34,14 +34,20 @@ export default function PasswordResetPage() {
       return;
     }
     // 2. 해당 사용자의 이메일, 비밀번호가 회원가입 돼있어야함
-    const response = await loginAuth(email, password);
-    const { status } = response;
-
-    // 로그인 인증 통과시
-    if (status === 200) {
+    try {
+      const response = await loginAuth(email, password);
+      const { status } = response;
+      // 로그인 인증 통과시
+      if (status === 200) {
+        navigate(`/newpassword`);
+      }
+    } catch (error) {
+      setIsOpen(true);
+    } finally {
       setEmail("");
       setPassword("");
-      navigate(`/newpassword`);
+      setIsEmailValid(false);
+      setIsPasswordValid(false);
     }
   };
 
@@ -79,9 +85,6 @@ export default function PasswordResetPage() {
           <Button className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] text-[12px] rounded-[6px] mt-[20px]">
             인증
           </Button>
-          <Link to="/signup" className="text-center mt-[16px]  text-[#475569] underline">
-            회원가입 바로가기
-          </Link>
         </div>
       </form>
     </>
