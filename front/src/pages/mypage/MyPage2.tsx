@@ -6,11 +6,6 @@ export default function MyPage2() {
   const navigate = useNavigate();
   const isLoggedIn = useLoginStore((state) => state.isLoggedIn);
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate("/login");
-    }
-  }, []);
   return (
     <>
       <h1>My Page</h1>
