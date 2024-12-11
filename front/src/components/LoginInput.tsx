@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useLoginStore } from "../store/loginStore";
+
 interface InputWithLabelProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   value?: string;
@@ -8,6 +11,14 @@ interface InputWithLabelProps extends React.InputHTMLAttributes<HTMLInputElement
   isValid: boolean;
 }
 export const LoginInput = ({ label, placeholder, value, handleChange, error, type, isValid }: InputWithLabelProps) => {
+  const { setIsEmailValid, setIsPasswordValid, setIsPasswordConfirmValid } = useLoginStore();
+
+  useEffect(() => {
+    setIsEmailValid(false);
+    setIsPasswordValid(false);
+    setIsPasswordConfirmValid(false);
+  }, []);
+
   return (
     <>
       <div className="flex-1  ">

@@ -3,13 +3,13 @@ import { Link, useNavigate } from "react-router";
 
 import { useLoginStore } from "../../store/loginStore";
 import NoticeModal from "../../components/NoticeModal";
-import { InputWithLabel } from "../../components/InputWithLabel";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
-import { loginAuth } from "../../apis/auth";
 import { LoginInput } from "../../components/LoginInput";
 import axiosInstance from "../../apis/axiosInstance";
 import { tokenService } from "../../utils/token";
+import { emailRegex, passwordRegex } from "../../utils/regex";
+import { loginAuth } from "../../apis/auth";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -27,36 +27,38 @@ export default function LoginPage() {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  // useEffect(() => {
-  //   setEmail("");
-  //   setPassword("");
-  // }, []);
+  useEffect(() => {
+    if (emailRegex.test(email)) setIsEmailValid(true);
+    if (passwordRegex.test(password)) setIsPasswordValid(true);
+  }, [email, password]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axiosInstance.post("/login", { email, password });
-      const { token, user } = response.data;
-      tokenService.setToken(token);
-      tokenService.setUser(user);
-      login(token);
-      navigate(`/`);
+      // loginAuth 호출하여 로그인 처리
+      const response = await loginAuth(email, password);
+      const { token } = response.data;
+
+      login(token); // 로그인 상태 업데이트
+      navigate(`/`); // 홈으로 이동
     } catch (error) {
-      setIsOpen(true);
+      setIsOpen(true); // 로그인 실패 시 모달 표시
+    } finally {
+      // 입력값 초기화
       setPassword("");
       setEmail("");
       setIsEmailValid(false);
       setIsPasswordValid(false);
-      throw error;
     }
   };
 
   return (
     <>
       {isOpen && (
-        <NoticeModal onClose={() => setIsOpen(false)} title="다시 시도해주세요">
-          <p>아이디 또는 비밀번호를</p>
-          <p>잘못 입력했습니다.</p>
+        <NoticeModal onClose={() => setIsOpen(false)} title="알림">
+          아이디 또는 비밀번호를
+          <br />
+          잘못 입력했습니다.
         </NoticeModal>
       )}
       <form onSubmit={handleSubmit}>
@@ -78,7 +80,7 @@ export default function LoginPage() {
             value={password}
             handleChange={setPassword}
             placeholder="비밀번호"
-            error="비밀번호 형식"
+            error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
             isValid={isPasswordValid}
           />
 

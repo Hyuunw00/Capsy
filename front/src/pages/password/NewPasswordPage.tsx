@@ -1,17 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useLoginStore } from "../../store/loginStore";
 import NoticeModal from "../../components/NoticeModal";
-import { InputWithLabel } from "../../components/InputWithLabel";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
 import { passwordChangeAuth } from "../../apis/auth";
 import { tokenService } from "../../utils/token";
 import { LoginInput } from "../../components/LoginInput";
+import { passwordRegex } from "../../utils/regex";
 
 export default function NewPasswordPage() {
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,16}$/;
-
   const navigate = useNavigate();
   const {
     password,
@@ -26,6 +24,11 @@ export default function NewPasswordPage() {
   const logout = useLoginStore((state) => state.logout);
 
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (passwordRegex.test(password)) setIsPasswordValid(true);
+    if (passwordConfirm === password) setIsPasswordConfirmValid(true);
+  }, [password, passwordConfirm]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
