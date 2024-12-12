@@ -325,7 +325,7 @@ export default function MainPage() {
           {filterData.map((item, index) => (
             <div
               key={index}
-              className="w-full inline-block break-inside-avoid relative mb-[10px] cursor-pointer"
+              className="w-full inline-block break-inside-avoid relative mb-[10px] overflow-hidden cursor-pointer"
               onClick={() => navigate(`/detail/${item._id}`)}
             >
               {item.image ? (
@@ -340,28 +340,34 @@ export default function MainPage() {
                 </div>
               )}
               {item.channel.name === "TIMECAPSULE" && (
-                <div className="absolute top-[6px] right-[6px]">
-                  <img src={img_capsule} alt="캡슐" />
+                <div className="absolute top-1.5 right-1.5 bg-black bg-opacity-40 w-[30px] h-[30px] flex item-center justify-center rounded-full">
+                  <img src={img_capsule} alt="캡슐" className="w-[16px]" />
                 </div>
               )}
-              <div className="absolute bottom-[6px] left-[6px] w-full text-white px-1">
+              <div className="absolute bottom-0 left-0 px-2.5 py-2 w-full text-white bg-custom-gradient rounded-b-[10px]">
                 <p className="font-semibold">@{item.author.fullName}</p>
                 <p className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ maxWidth: "calc(18ch)" }}>
                   {getTitle(item.title)}
                 </p>
               </div>
-              <div className="absolute bottom-[6px] right-[6px] flex flex-col justify-center items-center space-y-1">
+              <div className="absolute bottom-0 right-0 px-2.5 py-2 flex flex-col justify-center items-center space-y-1">
                 <img
                   src={likeStatus[item._id] ? img_fillHeart : img_heart}
                   className="w-[20px] h-[20px] object-contain cursor-pointer"
-                  onClick={() => handleLikeClick(item._id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLikeClick(item._id);
+                  }}
                 />
                 {item.channel.name === "TIMECAPSULE" && (
                   <img
                     src={notiStatus[index] ? img_fillNoti : img_noti}
                     alt="noti"
                     className={`object-contain cursor-pointer h-[20px] ${notiStatus[index] ? "w-[15px]" : "w-[18px]"}`}
-                    onClick={() => handleNotiClick(index)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNotiClick(index);
+                    }}
                   />
                 )}
               </div>
