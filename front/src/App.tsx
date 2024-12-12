@@ -22,7 +22,6 @@ import AlarmListPage from "./components/AlarmListPage";
 export default function App() {
   // 새로고침할때마다 session storage에서 token 받아와서 로그인
   const login = useLoginStore((state) => state.login);
-  const isLoggedIn = useLoginStore((state) => state.isLoggedIn);
 
   // 처음에 렌더링될때 isLoggedIn이 false가 되는것을 방지
   const [isLoading, setIsLoading] = useState(true);
