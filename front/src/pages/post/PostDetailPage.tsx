@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from "react";
-import { useParams } from "react-router";
 import { getPostDetail } from "../../apis/apis";
 import thumbnail1 from "../../assets/random-thumnail/random-thumnail-black-1.png";
 import thumbnail2 from "../../assets/random-thumnail/random-thumnail-black-2.png";
@@ -89,7 +88,7 @@ export default function PostDetailPage() {
       <hr className="border-t border-gray200" />
       {/* 포스트 이미지 렌더링 */}
       <div className="relative w-full overflow-hidden">
-        <img src={post.image || randomThumbnail} className="w-full aspect-square object-cover" alt="post-image" />
+        <img src={post.image || randomThumbnail} className="object-cover w-full aspect-square" alt="post-image" />
       </div>
 
       {/* 포스트 타이틀, 내용 렌더링 */}

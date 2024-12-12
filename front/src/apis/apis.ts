@@ -45,6 +45,15 @@ export const getPostDetail = async (postId: string) => {
 export const createComment = async (data: any) => {
   try {
     const response = await axiosInstance.post(`/comments/create`, data);
+
+    // 댓글 작성 후 알림 생성
+    await createNotifications({
+      notificationType: "COMMENT",
+      notificationTypeId: response.data._id, // <- 작성된 댓글의 ID 전달해주세요!
+      userId: response.data.author._id,
+      postId: response.data.post,
+    });
+
     return response.data;
   } catch (error) {
     throw error;
@@ -113,3 +122,28 @@ interface NotificationsProps {
   userId: string;
   postId: string | null;
 }
+
+// Follow  ---------------------------------------------------------------
+
+// 팔로우 맺기 API
+export const followUser = async (userId: string) => {
+  try {
+    const response = await axiosInstance.post(`/follow/create`, userId);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 팔로우 취소 API
+export const unFollowUser = async (id: string) => {
+  try {
+    const response = await axiosInstance.delete("/follow/delete", {
+      data: { id },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
