@@ -15,7 +15,6 @@ import { useEffect, useState } from "react";
 import { tokenService } from "./utils/token";
 import Private from "./layouts/Private";
 import NonPrivate from "./layouts/NonPrivate";
-import MyPage2 from "./pages/mypage/MyPage2";
 import Loading from "./components/Loading";
 import CapsuleListPage from "./components/CapsuleListPage";
 import AlarmListPage from "./components/AlarmListPage";
@@ -54,7 +53,6 @@ export default function App() {
             <Route path="/detail/:postId" element={<PostDetailPage />} />
             <Route path="/event" element={<Event />} />
             <Route path="/mypage" element={<MyPage />} />
-            <Route path="/mypage2" element={<MyPage2 />} />
             <Route path="/resetpassword" element={<PasswordResetPage />} />
             <Route path="/newpassword" element={<NewPasswordPage />} />
             <Route path="/capsule-list" element={<CapsuleListPage />} /> {/* 추가된 경로 */}

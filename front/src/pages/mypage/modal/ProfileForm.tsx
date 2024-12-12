@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Modal } from "../../../components/Modal";
 import { InputWithLabel } from "../../../components/InputWithLabel";
 import Button from "../../../components/Button";
+import { Link } from "react-router";
 
 interface ProfileFormProps {
   onClose: () => void; // onClose를 prop으로 받아옴
@@ -43,7 +44,9 @@ export default function ProfileForm({ onClose }: ProfileFormProps) {
           </div>
 
           <div className="mt-4">
-            <p className="mb-4 text-sm text-gray-500">비밀번호 재설정</p>
+            <p className="mb-4 text-sm text-gray-500">
+              <Link to="/resetpassword">비밀번호 재설정</Link>
+            </p>
             <Button type="submit" className="w-full py-3 text-white bg-black rounded-md hover:bg-gray-800">
               저장하기
             </Button>
