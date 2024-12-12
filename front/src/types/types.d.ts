@@ -162,3 +162,51 @@ interface CustomPostData {
   // 타임캡슐인 경우 추가 필드
   closeAt?: string; // YYYY-MM-DD 형식의 공개 날짜
 }
+interface PostDetail {
+  _id: string;
+  title: string;
+  image: string;
+  author: {
+    _id: string;
+    fullName: string;
+    role: string;
+    emailVerified: boolean;
+    banned: boolean;
+    isOnline: boolean;
+    posts: Array<string>;
+    likes: Array<string>;
+    comments: Array<string>;
+    followers: Array<string>;
+    following: Array<string>;
+    notifications: Array<string>;
+    messages: Array<string>;
+    email: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+  comments: Array<{
+    _id: string;
+    author: {
+      _id: string;
+      fullName: string;
+    };
+    content: string;
+  }>;
+  __v: number;
+}
+
+interface PostContent {
+  title: string;
+  content?: string;
+}
+
+interface PostComment {
+  author: {
+    _id: string;
+    fullName: string;
+  };
+  content: string;
+}

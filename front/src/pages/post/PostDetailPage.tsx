@@ -1,114 +1,102 @@
-import { useParams } from "react-router";
 import { useState } from "react";
+import axiosInstance from "../../apis/axiosInstance";
 
-interface Comment {
-  id: string;
-  userId: string;
-  content: string;
-}
-interface CommentItemProps {
-  userId: string;
-  content: string;
-}
+export const getPostDetail = async (postId: string) => {
+  try {
+    const response = await axiosInstance.get(`/posts/${postId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
-//댓글 아이템 가져오는 함수
+// json 파싱
+const parsePostContent = (jsonString: string): PostContent => {
+  try {
+    return JSON.parse(jsonString) as PostContent;
+  } catch (error) {
+    console.error("포스트를 불러오는데 실패했습니다.:", error);
+    return { title: "", content: "" };
+  }
+};
 
-const CommentItem = ({ userId, content }: CommentItemProps) => (
+const CommentItem = ({ author, content }: PostComment) => (
   <li className="py-[4px]">
-    <div className="font-semibold">@{userId}</div>
+    <div className="font-semibold">@{author.fullName}</div>
     <div className="mt-[9.14px]">{content}</div>
   </li>
 );
 
-// 이미지 슬라이더의 화살표 버튼
-
-const ArrowButton = ({ direction, onClick }: { direction: "left" | "right"; onClick: () => void }) => (
-  <div
-    className={`absolute top-0 ${direction === "left" ? "left-0" : "right-0"} w-1/3 h-full group cursor-pointer`}
-    onClick={onClick}
-  >
-    <div className="absolute top-0 w-full h-full group-hover:bg-transparent">
-      <button
-        className={`absolute top-1/2 ${direction === "left" ? "left-0" : "right-0"} transform -translate-y-1/2 w-10 h-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity`}
-      >
-        <svg width="24" height="24" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d={
-              direction === "left"
-                ? "M6.7675 7.50002L9.86125 10.5938L8.9775 11.4775L5 7.50002L8.9775 3.52252L9.86125 4.40627L6.7675 7.50002Z"
-                : "M8.2325 7.50002L5.13875 4.40627L6.0225 3.52252L10 7.50002L6.0225 11.4775L5.13875 10.5938L8.2325 7.50002Z"
-            }
-            className="fill-primary"
-          />
-        </svg>
-      </button>
-    </div>
-  </div>
-);
-
 export default function PostDetailPage() {
-  const { postId } = useParams();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0); // 이미지 관리 상태
   const [isFollowing, setIsFollowing] = useState(false); // 팔로우 상태 관리 상태
   const [commentText, setCommentText] = useState(""); // 댓글 관리 상태
 
+  // 팔로우 로직
   const handleFollowClick = () => {
-    // 팔로우 버튼 클릭 시 팔로우 상태 변경
     setIsFollowing(!isFollowing);
   };
 
+  // 댓글 로직
   const handleSubmitComment = (e: React.FormEvent) => {
-    // 댓글 제출 시 댓글 관리 상태 초기화
-    e.preventDefault(); // form 기본 이벤트 방지
-    setCommentText(""); // 댓글 상태 초기화
-  };
-  // 포스트 더미 데이터
-  const post = {
-    userId: "huhjeongmin",
-    images: [
-      "https://cdn.pixabay.com/photo/2024/10/22/01/17/cat-9138461_1280.jpg",
-      "https://cdn.pixabay.com/photo/2021/12/01/18/17/cat-6838844_1280.jpg",
-      "https://cdn.pixabay.com/photo/2015/04/02/06/25/cat-mia-703408_1280.jpg",
-    ],
-    title: "테스트 포스트용 제목입니다.",
-    content: "우리집 고양이들을 소개합니다 😺😸😼",
-    createdAt: "2024-12-06T13:58:34.439Z",
-  };
-  // 댓글 더미 데이터
-  const comments: Comment[] = [
-    {
-      id: "1",
-      userId: "testUser",
-      content:
-        "Lorem ipsum dolor sit amet consectetur. Amet vestibulum suspendisse mauris lacus felis velit sit neque. Sit ante nunc nec ac bibendum cursus. Eget aenean ut ut proin. Nisl pellentesque amet dictum ullamcorper tempor mauris magna egestas condimentum. Integer natoque enim aliquam donec. A sit scelerisque risus ante fringilla amet amet elit. Et ipsum porttitor elit diam euismod. Aenean convallis scelerisque euismod elit tempus. Sagittis auctor penatibus cras nulla orci sit.",
-    },
-    {
-      id: "2",
-      userId: "testUser2",
-      content:
-        "Lorem ipsum dolor sit amet consectetur. Amet vestibulum suspendisse mauris lacus felis velit sit neque. Sit ante nunc nec ac bibendum cursus. Eget aenean ut ut proin. Nisl pellentesque amet dictum ullamcorper tempor mauris magna egestas condimentum. Integer natoque enim aliquam donec. A sit scelerisque risus ante fringilla amet amet elit. Et ipsum porttitor elit diam euismod. Aenean convallis scelerisque euismod elit tempus. Sagittis auctor penatibus cras nulla orci sit.",
-    },
-  ];
-  // 다음 이미지로 이동하는 함수
-  const handleNextImage = () => {
-    if (currentImageIndex < post.images.length - 1) {
-      setCurrentImageIndex((prev) => prev + 1);
-    }
+    e.preventDefault();
+    setCommentText("");
   };
 
-  // 이전 이미지로 이동하는 함수
-  const handlePrevImage = () => {
-    if (currentImageIndex > 0) {
-      setCurrentImageIndex((prev) => prev - 1);
-    }
+  // 테스트용 더미데이터
+  const post: PostDetail = {
+    _id: "67596ad6be515047d62b80e9",
+    title: '{"title":"잠온당","content":"null null합니다"}',
+    image:
+      "https://res.cloudinary.com/learnprogrammers/image/upload/v1733899519/post/8ef31164-136c-47c1-97a1-33fb51c7addc.jpg",
+    author: {
+      _id: "67578dee18276c7d71022c22",
+      fullName: "test123",
+      role: "Regular",
+      emailVerified: false,
+      banned: false,
+      isOnline: false,
+      posts: [
+        "6757947c18276c7d71022c3d",
+        "675853d3757bff0e678a567a",
+        "67585480757bff0e678a5682",
+        "675866d4757bff0e678a56d9",
+        "6758674f757bff0e678a56e1",
+        "6758e9b499ea03300a172e69",
+        "67590bde0e73243169bed649",
+        "675934570e73243169bf286e",
+        "675935000e73243169bf28d6",
+        "675935240e73243169bf28dd",
+        "6759356b0e73243169bf28e4",
+        "675945dbfe3cf0411632862d",
+        "675953127e95d045fd6e3e52",
+        "67596698be515047d62b80de",
+        "67596ad6be515047d62b80e9",
+        "67596b12be515047d62b80f1",
+        "67596b14be515047d62b80f7",
+      ],
+      likes: ["67593d050e73243169bf2a97", "6759ab36c476564e5bced88a"],
+      comments: [],
+      followers: [],
+      following: [],
+      notifications: [],
+      messages: [],
+      email: "test123@gmail.com",
+      createdAt: "2024-12-10T00:40:14.269Z",
+      updatedAt: "2024-12-12T01:48:24.806Z",
+      __v: 0,
+    },
+    createdAt: "2024-12-11T10:35:02.903Z",
+    updatedAt: "2024-12-11T10:35:02.903Z",
+    comments: [],
+    __v: 0,
   };
 
-  // 작성자명 + 팔로우 버튼
   return (
     <div className="flex flex-col w-full">
+      {/* 포스트 작성자명 & 게시 날짜 & 팔로우 버튼 */}
       <div className="flex items-center justify-between px-5 py-2.5 font-semibold">
         <div className="flex items-center gap-2">
-          <span className="leading-none">@{post.userId}</span>
+          <span className="leading-none">@{post.author.fullName}</span>
           <span className="text-xs font-normal text-[#888888] leading-none">
             {new Date(post.createdAt).getMonth() + 1}월 {new Date(post.createdAt).getDate()}일
           </span>
@@ -121,69 +109,38 @@ export default function PostDetailPage() {
         </button>
       </div>
 
-      {/* 이미지 슬라이더 */}
+      {/* 포스트 이미지 렌더링 */}
       <div className="relative w-full overflow-hidden">
-        <div
-          className="flex w-full transition-transform duration-300 ease-in-out"
-          style={{
-            transform: `translateX(-${currentImageIndex * 100}%)`,
-          }}
-        >
-          {post.images.map((image, index) => (
-            <img
-              key={index}
-              src={image}
-              className="min-w-full w-0 aspect-square object-cover"
-              alt={`post-image-${index}`}
-            />
-          ))}
-        </div>
-        {/* 이전 이미지 버튼 */}
-        {currentImageIndex > 0 && <ArrowButton direction="left" onClick={handlePrevImage} />}
-        {/* 다음 이미지 버튼 */}
-        {currentImageIndex < post.images.length - 1 && <ArrowButton direction="right" onClick={handleNextImage} />}
-        {/* 이미지 인디케이터 */}
-        {post.images.length > 1 && (
-          <div className="absolute bottom-3.5 left-1/2 transform -translate-x-1/2 flex gap-1.5">
-            {post.images.map((_, index) => (
-              <div
-                key={index}
-                className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                  index === currentImageIndex ? "bg-primary" : "bg-gray-100"
-                }`}
-              />
-            ))}
-          </div>
-        )}
+        <img src={post.image} className="w-full aspect-square object-cover" alt="post-image" />
       </div>
 
-      {/* 포스트 제목  및 내용*/}
-      <div className="px-[20px] pt-[24px]">
-        <h1 className="text-xl font-bold">{post.title}</h1>
+      {/* 포스트 타이틀, 내용 렌더링 */}
+      <div className="px-5 mt-5">
+        <h2 className="font-semibold">{parsePostContent(post.title).title}</h2>
+        <p className="mt-2.5">{parsePostContent(post.title).content}</p>
       </div>
 
-      <div className="px-[20px] py-[8px] text-base">{post.content}</div>
-
-      {/* 구분선 */}
+      {/* 영역 구분선 */}
       <div className="px-[20px] mt-[20px]">
         <hr className="border-t border-gray200" />
       </div>
 
-      {/*댓글 리스트 */}
+      {/* 댓글 리스트 렌더링 */}
       <section aria-label="Comment List" className="px-[20px] mt-[20px] pb-[100px] text-sm">
         <ul className="flex flex-col gap-[12px]">
-          {comments.map((comment) => (
-            <CommentItem key={comment.id} userId={comment.userId} content={comment.content} />
+          {post.comments.map((comment) => (
+            <CommentItem key={comment._id} author={comment.author} content={comment.content} />
           ))}
         </ul>
       </section>
 
-      {/* 댓글 입력 박스 */}
+      {/* 댓글 입력폼 */}
       <form
         className="fixed bottom-[60px] left-1/2 -translate-x-1/2 w-[600px] border-t border-white bg-white py-1.5"
         onSubmit={handleSubmitComment}
       >
         <div className="flex items-center gap-2 px-[10px]">
+          {/* 댓글 입력란 */}
           <textarea
             value={commentText}
             onChange={(e) => {
@@ -200,7 +157,8 @@ export default function PostDetailPage() {
               WebkitOverflowScrolling: "touch",
             }}
           />
-          {/* 댓글 제출 버튼 */}
+
+          {/* 댓글 등록 버튼 */}
           <button
             type="submit"
             disabled={!commentText.trim()}
