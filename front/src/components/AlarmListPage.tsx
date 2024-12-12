@@ -1,16 +1,20 @@
 import { useLocation } from "react-router-dom";
 
-interface CapsuleListPageState {
-  title: string; // 제목 (ex. "공개 완료", "공개 대기")
-  items: string[]; // 리스트 아이템 배열
+interface AlarmListPageState {
+  items: string[]; // title을 제거하고 items만 사용
 }
 
-function CapsuleListPage() {
+function AlarmListPage() {
   const location = useLocation();
-  const { items } = location.state as CapsuleListPageState;
+  const { items } = location.state as AlarmListPageState;
+
+  if (!items || items.length === 0) {
+    return <div>아이템이 없습니다.</div>;
+  }
 
   return (
-    <div className="capsule-list-page mb-[30px]">
+    <div className="alarm-list-page mb-[30px]">
+      {/* 제목을 출력하지 않음 */}
       <div className="grid grid-cols-3 gap-[10px] px-[30px]">
         {items.map((item, index) => (
           <div key={index} className="w-full aspect-square bg-gray-200 rounded-[10px] flex justify-center items-center">
@@ -22,4 +26,4 @@ function CapsuleListPage() {
   );
 }
 
-export default CapsuleListPage;
+export default AlarmListPage;
