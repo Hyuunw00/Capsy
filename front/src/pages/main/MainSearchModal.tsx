@@ -56,8 +56,10 @@ export default function MainSearchModal() {
             {/* 입력값에 따라 출력되는 사용자들*/}
             {users.length > 0 &&
               users.map((user) => {
+                console.log(user);
+
                 return (
-                  <li key={user._id} className="flex items-center">
+                  <li key={user._id} className="flex items-center gap-4 ">
                     <div className=" relative  w-[40px] h-[40px] overflow-hidden  bg-gradient-to-r from-[rgba(3,199,90,0.60)] to-[rgba(103,78,255,0.60)] rounded-full  ">
                       {/* user.profileImage */}
                       <img
@@ -67,12 +69,19 @@ export default function MainSearchModal() {
                       />
                     </div>
 
-                    <Link to="/mypage" className="block w-fit">
+                    <Link
+                      // 만약에 fullName이 중복된 사용자들이 있다면? -> 임시로  _id
+                      to={`userInfo/${user._id}`}
+                      className="block w-fit hover:bg-gray-300 transition-all duration-300 rounded-lg"
+                    >
                       <div className="text-[#000000]  w-[300px] py-[10px] px-[20px]  ">
                         <div className="text-[14px] font-bold flex  items-center gap-2">
                           <p className=" ">@{user.fullName}</p>
-                          {/* bg-[#03C75A] bg-rose-500 */}
-                          <div className="w-[6px] h-[6px]  rounded-full"></div>
+                          <div
+                            className={`w-[6px] h-[6px]   rounded-full ${
+                              user.isOnline ? "bg-[#7CF335]" : "bg-red-500"
+                            } `}
+                          ></div>
                         </div>
                         <p className="text-[14px] font-bold ">{user?.username}</p>
                       </div>
