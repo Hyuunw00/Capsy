@@ -97,9 +97,6 @@ export default function NewPasswordPage() {
           <Button className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] text-[12px] rounded-[6px] mt-[20px]">
             확인
           </Button>
-          <Link to="/signup" className="text-center mt-[16px]  text-[#475569] underline">
-            회원가입 바로가기
-          </Link>
         </div>
       </form>
     </>
