@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useMainSearchStore } from "../../store/mainSearchStore";
 import axiosInstance from "../../apis/axiosInstance";
 import img_search from "../../assets/Search.svg";
-import default_img from "../../assets/user.png";
 import { Link } from "react-router-dom";
 
 export default function MainSearchModal() {
@@ -10,31 +9,40 @@ export default function MainSearchModal() {
 
   const [users, setUsers] = useState<UserLists[]>([]);
 
+  // 검색된 user 목록
   const getUsers = async () => {
     try {
+      // const { data } = await axiosInstance.get(`/search/users/${searchInput.replace(/\s+/g, "")}`);
       const { data } = await axiosInstance.get("/users/get-users");
-
       const filteredData =
         searchInput.trim().length > 0 &&
         data.filter(
           (item: UserLists) =>
-            item.fullName.toLowerCase().includes(searchInput.toLowerCase().trim()) ||
-            item.username?.toLowerCase().includes(searchInput.toLowerCase().trim()),
+            item.fullName.toLowerCase().includes(searchInput.toLowerCase().replace(/\s+/g, "")) ||
+            item.username?.toLowerCase().includes(searchInput.toLowerCase().replace(/\s+/g, "")),
         );
-      setUsers(filteredData);
+      searchInput.length > 0 && setUsers(filteredData);
     } catch (error) {
-      console.error(error);
+      setUsers([]);
     }
   };
-
-  useEffect(() => {}, []);
   useEffect(() => {
     getUsers();
   }, [searchInput]);
+
+  // 현재 접속중인 사용자 코드
+  useEffect(() => {
+    const getCurrentUsers = async () => {
+      const { data } = await axiosInstance.get("users/online-users");
+      console.log(data);
+    };
+    getCurrentUsers();
+  }, []);
+
   return (
     <>
       <div className="px-8 max-w-[600px] h-full z- ">
-        <div className="mt-5 ml-5 ">
+        <div className=" mt-5  ml-5">
           {/* 고정- 검색 keyword */}
           <ul className="flex flex-col gap-[14px]">
             <li className="flex items-center gap-[14px]">
@@ -48,8 +56,6 @@ export default function MainSearchModal() {
             {/* 입력값에 따라 출력되는 사용자들*/}
             {users.length > 0 &&
               users.map((user) => {
-                console.log(user);
-
                 return (
                   <li key={user._id} className="flex items-center">
                     <div className=" relative  w-[40px] h-[40px] overflow-hidden  bg-gradient-to-r from-[rgba(3,199,90,0.60)] to-[rgba(103,78,255,0.60)] rounded-full  ">
@@ -63,7 +69,11 @@ export default function MainSearchModal() {
 
                     <Link to="/mypage" className="block w-fit">
                       <div className="text-[#000000]  w-[300px] py-[10px] px-[20px]  ">
-                        <p className="text-[14px] font-bold ">@{user.fullName}</p>
+                        <div className="text-[14px] font-bold flex  items-center gap-2">
+                          <p className=" ">@{user.fullName}</p>
+                          {/* bg-[#03C75A] bg-rose-500 */}
+                          <div className="w-[6px] h-[6px]  rounded-full"></div>
+                        </div>
                         <p className="text-[14px] font-bold ">{user?.username}</p>
                       </div>
                     </Link>

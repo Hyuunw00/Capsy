@@ -91,6 +91,19 @@ export default function MainPage() {
 
   const [likeStatus, setLikeStatus] = useState<{ [key: string]: boolean }>({});
 
+  // 전역 상태 변수
+  const isFocused = useMainSearchStore((state) => state.isFocused);
+  const searchInput = useMainSearchStore((state) => state.searchInput);
+  const setSearchInput = useMainSearchStore((state) => state.setSearchInput);
+  const setIsfocused = useMainSearchStore((state) => state.setIsFocused);
+
+  //  뒤로가기 버튼
+  const handleBackClick = () => {
+    setSearchInput("");
+    setFilterData(data);
+    setIsfocused(false);
+  };
+
   // 필터링 드롭다운
   const toggleDropdown = (): void => setIsOpen(!isOpen);
 
@@ -214,12 +227,23 @@ export default function MainPage() {
     console.log("userData", userData);
   }, [data, filterData]);
 
-  const isFocused = useMainSearchStore((state) => state.isFocused);
+  // 검색된 게시물에대한 코드
+  useEffect(() => {
+    const getSearchPost = async () => {
+      try {
+        const keywordPost = data.filter((post) => post.title.includes(searchInput.replace(/\s+/g, "")));
+        setFilterData(keywordPost);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getSearchPost();
+  }, [isFocused]);
 
   if (isFocused) {
     return (
       <>
-        <MainSearch />
+        <MainSearch onBackClick={handleBackClick} />
         <MainSearchModal />
       </>
     );
@@ -227,39 +251,49 @@ export default function MainPage() {
 
   return (
     <>
-      <MainSearch />
+      <MainSearch onBackClick={handleBackClick} />
       <div className="px-8 mt-3 relative">
-        {/* 드롭다운 */}
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          {/* 키워드에 대한 검색 결과 */}
           <div>
-            <div className="flex justify-end">
-              <button
-                onClick={toggleDropdown}
-                className="inline-flex justify-around items-center bg-white focus:outline-none"
-              >
-                {selectedOption}
-                <img src={img_bottom} alt="선택" />
-              </button>
-            </div>
-
-            {isOpen && (
-              <div className="absolute rounded-[6px] mt-2 shadow-300 z-10 right-8 bg-white">
-                <div className="flex flex-col px-5 py-2 flex-nowrap">
-                  {["All", "포스트", "타임캡슐"].map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => selectOption(option)}
-                      className={`block w-full px-4 py-1.5 text-sm text-center hover:bg-gray-100  ${
-                        selectedOption === option ? "font-semibold" : ""
-                      }`}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            {searchInput.length > 0 && (
+              <span>
+                <strong>{searchInput}</strong> 관련된 포스트 결과
+              </span>
             )}
           </div>
+          {/* 드롭다운 */}
+          {searchInput.length === 0 && (
+            <div>
+              <div className="flex justify-end">
+                <button
+                  onClick={toggleDropdown}
+                  className="inline-flex justify-around items-center bg-white focus:outline-none"
+                >
+                  {selectedOption}
+                  <img src={img_bottom} alt="선택" />
+                </button>
+              </div>
+
+              {isOpen && (
+                <div className="absolute rounded-[6px] mt-2 shadow-300 z-10 right-8 bg-white">
+                  <div className="flex flex-col px-5 py-2 flex-nowrap">
+                    {["All", "포스트", "타임캡슐"].map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => selectOption(option)}
+                        className={`block w-full px-4 py-1.5 text-sm text-center hover:bg-gray-100  ${
+                          selectedOption === option ? "font-semibold" : ""
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 게시물 data */}
