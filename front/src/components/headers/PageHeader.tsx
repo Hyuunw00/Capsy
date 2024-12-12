@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import Left from "../assets/Left.svg";
-import logo_black from "../assets/logo_black.svg";
-import Notification from "../assets/Notification.svg";
+import Left from "../../assets/Left.svg";
+import logo_black from "../../assets/logo_black.svg";
+import Notification from "../../assets/Notification.svg";
 
 export default function PageHeader() {
   const navigate = useNavigate();

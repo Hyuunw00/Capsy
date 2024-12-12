@@ -34,7 +34,7 @@ export default function MainSearchModal() {
   return (
     <>
       <div className="px-8 max-w-[600px] h-full z- ">
-        <div className=" mt-5  ml-5">
+        <div className="mt-5 ml-5 ">
           {/* 고정- 검색 keyword */}
           <ul className="flex flex-col gap-[14px]">
             <li className="flex items-center gap-[14px]">
@@ -52,10 +52,10 @@ export default function MainSearchModal() {
 
                 return (
                   <li key={user._id} className="flex items-center">
-                    <div className=" relative  w-[40px] h-[40px] overflow-hidden  bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-primary)]  rounded-full  ">
+                    <div className=" relative  w-[40px] h-[40px] overflow-hidden  bg-gradient-to-r from-[rgba(3,199,90,0.60)] to-[rgba(103,78,255,0.60)] rounded-full  ">
                       {/* user.profileImage */}
                       <img
-                        className="w-[40px] h-[40px] rounded-full object-cover p-[3px]"
+                        className="w-[40px] h-[40px] rounded-full object-cover p-[2px]"
                         src={user.image ? user.image : "/Capsy.svg"}
                         alt="프로필 이미지"
                       />
