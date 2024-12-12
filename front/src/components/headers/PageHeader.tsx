@@ -13,7 +13,9 @@ export default function PageHeader() {
       >
         <img src={Left} alt="Left" style={{ width: "24px", height: "24px" }} />
       </button>
+      
       <img src={logo_black} alt="Logo" style={{ width: "75px", height: "30px" }} />
+      
       <img src={Notification} alt="Notification" style={{ width: "20px", height: "20px" }} />
     </nav>
 

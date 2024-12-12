@@ -87,16 +87,6 @@ export const getNotifications = async () => {
   }
 };
 
-// 알림 생성 API
-export const createNotifications = async () => {
-  try {
-    const response = await axiosInstance.get(`/notifications/create`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
 // 알림 확인 API
 export const seenNotifications = async () => {
   try {
@@ -106,3 +96,20 @@ export const seenNotifications = async () => {
     throw error;
   }
 };
+
+// 알림 생성 API
+export const createNotifications = async (data: NotificationsProps) => {
+  try {
+    const response = await axiosInstance.post(`/notifications/create`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+interface NotificationsProps {
+  notificationType: "COMMENT" | "FOLLOW" | "LIKE" | "MESSAGE";
+  notificationTypeId: string;
+  userId: string;
+  postId: string | null;
+}
