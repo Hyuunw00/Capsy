@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 import { useLocation } from "react-router-dom";
-import Header from "../components/Header";
-import PageHeader from "../components/PageHeader";
+import Header from "../components/headers/Header";
+import PageHeader from "../components/headers/PageHeader";
 import Footer from "../components/Footer";
 
 export default function RootLayout() {
