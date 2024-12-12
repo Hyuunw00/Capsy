@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useParams } from "react-router";
 import { getPostDetail } from "../../apis/apis";
 import thumbnail1 from "../../assets/random-thumnail/random-thumnail-black-1.png";
 import thumbnail2 from "../../assets/random-thumnail/random-thumnail-black-2.png";
@@ -12,12 +13,13 @@ export default function PostDetailPage() {
   const [isFollowing, setIsFollowing] = useState(false); // 팔로우 상태 관리
   const [commentText, setCommentText] = useState(""); // 댓글 상태 관리
   const [post, setPost] = useState<PostDetail | null>(null); // 포스트 데이터 상태 관리
-  //const { postId } = useParams<{ postId: string }>();
-  const postId = "675a57eb18d96f4540eb68d2";
+  const { postId } = useParams<{ postId: string }>();
+  // const postId = "675a57eb18d96f4540eb68d2";
 
   // 포스트 데이터 불러오기
   useEffect(() => {
     const loadPostDetail = async () => {
+      if (!postId) return;
       try {
         const postData = await getPostDetail(postId);
         setPost(postData);
