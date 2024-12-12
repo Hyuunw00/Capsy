@@ -1,95 +1,73 @@
-import { useState } from "react";
-import axiosInstance from "../../apis/axiosInstance";
-
-export const getPostDetail = async (postId: string) => {
-  try {
-    const response = await axiosInstance.get(`/posts/${postId}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-// json 파싱
-const parsePostContent = (jsonString: string): PostContent => {
-  try {
-    return JSON.parse(jsonString) as PostContent;
-  } catch (error) {
-    console.error("포스트를 불러오는데 실패했습니다.:", error);
-    return { title: "", content: "" };
-  }
-};
-
-const CommentItem = ({ author, content }: PostComment) => (
-  <li className="py-[4px]">
-    <div className="font-semibold">@{author.fullName}</div>
-    <div className="mt-[9.14px]">{content}</div>
-  </li>
-);
+import { useState, useEffect, useMemo } from "react";
+import { useParams } from "react-router";
+import { getPostDetail } from "../../apis/apis";
+import thumbnail1 from "../../assets/random-thumnail/random-thumnail-black-1.png";
+import thumbnail2 from "../../assets/random-thumnail/random-thumnail-black-2.png";
+import thumbnail3 from "../../assets/random-thumnail/random-thumnail-black-3.png";
+import thumbnail4 from "../../assets/random-thumnail/random-thumnail-white-1.png";
+import thumbnail5 from "../../assets/random-thumnail/random-thumnail-white-2.png";
+import thumbnail6 from "../../assets/random-thumnail/random-thumnail-white-3.png";
+import Loading from "../../components/Loading";
 
 export default function PostDetailPage() {
-  const [isFollowing, setIsFollowing] = useState(false); // 팔로우 상태 관리 상태
-  const [commentText, setCommentText] = useState(""); // 댓글 관리 상태
+  const [isFollowing, setIsFollowing] = useState(false); // 팔로우 상태 관리
+  const [commentText, setCommentText] = useState(""); // 댓글 상태 관리
+  const [post, setPost] = useState<PostDetail | null>(null); // 포스트 데이터 상태 관리
+  //const { postId } = useParams<{ postId: string }>();
+  const postId = "675a57eb18d96f4540eb68d2";
+
+  // 포스트 데이터 불러오기
+  useEffect(() => {
+    const loadPostDetail = async () => {
+      try {
+        const postData = await getPostDetail(postId);
+        setPost(postData);
+      } catch (error) {
+        console.error("포스트를 불러오는데 실패했습니다.:", error);
+      }
+    };
+
+    loadPostDetail();
+  }, [postId]);
+
+  // json 파싱
+  const parsePostContent = (jsonString: string): PostContent => {
+    try {
+      return JSON.parse(jsonString) as PostContent;
+    } catch (error) {
+      console.error("포스트를 불러오는데 실패했습니다.:", error);
+      return { title: "", content: "" };
+    }
+  };
 
   // 팔로우 로직
   const handleFollowClick = () => {
     setIsFollowing(!isFollowing);
   };
 
-  // 댓글 로직
+  // 이미지 없을 경우 랜덤 썸네일 로직
+  const randomThumbnail = useMemo(() => {
+    const thumbnails = [thumbnail1, thumbnail2, thumbnail3, thumbnail4, thumbnail5, thumbnail6];
+    return thumbnails[Math.floor(Math.random() * thumbnails.length)];
+  }, []);
+
+  // 댓글 아이템
+  const CommentItem = ({ author, content }: PostComment) => (
+    <li className="py-[4px]">
+      <div className="font-semibold">@{author.fullName}</div>
+      <div className="mt-[9.14px]">{content}</div>
+    </li>
+  );
+
+  // 댓글 제출 로직
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
     setCommentText("");
   };
 
-  // 테스트용 더미데이터
-  const post: PostDetail = {
-    _id: "67596ad6be515047d62b80e9",
-    title: '{"title":"잠온당","content":"null null합니다"}',
-    image:
-      "https://res.cloudinary.com/learnprogrammers/image/upload/v1733899519/post/8ef31164-136c-47c1-97a1-33fb51c7addc.jpg",
-    author: {
-      _id: "67578dee18276c7d71022c22",
-      fullName: "test123",
-      role: "Regular",
-      emailVerified: false,
-      banned: false,
-      isOnline: false,
-      posts: [
-        "6757947c18276c7d71022c3d",
-        "675853d3757bff0e678a567a",
-        "67585480757bff0e678a5682",
-        "675866d4757bff0e678a56d9",
-        "6758674f757bff0e678a56e1",
-        "6758e9b499ea03300a172e69",
-        "67590bde0e73243169bed649",
-        "675934570e73243169bf286e",
-        "675935000e73243169bf28d6",
-        "675935240e73243169bf28dd",
-        "6759356b0e73243169bf28e4",
-        "675945dbfe3cf0411632862d",
-        "675953127e95d045fd6e3e52",
-        "67596698be515047d62b80de",
-        "67596ad6be515047d62b80e9",
-        "67596b12be515047d62b80f1",
-        "67596b14be515047d62b80f7",
-      ],
-      likes: ["67593d050e73243169bf2a97", "6759ab36c476564e5bced88a"],
-      comments: [],
-      followers: [],
-      following: [],
-      notifications: [],
-      messages: [],
-      email: "test123@gmail.com",
-      createdAt: "2024-12-10T00:40:14.269Z",
-      updatedAt: "2024-12-12T01:48:24.806Z",
-      __v: 0,
-    },
-    createdAt: "2024-12-11T10:35:02.903Z",
-    updatedAt: "2024-12-11T10:35:02.903Z",
-    comments: [],
-    __v: 0,
-  };
+  if (!post) {
+    return <Loading />;
+  }
 
   return (
     <div className="flex flex-col w-full">
@@ -108,10 +86,10 @@ export default function PostDetailPage() {
           {isFollowing ? "팔로잉" : "팔로우"}
         </button>
       </div>
-
+      <hr className="border-t border-gray200" />
       {/* 포스트 이미지 렌더링 */}
       <div className="relative w-full overflow-hidden">
-        <img src={post.image} className="w-full aspect-square object-cover" alt="post-image" />
+        <img src={post.image || randomThumbnail} className="w-full aspect-square object-cover" alt="post-image" />
       </div>
 
       {/* 포스트 타이틀, 내용 렌더링 */}
