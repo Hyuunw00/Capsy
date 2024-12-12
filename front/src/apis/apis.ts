@@ -147,3 +147,12 @@ export const unFollowUser = async (id: string) => {
   }
 };
 
+//사용자 정보 가져오기 API
+export const getMyProfile = async () => {
+  try {
+    const response = await axiosInstance.get("/auth-user");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

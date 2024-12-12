@@ -27,7 +27,7 @@ export default function ProfileForm({ onClose }: ProfileFormProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <InputWithLabel
-            label="닉네임"
+            label="아이디"
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             placeholder="다람쥐헌쳇바퀴어쩌구"

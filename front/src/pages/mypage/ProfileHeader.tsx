@@ -1,17 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import profileImgEditIcon from "../../assets/profile-img-edit-icon.svg";
 import profileImgSample from "../../assets/profile-img-sample.jpg";
 import ProfileForm from "./modal/ProfileForm";
+import { getMyProfile } from "../../apis/apis";
 
 export default function ProfileHeader() {
-  const username = "@caapsy_human";
   const posts = 19;
   const followers = 99;
   const following = 99;
-  const nickname = "캡시햄찌";
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [user, setUser] = useState<UserLists>();
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -21,8 +21,17 @@ export default function ProfileHeader() {
     setIsModalOpen(false);
   };
 
+  const getUserInfo = async () => {
+    const data = await getMyProfile();
+    setUser(data);
+  };
+
+  useEffect(() => {
+    getUserInfo();
+  }, []);
+
   const handleShareProfile = async () => {
-    const profileUrl = `https://mywebsite.com/${username}`;
+    const profileUrl = `https://mywebsite.com/${user?.fullName}`;
 
     try {
       await navigator.clipboard.writeText(profileUrl); // 클립보드에 텍스트 복사
@@ -38,7 +47,7 @@ export default function ProfileHeader() {
       {/* 헤더 */}
       <div className="flex flex-col">
         {/* 유저 이름 */}
-        <h2 className="text-xl font-semibold mb-[20px]">{username}</h2>
+        <h2 className="text-xl font-semibold mb-[20px]">@{user?.fullName}</h2>
 
         <div className="flex items-center justify-evenly">
           {/* 프로필 이미지 */}
@@ -81,7 +90,7 @@ export default function ProfileHeader() {
 
         {/* 닉네임 부분 추가 */}
         <div className="mt-[20px]">
-          <h3 className="text-[14px] font-regular">{nickname}</h3>
+          <h3 className="text-[14px] font-regular">{user?.username}</h3>
         </div>
 
         {/* 프로필 편집과 프로필 공유 버튼 */}
