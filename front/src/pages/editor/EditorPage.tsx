@@ -135,7 +135,7 @@ export default function EditorPage() {
       setSaveModal(true);
   
       if (response?._id) {
-        navigate(`/post/${response._id}`);
+        navigate(`/detail/${response._id}`);
       }
     } catch (error) {
       console.error("게시물 생성 실패:", error);
