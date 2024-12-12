@@ -9,12 +9,13 @@ import { Notification } from "../../types/notification";
 export default function Header() {
   const [showNoticeModal, setShowNoticeModal] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [toast, setToast] = useState<{ show: boolean; message: string }>({ 
-    show: false, 
-    message: "" 
+  const [toast, setToast] = useState<{ show: boolean; message: string }>({
+    show: false,
+    message: ""
   });
 
-  const token = tokenService.getToken();
+  // 로그인 상태 변경 감지를 위한 state 추가
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!tokenService.getToken());
 
   const showToastMessage = (message: string) => {
     setToast({ show: true, message });
@@ -55,39 +56,62 @@ export default function Header() {
   };
 
   const fetchNotifications = async () => {
-    if (!token) return;
+    const currentToken = tokenService.getToken();
+    if (!currentToken) {
+      setNotifications([]);
+      return;
+    }
 
     try {
       const response = await getNotifications();
       setNotifications(response);
     } catch (error) {
       console.error("알림을 불러오는데 실패했습니다", error);
+      setNotifications([]);
     }
   };
 
+  // 로그인 상태 변경 감지
   useEffect(() => {
-    if (token) {
-      fetchNotifications();
-    }
-  }, [token]);
+    const checkLoginStatus = () => {
+      const currentToken = tokenService.getToken();
+      setIsLoggedIn(!!currentToken);
+      if (currentToken) {
+        fetchNotifications();
+      } else {
+        setShowNoticeModal(false);
+        setNotifications([]);
+      }
+    };
+
+    // 초기 상태 체크
+    checkLoginStatus();
+
+    // 로그인 상태 변경 감지를 위한 이벤트 리스너
+    window.addEventListener('storage', checkLoginStatus);
+
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+    };
+  }, []);
 
   return (
     <>
       <nav className="flex items-center justify-between px-8 py-4">
         <img src={logo_black} alt="Logo" className="w-[75px] h-[30px]" />
         <button
-          onClick={() => token && setShowNoticeModal((prev) => !prev)}
+          onClick={() => isLoggedIn && setShowNoticeModal((prev) => !prev)}
           className={`flex items-center justify-center w-5 h-5 ${
-            !token ? "invisible pointer-events-none" : ""
+            !isLoggedIn ? "invisible pointer-events-none" : ""
           }`}
         >
-          <img 
-            src={NotificationIcon} 
-            alt="Notification" 
-            className="object-contain w-full h-full" 
+          <img
+            src={NotificationIcon}
+            alt="Notification"
+            className="object-contain w-full h-full"
           />
         </button>
-        {token && (
+        {isLoggedIn && (
           <NotifyModal
             isVisible={showNoticeModal}
             notifications={notifications}

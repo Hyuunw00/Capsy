@@ -3,6 +3,9 @@ export interface Notification {
   userId: string;
   postId?: string;
   notificationTypeId: string;
+  user?: {
+    fullName: string;
+  };
 }
 
 export interface NotifyModalProps {
