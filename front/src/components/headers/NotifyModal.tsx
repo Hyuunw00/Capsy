@@ -1,5 +1,5 @@
 import { Notification, NotifyModalProps } from "../../types/notification";
-import { tokenService } from "../../utils/token";
+// import { tokenService } from "../../utils/token";
 import Button from "../Button";
 
 const NotifyModal = ({
@@ -10,7 +10,7 @@ const NotifyModal = ({
   onReadNotification,
   onMoveToPost
 }: NotifyModalProps) => {
-  const user = tokenService.getUser();
+  // const user = tokenService.getUser();
   
   const renderNotification = (notification: Notification) => {
     switch (notification.type) {

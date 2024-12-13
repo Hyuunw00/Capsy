@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useLoginStore } from "../../store/loginStore";
 import NoticeModal from "../../components/NoticeModal";
 import Button from "../../components/Button";
@@ -68,12 +68,11 @@ export default function NewPasswordPage() {
           다시 입력해주세요.
         </NoticeModal>
       )}
-      <form onSubmit={handleSubmit}>
-        <Logo>
-          <p>본인 인증이 완료되었습니다.</p>
-          <p>새로운 비밀번호를 설정해주세요.</p>
-        </Logo>
-        <div className="flex flex-col gap-[12px]">
+      <form onSubmit={handleSubmit} className="px-12">
+        <Logo />
+        {/* <p>본인 인증이 완료되었습니다.</p>
+          <p>새로운 비밀번호를 설정해주세요.</p> */}
+        <div className="flex flex-col gap-2">
           <LoginInput
             label="새 비밀번호"
             type="password"

@@ -49,7 +49,7 @@ export const createComment = async (data: any) => {
     // 댓글 작성 후 알림 생성
     await createNotifications({
       notificationType: "COMMENT",
-      notificationTypeId: response.data._id, // <- 작성된 댓글의 ID 전달해주세요!
+      notificationTypeId: response.data._id,
       userId: response.data.author._id,
       postId: response.data.post,
     });
@@ -129,6 +129,15 @@ interface NotificationsProps {
 export const followUser = async (userId: string) => {
   try {
     const response = await axiosInstance.post(`/follow/create`, userId);
+
+    // 댓글 작성 후 알림 생성
+    await createNotifications({
+      notificationType: "COMMENT",
+      notificationTypeId: response.data._id,
+      userId: response.data.author._id,
+      postId: response.data.post,
+    });
+
     return response.data;
   } catch (error) {
     throw error;
