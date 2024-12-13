@@ -61,17 +61,21 @@ export default function PostDetailPage() {
       <div className="flex justify-between items-start p-3">
         <div className="flex gap-3">
           {/* 프로필 이미지 */}
-          <div className="relative w-[40px] h-[40px] rounded-full overflow-hidden">
-            <img
-              className="w-[40px] h-[40px] rounded-full object-cover"
-              src={author.image ? author.image : "/Capsy.svg"}
-              alt="프로필 이미지"
-            />
-          </div>
+          <Link to={`/userinfo/${author.fullName}`}>
+            <div className="relative w-[40px] h-[40px] rounded-full overflow-hidden cursor-pointer">
+              <img
+                className="w-[40px] h-[40px] rounded-full object-cover"
+                src={author.image ? author.image : "/Capsy.svg"}
+                alt="프로필 이미지"
+              />
+            </div>
+          </Link>
 
           {/* 댓글 내용 */}
           <div>
-            <span className="font-bold">{author.fullName}</span>
+            <Link to={`/userinfo/${author.fullName}`} className="font-bold">
+              {author.fullName}
+            </Link>
             <p className="mt-1">{comment}</p>
           </div>
         </div>
@@ -150,17 +154,18 @@ export default function PostDetailPage() {
         <div className="flex items-center justify-between px-5 py-2.5 font-semibold">
           <div className="flex items-center gap-3">
             {/* 작성자 프로필 이미지 */}
-            <div className="relative w-[40px] h-[40px] rounded-full overflow-hidden">
-              <img
-                className="w-[40px] h-[40px] rounded-full object-cover"
-                src={post.author.image ? post.author.image : "/Capsy.svg"}
-                alt="작성자 프로필 이미지"
-              />
-            </div>
-
+            <Link to={`/userinfo/${post.author.fullName}`}>
+              <div className="relative w-[40px] h-[40px] rounded-full overflow-hidden cursor-pointer">
+                <img
+                  className="w-[40px] h-[40px] rounded-full object-cover"
+                  src={post.author.image ? post.author.image : "/Capsy.svg"}
+                  alt="작성자 프로필 이미지"
+                />
+              </div>
+            </Link>
             {/* 작성자 정보와 게시 날짜 */}
             <div className="flex items-center gap-2">
-              <Link to={`/userinfo/${post.author.fullName}`} className="font-bold hover:underline">
+              <Link to={`/userinfo/${post.author.fullName}`} className="font-bold">
                 @{post.author.fullName}
               </Link>
               <span className="text-xs font-normal text-[#888888]">
