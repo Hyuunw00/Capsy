@@ -21,7 +21,7 @@ export default function MainSearchModal() {
             item.fullName.toLowerCase().includes(searchInput.toLowerCase().replace(/\s+/g, "")) ||
             item.username?.toLowerCase().includes(searchInput.toLowerCase().replace(/\s+/g, "")),
         );
-      searchInput.length > 0 && setUsers(filteredData);
+      setUsers(filteredData);
     } catch (error) {
       setUsers([]);
     }
@@ -29,15 +29,6 @@ export default function MainSearchModal() {
   useEffect(() => {
     getUsers();
   }, [searchInput]);
-
-  // 현재 접속중인 사용자 코드
-  useEffect(() => {
-    const getCurrentUsers = async () => {
-      const { data } = await axiosInstance.get("users/online-users");
-      console.log(data);
-    };
-    getCurrentUsers();
-  }, []);
 
   return (
     <>
@@ -60,7 +51,9 @@ export default function MainSearchModal() {
 
                 return (
                   <li key={user._id} className="flex items-center gap-4 ">
-                    <div className=" relative  w-[40px] h-[40px] overflow-hidden  bg-gradient-to-r from-[rgba(3,199,90,0.60)] to-[rgba(103,78,255,0.60)] rounded-full  ">
+                    <div
+                      className={`relative  w-[40px] h-[40px] overflow-hidden ${user.isOnline && "bg-gradient-to-r from-[rgba(3,199,90,0.60)] to-[rgba(103,78,255,0.60)]"}  rounded-full  `}
+                    >
                       {/* user.profileImage */}
                       <img
                         className="w-[40px] h-[40px] rounded-full object-cover p-[2px]"
@@ -71,7 +64,7 @@ export default function MainSearchModal() {
 
                     <Link
                       // 만약에 fullName이 중복된 사용자들이 있다면? -> 임시로  _id
-                      to={`userInfo/${user._id}`}
+                      to={`userinfo/${user.fullName}`}
                       className="block w-fit hover:bg-gray-300 transition-all duration-300 rounded-lg"
                     >
                       <div className="text-[#000000]  w-[300px] py-[10px] px-[20px]  ">
