@@ -9,7 +9,6 @@ import MyPage from "./pages/mypage/MyPage";
 import SignUpPage from "./pages/signup/SignUpPage";
 import SignUpSuccessPage from "./pages/signup/SignUpSuccessPage";
 import PasswordResetPage from "./pages/password/PasswordResetPage";
-import NewPasswordPage from "./pages/password/NewPasswordPage";
 import { useLoginStore } from "./store/loginStore";
 import { useEffect, useState } from "react";
 import { tokenService } from "./utils/token";
@@ -55,9 +54,8 @@ export default function App() {
             <Route path="/detail/:postId" element={<PostDetailPage />} />
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/resetpassword" element={<PasswordResetPage />} />
-            <Route path="/newpassword" element={<NewPasswordPage />} />
-            <Route path="/capsule-list" element={<CapsuleListPage />} />
-            <Route path="/alarm-list" element={<AlarmListPage />} />
+            <Route path="/capsule-list" element={<CapsuleListPage />} /> {/* 추가된 경로 */}
+            <Route path="/alarm-list" element={<AlarmListPage />} /> {/* 추가된 경로 */}
           </Route>
 
           <Route element={<NonPrivate />}>
