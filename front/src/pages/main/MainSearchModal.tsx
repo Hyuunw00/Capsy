@@ -47,8 +47,6 @@ export default function MainSearchModal() {
             {/* 입력값에 따라 출력되는 사용자들*/}
             {users.length > 0 &&
               users.map((user) => {
-                console.log(user);
-
                 return (
                   <li key={user._id} className="flex items-center gap-4 ">
                     <div
