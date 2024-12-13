@@ -26,9 +26,9 @@ export const LoginInput = ({ label, placeholder, value, handleChange, error, typ
 
   return (
     <>
-      <div className="flex-1  ">
+      <div className="flex-1 ">
         <div>
-          <label htmlFor="email" className="text-[10px] mb-[5px]">
+          <label htmlFor="email" className="text-sm mb-[5px]">
             {label}
             <input
               type={type}
