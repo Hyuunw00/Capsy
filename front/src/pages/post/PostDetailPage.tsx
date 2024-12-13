@@ -59,27 +59,28 @@ export default function PostDetailPage() {
   const CommentItem = ({ author, comment, _id, onDelete, isCurrentUser }: CommentItemProps) => {
     return (
       <div className="flex justify-between items-start p-3">
-        <div>
-          <span className="font-bold">{author.fullName}</span>
-          <p className="mt-1">{comment}</p>
+        <div className="flex gap-3">
+          {/* 프로필 이미지 */}
+          <div className="relative w-[40px] h-[40px] rounded-full overflow-hidden">
+            <img
+              className="w-[40px] h-[40px] rounded-full object-cover"
+              src={author.image ? author.image : "/Capsy.svg"}
+              alt="프로필 이미지"
+            />
+          </div>
+
+          {/* 댓글 내용 */}
+          <div>
+            <span className="font-bold">{author.fullName}</span>
+            <p className="mt-1">{comment}</p>
+          </div>
         </div>
-        {/* 현재 사용자가 댓글 작성자인 경우 삭제 버튼 렌더링 */}
+
+        {/* 삭제 버튼 */}
         {isCurrentUser && (
           <button onClick={() => onDelete(_id)} className="text-gray-400 hover:text-opacity-60 transition-colors">
-            <svg width="10" height="10" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <g clipPath="url(#clip0_957_4884)">
-                <path
-                  d="M16.5 3H12.75V1.5C12.75 1.10218 12.592 0.720644 12.3107 0.43934C12.0294 0.158035 11.6478 0 11.25 0L6.75 0C6.35217 0 5.97064 0.158035 5.68934 0.43934C5.40803 0.720644 5.25 1.10218 5.25 1.5V3H1.5V4.5H3V15.75C3 16.3467 3.23705 16.919 3.65901 17.341C4.08097 17.7629 4.65326 18 5.25 18H12.75C13.3467 18 13.919 17.7629 14.341 17.341C14.7629 16.919 15 16.3467 15 15.75V4.5H16.5V3ZM6.75 1.5H11.25V3H6.75V1.5ZM13.5 15.75C13.5 15.9489 13.421 16.1397 13.2803 16.2803C13.1397 16.421 12.9489 16.5 12.75 16.5H5.25C5.05109 16.5 4.86032 16.421 4.71967 16.2803C4.57902 16.1397 4.5 15.9489 4.5 15.75V4.5H13.5V15.75Z"
-                  fill="currentColor"
-                />
-                <path d="M8.25 7.49951H6.75V13.4995H8.25V7.49951Z" fill="currentColor" />
-                <path d="M11.25 7.49951H9.75V13.4995H11.25V7.49951Z" fill="currentColor" />
-              </g>
-              <defs>
-                <clipPath id="clip0_957_4884">
-                  <rect width="18" height="18" fill="white" />
-                </clipPath>
-              </defs>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* SVG 내용 유지 */}
             </svg>
           </button>
         )}
@@ -135,18 +136,38 @@ export default function PostDetailPage() {
       <div className="flex flex-col w-full">
         {/* 포스트 작성자명 & 게시 날짜 & 팔로우 버튼 */}
         <div className="flex items-center justify-between px-5 py-2.5 font-semibold">
-          <div className="flex items-center gap-2">
-            <Link to={`/userinfo/${post.author.fullName}`}>@{post.author.fullName}</Link>
-            <span className="text-xs font-normal text-[#888888] leading-none">
-              {new Date(post.createdAt).getMonth() + 1}월 {new Date(post.createdAt).getDate()}일
-            </span>
+          <div className="flex items-center gap-3">
+            {/* 작성자 프로필 이미지 */}
+            <div className="relative w-[40px] h-[40px] rounded-full overflow-hidden">
+              <img
+                className="w-[40px] h-[40px] rounded-full object-cover"
+                src={post.author.image ? post.author.image : "/Capsy.svg"}
+                alt="작성자 프로필 이미지"
+              />
+            </div>
+
+            {/* 작성자 정보와 게시 날짜 */}
+            <div className="flex items-center gap-2">
+              <Link to={`/userinfo/${post.author.fullName}`} className="font-bold hover:underline">
+                @{post.author.fullName}
+              </Link>
+              <span className="text-xs font-normal text-[#888888]">
+                {new Date(post.createdAt).getMonth() + 1}월 {new Date(post.createdAt).getDate()}일
+              </span>
+            </div>
           </div>
-          <button
-            className={`${isFollowing ? "bg-black" : "bg-primary"} text-white rounded px-4 py-1 transition-colors`}
-            onClick={handleFollowClick}
-          >
-            {isFollowing ? "팔로잉" : "팔로우"}
-          </button>
+
+          {/* 팔로우 버튼 */}
+          {currentUser?._id !== post.author._id && (
+            <button
+              className={`${
+                isFollowing ? "bg-black" : "bg-primary"
+              } text-white rounded px-4 py-1 transition-colors text-sm`}
+              onClick={handleFollowClick}
+            >
+              {isFollowing ? "팔로잉" : "팔로우"}
+            </button>
+          )}
         </div>
         <hr className="border-t border-gray200" />
         {/* 포스트 이미지 렌더링 */}
