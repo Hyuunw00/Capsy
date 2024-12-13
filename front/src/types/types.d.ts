@@ -184,6 +184,7 @@ interface PostDetail {
     createdAt: string;
     updatedAt: string;
     __v: number;
+    image?: string; // 이 부분 추가
   };
   createdAt: string;
   updatedAt: string;
@@ -192,6 +193,7 @@ interface PostDetail {
     author: {
       _id: string;
       fullName: string;
+      image?: string;
     };
     comment: string;
   }>;
@@ -204,7 +206,11 @@ interface PostItemProps {
 }
 
 interface CommentItemProps {
-  author: { fullName: string; _id: string };
+  author: {
+    fullName: string;
+    _id: string;
+    image?: string;
+  };
   comment: string;
   _id: string;
   onDelete: (id: string) => void;
