@@ -117,9 +117,13 @@ export default function EditorPage() {
         title: title,
         content: text,
         ...(activeTab === "timeCapsule" && {
-          closeAt: new Date(
-            `${selectedDate.year}-${selectedDate.month.padStart(2, '0')}-${selectedDate.day.padStart(2, '0')}`
-          ).toISOString()
+          closeAt: (() => {
+            const date = new Date(
+              `${selectedDate.year}-${selectedDate.month.padStart(2, '0')}-${selectedDate.day.padStart(2, '0')}`
+            );
+            date.setHours(date.getHours() + 9); // 서버 시간과 맞추기 : UTC+9 적용
+            return date.toISOString();
+          })()
         }),
       };
 
