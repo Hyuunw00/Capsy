@@ -215,6 +215,13 @@ export default function MainPage() {
       }
     };
     updateData(CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE);
+
+    // unmount시 key관련 검색어 삭제 및, filtering 부분 생성
+    return () => {
+      setSearchInput("");
+      setFilterData(data);
+      setIsfocused(false);
+    };
   }, []);
 
   // 좋아요 상태 바뀌면 실행

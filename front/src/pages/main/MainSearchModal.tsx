@@ -41,7 +41,7 @@ export default function MainSearchModal() {
                 <img className="w-[20px] h-[20px] fill-black" src={img_search} alt="검색 아이콘" />
               </div>
               <div className="text-[#000000]  ">
-                <span className="text-[14px] font-bold">search : {searchInput}</span>
+                <span className="text-[14px] font-bold">KEYWORD : {searchInput}</span>
               </div>
             </li>
             {/* 입력값에 따라 출력되는 사용자들*/}
