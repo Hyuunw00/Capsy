@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import profileImgEditIcon from "../../assets/profile-img-edit-icon.svg";
 import ProfileForm from "./modal/ProfileForm";
+import { getMyProfile } from "../../apis/apis";
 
 export default function ProfileHeader() {
-  const username = "@caapsy_human";
   const posts = 19;
   const followers = 99;
   const following = 99;
-  const nickname = "캡시햄찌";
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [user, setUser] = useState<UserLists>();
 
   const openProfileModal = () => setIsProfileModalOpen(true);
   const closeProfileModal = () => setIsProfileModalOpen(false);
@@ -59,7 +59,7 @@ export default function ProfileHeader() {
   }, []);
 
   const handleShareProfile = async () => {
-    const profileUrl = `https://mywebsite.com/${username}`;
+    const profileUrl = `https://mywebsite.com/${user?.fullName}`;
 
     try {
       await navigator.clipboard.writeText(profileUrl);
@@ -78,7 +78,7 @@ export default function ProfileHeader() {
     <div className="px-[30px] py-6 mb-[30px] font-pretendard">
       <div className="flex flex-col">
         {/* 유저 이름 */}
-        <h2 className="text-xl font-semibold mb-[20px]">{username}</h2>
+        <h2 className="text-xl font-semibold mb-[20px]">@{user?.fullName}</h2>
 
         <div className="flex items-center justify-evenly">
           <div className="relative w-[90px] h-[90px]">
@@ -113,7 +113,7 @@ export default function ProfileHeader() {
         </div>
 
         <div className="mt-[20px]">
-          <h3 className="text-[14px] font-regular">{nickname}</h3>
+          <h3 className="text-[14px] font-regular">{user?.username}</h3>
         </div>
 
         <div className="flex space-x-[5px] mt-6">

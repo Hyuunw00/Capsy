@@ -52,7 +52,7 @@ export default function ProfileForm({ onClose, onUsernameUpdate }: ProfileFormPr
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {/* 수정 불가한 아이디 입력란 (fullName) */}
           <InputWithLabel
-            label="닉네임"
+            label="아이디"
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             placeholder="다람쥐헌쳇바퀴어쩌구"
