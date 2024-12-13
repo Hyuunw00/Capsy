@@ -61,7 +61,7 @@ export default function PasswordResetPage() {
       )}
       <form onSubmit={handleSubmit} className="px-12">
         <Logo />
-        <p>비밀번호 변경을 위한 사용자 인증을</p>
+        <p >사용자 인증</p>
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
             <LoginInput
