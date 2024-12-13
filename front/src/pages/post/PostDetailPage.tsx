@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router";
 import { getPostDetail, createComment } from "../../apis/apis";
+import { Link } from "react-router";
 import thumbnail1 from "../../assets/random-thumnail/random-thumnail-black-1.png";
 import thumbnail2 from "../../assets/random-thumnail/random-thumnail-black-2.png";
 import thumbnail3 from "../../assets/random-thumnail/random-thumnail-black-3.png";
@@ -53,7 +54,9 @@ export default function PostDetailPage() {
   // 댓글 아이템
   const CommentItem = ({ author, comment }: PostComment) => (
     <li className="py-[4px]">
-      <div className="font-semibold">@{author.fullName}</div>
+      <div className="font-semibold">
+        <Link to={`/userinfo/${author.fullName}`}>@{author.fullName}</Link>
+      </div>
       <div className="mt-[9.14px]">{comment}</div>
     </li>
   );
@@ -93,7 +96,7 @@ export default function PostDetailPage() {
       {/* 포스트 작성자명 & 게시 날짜 & 팔로우 버튼 */}
       <div className="flex items-center justify-between px-5 py-2.5 font-semibold">
         <div className="flex items-center gap-2">
-          <span className="leading-none">@{post.author.fullName}</span>
+          <Link to={`/userinfo/${post.author.fullName}`}>@{post.author.fullName}</Link>
           <span className="text-xs font-normal text-[#888888] leading-none">
             {new Date(post.createdAt).getMonth() + 1}월 {new Date(post.createdAt).getDate()}일
           </span>
@@ -107,14 +110,14 @@ export default function PostDetailPage() {
       </div>
       <hr className="border-t border-gray200" />
       {/* 포스트 이미지 렌더링 */}
-      <div className="relative w-full overflow-hidden">
-        <img src={post.image || randomThumbnail} className="object-cover w-full aspect-square" alt="post-image" />
+      <div className="relative w-[600px] h-[600px] bg-gray-50 mx-auto">
+        <img src={post.image || randomThumbnail} className="w-full h-full object-contain" alt="post-image" />
       </div>
 
       {/* 포스트 타이틀, 내용 렌더링 */}
       <div className="px-5 mt-5">
-        <h2 className="font-semibold">{parsePostContent(post.title).title}</h2>
-        <p className="mt-2.5">{parsePostContent(post.title).content}</p>
+        <h2 className="font-semibold text-lg ">{parsePostContent(post.title).title}</h2>
+        <p className="mt-2.5 text-base">{parsePostContent(post.title).content}</p>
       </div>
 
       {/* 영역 구분선 */}
@@ -124,7 +127,7 @@ export default function PostDetailPage() {
 
       {/* 댓글 리스트 렌더링 */}
       <section aria-label="Comment List" className="px-[20px] mt-[20px] mb-[100px] text-sm">
-        <div className="font-bold h-[45px]">댓글</div>
+        <div className="font-bold h-[45px]">댓글 {post.comments.length}</div>
         {post.comments.length === 0 && <div className="text-center text-gray-300">첫 댓글을 남겨보세요!</div>}
         <ul className="flex flex-col">
           {post.comments.map((comment, index) => (
