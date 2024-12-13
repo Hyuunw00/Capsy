@@ -193,7 +193,7 @@ interface PostDetail {
       _id: string;
       fullName: string;
     };
-    content: string;
+    comment: string;
   }>;
   __v: number;
 }
@@ -208,5 +208,5 @@ interface PostComment {
     _id: string;
     fullName: string;
   };
-  content: string;
+  comment: string;
 }
