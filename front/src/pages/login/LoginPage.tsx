@@ -58,30 +58,32 @@ export default function LoginPage() {
           잘못 입력했습니다.
         </NoticeModal>
       )}
-      <form onSubmit={handleSubmit}>
-        <Logo>로그인</Logo>
-        <div className="flex flex-col ">
-          <LoginInput
-            label="이메일"
-            type="email"
-            value={email}
-            handleChange={setEmail}
-            placeholder="이메일"
-            error="이메일 형식"
-            isValid={isEmailValid}
-          />
+      <form onSubmit={handleSubmit} className="px-12">
+        <Logo />
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
+            <LoginInput
+              label="이메일"
+              type="email"
+              value={email}
+              handleChange={setEmail}
+              placeholder="이메일"
+              error="이메일 형식"
+              isValid={isEmailValid}
+            />
 
-          <LoginInput
-            label="비밀번호"
-            type="password"
-            value={password}
-            handleChange={setPassword}
-            placeholder="비밀번호"
-            error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
-            isValid={isPasswordValid}
-          />
+            <LoginInput
+              label="비밀번호"
+              type="password"
+              value={password}
+              handleChange={setPassword}
+              placeholder="비밀번호"
+              error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
+              isValid={isPasswordValid}
+            />
+          </div>
 
-          <Button className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] text-[12px] rounded-[6px] mt-[20px]">
+          <Button className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] rounded-[6px] mt-[20px]">
             로그인
           </Button>
           <Link to="/signup" className="text-center mt-[16px]  text-[#475569] underline">
