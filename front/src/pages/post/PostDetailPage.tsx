@@ -28,7 +28,7 @@ export default function PostDetailPage() {
         const postData = await getPostDetail(postId);
         setPost(postData);
       } catch (error) {
-        console.error("포스트를 불러오는데 실패했습니다.:", error);
+        // console.error("포스트를 불러오는데 실패했습니다.:", error);
       }
     };
 
@@ -40,7 +40,7 @@ export default function PostDetailPage() {
     try {
       return JSON.parse(jsonString) as PostContent;
     } catch (error) {
-      console.error("포스트를 불러오는데 실패했습니다.:", error);
+      //console.error("포스트를 불러오는데 실패했습니다.:", error);
       return { title: "", content: "" };
     }
   };
@@ -123,10 +123,17 @@ export default function PostDetailPage() {
       </div>
 
       {/* 댓글 리스트 렌더링 */}
-      <section aria-label="Comment List" className="px-[20px] mt-[20px] pb-[100px] text-sm">
-        <ul className="flex flex-col gap-[12px]">
-          {post.comments.map((comment) => (
-            <CommentItem key={comment._id} author={comment.author} comment={comment.comment} />
+      <section aria-label="Comment List" className="px-[20px] mt-[20px] mb-[100px] text-sm">
+        <div className="font-bold h-[45px]">댓글</div>
+        {post.comments.length === 0 && <div className="text-center text-gray-300">첫 댓글을 남겨보세요!</div>}
+        <ul className="flex flex-col">
+          {post.comments.map((comment, index) => (
+            <li
+              key={comment._id}
+              className={`border-b-gray-150 py-[10px] ${index === post.comments.length - 1 ? "" : "border-b"}`}
+            >
+              <CommentItem author={comment.author} comment={comment.comment} />
+            </li>
           ))}
         </ul>
       </section>
