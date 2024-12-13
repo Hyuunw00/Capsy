@@ -326,12 +326,12 @@ export default function MainPage() {
 
               {isOpen && (
                 <div className="absolute items-center rounded-[6px] mt-2 shadow-300 z-10 right-8 bg-white w-[120px] h-[104px]">
-                  <div className="flex flex-col p-2 space-y-2 flex-nowrap">
+                  <div className="flex flex-col p-2 flex-nowrap space-y-2">
                     {["All", "포스트", "타임캡슐"].map((option) => (
                       <button
                         key={option}
                         onClick={() => selectOption(option)}
-                        className={`block w-fulltext-sm text-center hover:bg-[rgba(0,0,0,0.04)]  ${
+                        className={`block w-fulltext-sm text-center hover:bg-[rgba(0,0,0,0.04)] ${
                           selectedOption === option ? "font-semibold" : ""
                         }`}
                       >
@@ -356,9 +356,17 @@ export default function MainPage() {
               {item.image ? (
                 <img src={item.image} alt={item.title} className="w-full h-auto rounded-[10px] object-cover" />
               ) : (
-                <div className="w-full h-40 bg-gray-200 rounded-[10px] relative">
-                  <div className="absolute text-xl text-white transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 ">
-                    <p className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ maxWidth: "calc(12ch)" }}>
+                <div className="w-full h-40 bg-white border border-[#E7E7E7] border-1 rounded-[10px] relative">
+                  <div className="px-2.5 py-2.5 text-[16px] ">
+                    <p
+                      className="overflow-hidden text-ellipsis whitespace-pre-wrap"
+                      style={{
+                        maxWidth: "calc(30ch)",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                      }}
+                    >
                       {item.title ? getContent(item.title) : "텍스트 없음"}
                     </p>
                   </div>
