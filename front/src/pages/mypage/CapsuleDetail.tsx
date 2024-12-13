@@ -24,11 +24,11 @@ const CapsuleDetail = () => {
         {imgs.map((img, i) => (
           <li 
             key={i} 
-            className="relative w-full aspect-square group"
+            className="relative w-full rounded aspect-square group"
           >
             {/* 그라디언트 테두리를 위한 가상 요소 */}
-            <div className="absolute inset-0 transition-opacity duration-200 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-primary)] ">
-              <div className="absolute inset-[2px] bg-white">
+            <div className="rounded absolute inset-0 transition-opacity duration-200 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-primary)] ">
+              <div className="rounded absolute inset-[2px] bg-white">
                 <Link to={'/'} className="block w-full h-full">
                   <img
                     className="object-cover w-full h-full"

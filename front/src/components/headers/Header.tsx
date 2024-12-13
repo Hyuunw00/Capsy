@@ -11,7 +11,7 @@ export default function Header() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [toast, setToast] = useState<{ show: boolean; message: string }>({
     show: false,
-    message: ""
+    message: "",
   });
 
   // 로그인 상태 변경 감지를 위한 state 추가
@@ -88,10 +88,10 @@ export default function Header() {
     checkLoginStatus();
 
     // 로그인 상태 변경 감지를 위한 이벤트 리스너
-    window.addEventListener('storage', checkLoginStatus);
+    window.addEventListener("storage", checkLoginStatus);
 
     return () => {
-      window.removeEventListener('storage', checkLoginStatus);
+      window.removeEventListener("storage", checkLoginStatus);
     };
   }, []);
 
@@ -101,15 +101,9 @@ export default function Header() {
         <img src={logo_black} alt="Logo" className="w-[75px] h-[30px]" />
         <button
           onClick={() => isLoggedIn && setShowNoticeModal((prev) => !prev)}
-          className={`flex items-center justify-center w-5 h-5 ${
-            !isLoggedIn ? "invisible pointer-events-none" : ""
-          }`}
+          className={`flex items-center justify-center w-5 h-5 ${!isLoggedIn ? "invisible pointer-events-none" : ""}`}
         >
-          <img
-            src={NotificationIcon}
-            alt="Notification"
-            className="object-contain w-full h-full"
-          />
+          <img src={NotificationIcon} alt="Notification" className="object-contain w-full h-full" />
         </button>
         {isLoggedIn && (
           <NotifyModal
