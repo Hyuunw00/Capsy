@@ -16,6 +16,7 @@ export default function EditorPage() {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [createdPostId, setCreatedPostId] = useState<string | null>(null);
 
   // 업로드 받은 이미지 상태
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
@@ -87,17 +88,16 @@ export default function EditorPage() {
 
   // 저장 버튼 클릭 시 유효성 검사
   const handleSaveClick = async () => {
-
     if (!title.trim()) {
       alert("제목을 입력해주세요.");
       return;
     }
-  
+
     if (!text.trim()) {
       alert("내용을 입력해주세요.");
       return;
     }
-  
+
     if (activeTab === "timeCapsule") {
       if (uploadedImages.length === 0) {
         alert("타임캡슐에는 이미지 첨부가 필수입니다.");
@@ -108,34 +108,37 @@ export default function EditorPage() {
         return;
       }
     }
-  
+
     try {
       const channelId = activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST;
-  
+
       // 커스텀 데이터 만들기
       const customData = {
         title: title,
         content: text,
         ...(activeTab === "timeCapsule" && {
-          closeAt: `${selectedDate.year}-${selectedDate.month.padStart(2, "0")}-${selectedDate.day.padStart(2, "0")}`,
+          closeAt: new Date(
+            `${selectedDate.year}-${selectedDate.month.padStart(2, '0')}-${selectedDate.day.padStart(2, '0')}`
+          ).toISOString()
         }),
       };
-  
+
       const formData = new FormData();
       formData.append("title", JSON.stringify(customData));
       formData.append("channelId", channelId);
-      
+
       if (uploadedImages.length > 0) {
         uploadedImages.forEach((image) => {
           formData.append("image", image);
         });
       }
-  
+
       const response = await createPost(formData);
       setSaveModal(true);
-  
+
       if (response?._id) {
-        navigate(`/detail/${response._id}`);
+        setCreatedPostId(response._id);
+        setSaveModal(true);
       }
     } catch (error) {
       console.error("게시물 생성 실패:", error);
@@ -224,6 +227,7 @@ export default function EditorPage() {
           isOpen={saveModal}
           onClose={() => setSaveModal(false)}
           isTimeCapsule={activeTab === "timeCapsule"}
+          postId={createdPostId!}
         />
       )}
     </div>
