@@ -1,33 +1,60 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal } from "../../../components/Modal";
 import Button from "../../../components/Button";
 import user from "../../../assets/user.png";
-export default function ProfileimageForm() {
-  const [isOpen, setIsOpen] = useState(true);
 
+interface ProfileImageFormProps {
+  onClose: () => void;
+  onSave: (image: File) => Promise<void>;
+}
+
+const ProfileImageForm: React.FC<ProfileImageFormProps> = ({ onClose, onSave }) => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+  // Preview URL 관리
+  useEffect(() => {
+    if (selectedImage) {
+      const objectUrl = URL.createObjectURL(selectedImage);
+      setPreviewUrl(objectUrl);
+
+      return () => URL.revokeObjectURL(objectUrl); // Clean up
+    }
+  }, [selectedImage]);
+
+  // 파일 변경 핸들러
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files[0]) {
-      setSelectedImage(files[0]); // 선택된 이미지 상태로 저장
+      setSelectedImage(files[0]);
+      e.target.value = ""; // Reset input
+    }
+  };
+
+  // 저장 버튼 클릭 핸들러
+  const handleSave = async () => {
+    if (selectedImage) {
+      try {
+        await onSave(selectedImage);
+        onClose();
+      } catch (error) {
+        console.error("Failed to save image:", error);
+      }
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+    <Modal isOpen={true} onClose={onClose}>
       <div className="w-full max-w-md">
-        <span className="mb-[60px] mt-[10px] text-[16px] text-center block text-[#000000]  ">프로필 편집</span>
-
-        <form className="space-y-4  mb-4">
-          <div className="mb-8  cursor-pointer flex flex-col justify-center items-center relative">
+        <span className="mb-[60px] mt-[10px] text-[16px] text-center block text-[#000000]">프로필 편집</span>
+        <form className="space-y-4 mb-4">
+          <div className="mb-8 cursor-pointer flex flex-col justify-center items-center relative">
             <div className="relative">
               <img
-                src={selectedImage ? URL.createObjectURL(selectedImage) : user}
+                src={previewUrl || user}
                 alt="Profile"
-                className="w-[90px] h-[90px] rounded-full object-cover m-auto "
+                className="w-[90px] h-[90px] rounded-full object-cover m-auto"
               />
-
               <input
                 type="file"
                 id="profileImageInput"
@@ -45,12 +72,15 @@ export default function ProfileimageForm() {
                 </svg>
               </label>
             </div>
-
-            <span className="block mt-10 text-[14px] text-block ">프로필 사진 수정</span>
+            <span className="block mt-10 text-[14px] text-black">사진 수정</span>
           </div>
 
           <div className="mt-4">
-            <Button type="submit" className="w-full py-3 text-white bg-black rounded-md hover:bg-gray-800">
+            <Button
+              type="button"
+              onClick={handleSave}
+              className="w-full py-3 text-white bg-black rounded-md hover:bg-gray-800"
+            >
               저장하기
             </Button>
           </div>
@@ -58,4 +88,6 @@ export default function ProfileimageForm() {
       </div>
     </Modal>
   );
-}
+};
+
+export default ProfileImageForm;
