@@ -254,8 +254,8 @@ export default function MainPage() {
   // 데이터 확인용 console.log
   useEffect(() => {
     // console.log("filterData", filterData);
-    console.log("userData", userData);
-    console.log("capsuleData", capsuleData);
+    // console.log("userData", userData);
+    // console.log("capsuleData", capsuleData);
   }, [data, filterData]);
 
   // 검색된 게시물에대한 코드
