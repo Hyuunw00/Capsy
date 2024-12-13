@@ -19,6 +19,34 @@ export const createPost = async (data: FormData) => {
   }
 };
 
+// 포스트 수정 API
+export const updatePost = async (data: PostDataType) => {
+  try {
+    const response = await axiosInstance.put("posts/update", data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+interface PostDataType {
+  postId: string;
+  title: string;
+}
+
+// 포스트 삭제 API
+export const deletePost = async (postId: string) => {
+  try {
+    const response = await axiosInstance.delete("posts/delete", {
+      data: {
+        id: postId,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 // 특정 사용자의 포스트 목록 조회 API
 export const getUserPosts = async (authorId: string) => {
   try {
