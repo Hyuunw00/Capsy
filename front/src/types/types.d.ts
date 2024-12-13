@@ -198,15 +198,15 @@ interface PostDetail {
   __v: number;
 }
 
-interface PostContent {
+interface PostItemProps {
   title: string;
   content?: string;
 }
 
-interface PostComment {
-  author: {
-    _id: string;
-    fullName: string;
-  };
+interface CommentItemProps {
+  author: { fullName: string; _id: string };
   comment: string;
+  _id: string;
+  onDelete: (id: string) => void;
+  isCurrentUser: boolean;
 }

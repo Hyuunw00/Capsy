@@ -88,7 +88,16 @@ export const createComment = async (data: any) => {
     throw error;
   }
 };
-
+export const deleteComment = async (commentId: string) => {
+  try {
+    const response = await axiosInstance.delete("/comments/delete", {
+      data: { id: commentId }, // API 요구사항에 맞춰 댓글 id 전송
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 // Channel ----------------------------------------------------------------------
 
 // 타임캡슐 채널의 포스트 목록 조회 API

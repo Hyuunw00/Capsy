@@ -54,3 +54,11 @@ export const passwordChangeAuth = async (password: string) => {
     throw error;
   }
 };
+
+export const userLogoutAuth = async () => {
+  try {
+    await axiosInstance.post("/logout");
+  } catch (error) {
+    throw error;
+  }
+};

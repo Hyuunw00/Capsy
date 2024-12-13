@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../apis/axiosInstance";
+import { useMainSearchStore } from "../../store/mainSearchStore";
 import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE } from "../../apis/apis";
+
 import MainSearch from "./MainSearch";
+import MainSearchModal from "./MainSearchModal";
+import Loading from "../../components/Loading";
 
 import img_bottom from "../../assets/bottom-arrow.svg";
 import img_capsule from "../../assets/icon_capsule.svg";
@@ -11,9 +16,6 @@ import img_noti from "../../assets/Notification-white.svg";
 import img_fillNoti from "../../assets/Notification-fill.svg";
 // import img_noti_disable from "../../assets/Notification-disabled.svg";
 import img_scroll from "../../assets/scroll-icon.svg";
-import { useMainSearchStore } from "../../store/mainSearchStore";
-import MainSearchModal from "./MainSearchModal";
-import { useNavigate } from "react-router-dom";
 
 interface Like {
   _id: string;
@@ -84,14 +86,15 @@ export default function MainPage() {
   const [selectedOption, setSelectedOption] = useState<string>("All");
   // // 각 게시물 알림 상태 관리
   const [notiStatus, setNotiStatus] = useState<boolean[]>([]);
-
   // 각 게시물 좋아요, 알림 상태 관리
   const [userData, _] = useState(() => {
     const storedUserData = sessionStorage.getItem("user");
     return storedUserData ? JSON.parse(storedUserData) : { likes: [] };
   });
-
+  // 좋아요 상태
   const [likeStatus, setLikeStatus] = useState<{ [key: string]: boolean }>({});
+  // 로딩중인지에 대한 상태
+  const [loading, setLoading] = useState<boolean>(true);
 
   // 전역 상태 변수
   const isFocused = useMainSearchStore((state) => state.isFocused);
@@ -158,8 +161,12 @@ export default function MainPage() {
         console.log("좋아요 취소 완료!", post.likes);
         setLikeStatus((prevState) => ({ ...prevState, [postId]: false }));
       }
-    } catch (error) {
-      console.error("좋아요 처리 실패: ", error);
+    } catch (error: any) {
+      // console.error("좋아요 처리 실패: ", error);
+      if (error.response && error.response.status === 401) {
+        console.log("좋아요 처리 실패: 로그인이 필요합니다.");
+        navigate("/login");
+      }
     }
   };
 
@@ -185,10 +192,11 @@ export default function MainPage() {
   };
 
   // 게시글 내용 가져오기
+  // 일단 이중 이스케이프(\\n)문, 단순한 이스케이프문(\n) 처리
   const getContent = (jsonString: any) => {
     try {
       const parsedData = JSON.parse(jsonString);
-      return parsedData.content || jsonString;
+      return parsedData.content ? parsedData.content.replace(/\\\\n/g, "\n").replace(/\\n/g, "\n") : jsonString;
     } catch (error) {
       // 기존의 데이터가 잘못 들어가있어 console을 잡아먹어 주석 처리
       // console.error("JSON parse error: ", error);
@@ -207,11 +215,15 @@ export default function MainPage() {
 
         const allData = [...postResponse.data, ...capsuleResponse.data];
 
-        setData(allData);
+        const sortedData = allData.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+        setData(sortedData);
         setPostData(postResponse.data);
         setCapsuleData(capsuleResponse.data);
       } catch (error) {
         console.error("Error: ", error);
+      } finally {
+        setLoading(false);
       }
     };
     updateData(CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE);
@@ -253,8 +265,9 @@ export default function MainPage() {
 
   // 데이터 확인용 console.log
   useEffect(() => {
-    // console.log("filterData", filterData);
     // console.log("userData", userData);
+    // console.log("filterData", filterData);
+    // console.log("postData", postData);
     // console.log("capsuleData", capsuleData);
   }, [data, filterData]);
 
@@ -278,6 +291,11 @@ export default function MainPage() {
         <MainSearchModal />
       </>
     );
+  }
+
+  // 데이터 로딩중일시 로딩 화면
+  if (loading) {
+    return <Loading />;
   }
 
   return (
@@ -307,13 +325,13 @@ export default function MainPage() {
               </div>
 
               {isOpen && (
-                <div className="absolute rounded-[6px] mt-2 shadow-300 z-10 right-8 bg-white">
-                  <div className="flex flex-col px-5 py-2 flex-nowrap">
+                <div className="absolute items-center rounded-[6px] mt-2 shadow-300 z-10 right-8 bg-white w-[120px] h-[104px]">
+                  <div className="flex flex-col p-2 space-y-2 flex-nowrap">
                     {["All", "포스트", "타임캡슐"].map((option) => (
                       <button
                         key={option}
                         onClick={() => selectOption(option)}
-                        className={`block w-full px-4 py-1.5 text-sm text-center hover:bg-gray-100  ${
+                        className={`block w-fulltext-sm text-center hover:bg-[rgba(0,0,0,0.04)]  ${
                           selectedOption === option ? "font-semibold" : ""
                         }`}
                       >
@@ -352,8 +370,18 @@ export default function MainPage() {
                   <img src={img_capsule} alt="캡슐" className="w-[16px]" />
                 </div>
               )}
-              <div className="absolute bottom-0 left-0 px-2.5 py-2 w-full text-white bg-custom-gradient rounded-b-[10px]">
-                <p className="font-semibold">@{item.author.fullName}</p>
+              <div
+                className={`absolute bottom-0 left-0 px-2.5 py-2 w-full text-white rounded-b-[10px] ${item.image ? "bg-custom-gradient" : "bg-[#674EFF]"}`}
+              >
+                <p
+                  className="inline-block font-semibold"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log("누른 아이디: ", item.author.fullName);
+                  }}
+                >
+                  @{item.author.fullName}
+                </p>
                 <p className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ maxWidth: "calc(18ch)" }}>
                   {getTitle(item.title)}
                 </p>
@@ -361,7 +389,7 @@ export default function MainPage() {
               <div className="absolute bottom-0 right-0 px-2.5 py-2 flex flex-col justify-center items-center space-y-1">
                 <img
                   src={likeStatus[item._id] ? img_fillHeart : img_heart}
-                  className="w-[20px] h-[20px] object-contain cursor-pointer"
+                  className="object-contain cursor-pointer flex-shrink-0 w-[24px] h-[24px]"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleLikeClick(item._id);
@@ -372,7 +400,7 @@ export default function MainPage() {
                   <img
                     src={notiStatus[index] ? img_fillNoti : img_noti}
                     alt="noti"
-                    className={`object-contain cursor-pointer h-[20px] ${notiStatus[index] ? "w-[15px]" : "w-[18px]"}`}
+                    className="object-contain cursor-pointer flex-shrink-0 w-[21px] h-[21px]"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleNotiClick(index);
