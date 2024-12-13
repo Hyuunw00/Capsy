@@ -12,7 +12,7 @@ const Tab1 = ({ setIsFocused }: Tab1Props) => {
   // const setSearchInput = useMainSearchStore((state) => state.setSearchInput);
 
   return (
-    <div className="h-[23px] rounded-[10px] bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-primary)] p-[1px]">
+    <div className="h-[36px] rounded-[10px] bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-primary)] p-[1px]">
       <div className="flex items-center w-full h-full bg-white rounded-[10px] px-4 overflow-hidden">
         <img src={img_search} alt="검색" className="pr-2" />
         <input
@@ -72,7 +72,7 @@ const Tab2 = ({ setIsFocused, onBackClick }: Tab2Props) => {
   };
 
   return (
-    <div className="flex h-[23px] rounded-[10px]">
+    <div className="flex h-[36px] rounded-[10px]">
       <img src={img_left} alt="뒤로 가기" onClick={onBackClick} className="cursor-pointer" />
       <div className="w-full rounded-[10px] bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-primary)] p-[1px]">
         <div className="flex items-center w-full h-full bg-white rounded-[10px] px-4 overflow-hidden">
