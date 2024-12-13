@@ -54,7 +54,7 @@ function ProfileContainer() {
             onClick={() => handleTabClick(tab)}
           >
             <img src={selectedTab === tab ? iconPurple : iconBlack} alt={label} className="w-[25px] h-[25px] mb-2" />
-            <span className="text-[14px] font-regular font-pretendard">{label}</span>
+            <span className="text-[16px] font-semibold font-pretendard">{label}</span>
           </div>
         ))}
       </div>
@@ -65,7 +65,7 @@ function ProfileContainer() {
           <>
             {/* 공개완료 슬라이드 */}
             <MySlideHeader
-              title="공개 완료"
+              title="공개완료"
               count={openCapsuleItems.length}
               showAllText="전체보기"
               onShowAllClick={() => handleShowAllClick("open", "capsules")}
@@ -73,9 +73,9 @@ function ProfileContainer() {
             <MySlideContainer uniqueKey="open" items={openCapsuleItems.slice(0, 8)} />
 
             {/* 공개대기 슬라이드 */}
-            <div className="mt-8">
+            <div className="mt-8 mb-8">
               <MySlideHeader
-                title="공개 대기"
+                title="공개대기"
                 count={closeCapsuleItems.length}
                 showAllText="전체보기"
                 onShowAllClick={() => handleShowAllClick("close", "capsules")}
@@ -86,12 +86,12 @@ function ProfileContainer() {
         )}
 
         {selectedTab === "articles" && (
-          <div className="px-4">
-            <h2 className="text-[14px] font-pretendard flex items-center">
-              <span className="font-regular">일반글</span>
+          <div className="px-[30px]">
+            <h2 className="text-[16px] font-pretendard flex items-center mb-[10px]">
+              <span className="font-semibold">일반글</span>
               <span className="ml-1 font-semibold">{openCapsuleItems.length}</span>
             </h2>
-            <div className="grid grid-cols-3 gap-[10px] mt-4 mb-[30px]">
+            <div className="grid grid-cols-3 gap-[10px] mb-[30px]">
               {openCapsuleItems.map((item, index) => (
                 <div
                   key={index}
@@ -108,7 +108,7 @@ function ProfileContainer() {
           <>
             {/* 공개완료 예약글 슬라이드 */}
             <MySlideHeader
-              title="공개 완료"
+              title="공개완료"
               count={openAlarmItems.length}
               showAllText="전체보기"
               onShowAllClick={() => handleShowAllClick("open", "alarms")}
@@ -116,9 +116,9 @@ function ProfileContainer() {
             <MySlideContainer uniqueKey="open" items={openAlarmItems.slice(0, 8)} />
 
             {/* 공개대기 예약글 슬라이드 */}
-            <div className="mt-8">
+            <div className="mt-8 mb-8">
               <MySlideHeader
-                title="공개 대기"
+                title="공개대기"
                 count={closeAlarmItems.length}
                 showAllText="전체보기"
                 onShowAllClick={() => handleShowAllClick("close", "alarms")}
