@@ -1,7 +1,7 @@
 import axiosInstance from "./axiosInstance";
 
-export const CHANNEL_ID_TIMECAPSULE = "67585b36757bff0e678a56a8";
-export const CHANNEL_ID_POST = "67585a88757bff0e678a56a3";
+export const CHANNEL_ID_TIMECAPSULE = "675c3793afaf9312bedbccd3";
+export const CHANNEL_ID_POST = "675c379fafaf9312bedbccd7";
 
 // Post -------------------------------------------------------------------------
 
@@ -11,6 +11,35 @@ export const createPost = async (data: FormData) => {
     const response = await axiosInstance.post("/posts/create", data, {
       headers: {
         "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 포스트 수정 API
+export const updatePost = async (data: PostDataType) => {
+  try {
+    const response = await axiosInstance.put("posts/update", data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+interface PostDataType {
+  postId: string;
+  title: string;
+}
+
+// 포스트 삭제 API
+export const deletePost = async (postId: string) => {
+  try {
+    const response = await axiosInstance.delete("posts/delete", {
+      data: {
+        id: postId,
       },
     });
     return response.data;
@@ -72,7 +101,7 @@ export const deleteComment = async (commentId: string) => {
 // Channel ----------------------------------------------------------------------
 
 // 타임캡슐 채널의 포스트 목록 조회 API
-export const getTimeCapsuleChannel = async () => {
+export const getTimeCapsuleChannel = async (CHANNEL_ID_TIMECAPSULE: string) => {
   try {
     const response = await axiosInstance.get(`/posts/channel/${CHANNEL_ID_TIMECAPSULE};
     }`);
@@ -83,7 +112,7 @@ export const getTimeCapsuleChannel = async () => {
 };
 
 // 일반 채널의 포스트 목록 조회 API
-export const getPostChannel = async () => {
+export const getPostChannel = async (CHANNEL_ID_POST: string) => {
   try {
     const response = await axiosInstance.get(`/posts/channel/${CHANNEL_ID_POST};
     }`);

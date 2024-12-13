@@ -266,7 +266,7 @@ export default function MainPage() {
   // 데이터 확인용 console.log
   useEffect(() => {
     // console.log("userData", userData);
-    console.log("filterData", filterData);
+    // console.log("filterData", filterData);
     // console.log("postData", postData);
     // console.log("capsuleData", capsuleData);
   }, [data, filterData]);
@@ -301,7 +301,7 @@ export default function MainPage() {
   return (
     <>
       <MainSearch onBackClick={handleBackClick} />
-      <div className="px-8 mt-3 relative">
+      <div className="relative px-8 mt-3">
         <div className="flex justify-between">
           {/* 키워드에 대한 검색 결과 */}
           <div>
@@ -317,7 +317,7 @@ export default function MainPage() {
               <div className="flex justify-end">
                 <button
                   onClick={toggleDropdown}
-                  className="inline-flex justify-around items-center bg-white focus:outline-none"
+                  className="inline-flex items-center justify-around bg-white focus:outline-none"
                 >
                   {selectedOption}
                   <img src={img_bottom} alt="선택" />
@@ -326,7 +326,7 @@ export default function MainPage() {
 
               {isOpen && (
                 <div className="absolute items-center rounded-[6px] mt-2 shadow-300 z-10 right-8 bg-white w-[120px] h-[104px]">
-                  <div className="flex flex-col p-2 flex-nowrap space-y-2">
+                  <div className="flex flex-col p-2 space-y-2 flex-nowrap">
                     {["All", "포스트", "타임캡슐"].map((option) => (
                       <button
                         key={option}
@@ -356,23 +356,16 @@ export default function MainPage() {
               {item.image ? (
                 <img src={item.image} alt={item.title} className="w-full h-auto rounded-[10px] object-cover" />
               ) : (
-                <div className="w-full h-40 bg-white border border-[#E7E7E7] border-1 rounded-[10px] relative">
-                  <div className="px-2.5 py-2.5 text-[16px] ">
-                    <p
-                      className="overflow-hidden text-ellipsis whitespace-pre-wrap"
-                      style={{
-                        maxWidth: "calc(30ch)",
-                        display: "-webkit-box",
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: "vertical",
-                      }}
-                    >
+                <div className="w-full h-40 bg-gray-200 rounded-[10px] relative">
+                  <div className="absolute text-xl text-white transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 ">
+                    <p className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ maxWidth: "calc(12ch)" }}>
                       {item.title ? getContent(item.title) : "텍스트 없음"}
                     </p>
                   </div>
                 </div>
               )}
-              {item.channel.name === "TIMECAPSULE" && (
+              {/* {item.channel.name === "TIMECAPSULE" && ( */}
+              {item.channel?.name === "CAPSULETEST" && (
                 <div className="absolute top-1.5 right-1.5 bg-black bg-opacity-40 w-[30px] h-[30px] flex item-center justify-center rounded-full">
                   <img src={img_capsule} alt="캡슐" className="w-[16px]" />
                 </div>
@@ -381,7 +374,7 @@ export default function MainPage() {
                 className={`absolute bottom-0 left-0 px-2.5 py-2 w-full text-white rounded-b-[10px] ${item.image ? "bg-custom-gradient" : "bg-[#674EFF]"}`}
               >
                 <p
-                  className="font-semibold inline-block"
+                  className="inline-block font-semibold"
                   onClick={(e) => {
                     e.stopPropagation();
                     console.log("누른 아이디: ", item.author.fullName);
@@ -402,7 +395,8 @@ export default function MainPage() {
                     handleLikeClick(item._id);
                   }}
                 />
-                {item.channel.name === "TIMECAPSULE" && (
+                {/* {item.channel.name === "TIMECAPSULE" && ( */}
+                {item.channel?.name === "CAPSULETEST" && (
                   <img
                     src={notiStatus[index] ? img_fillNoti : img_noti}
                     alt="noti"
