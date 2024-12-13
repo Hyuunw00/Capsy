@@ -1,4 +1,4 @@
-interface NotificationModalProps {
+export interface NotificationModalProps {
   isOpen: boolean;
   title: string;
   description: string;

@@ -3,13 +3,13 @@ interface InputWithLabelProps extends React.InputHTMLAttributes<HTMLInputElement
   placeholder: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  isError?: boolean;
+  isError?: boolean | string;
 }
 
 export function InputWithLabel({ label, placeholder, value, onChange, isError, ...props }: InputWithLabelProps) {
   return (
     <div>
-      <label className="text-sm text-gray-600">{label}</label>
+      <label className="text-gray-600 ">{label}</label>
       <input
         type="text"
         placeholder={placeholder}

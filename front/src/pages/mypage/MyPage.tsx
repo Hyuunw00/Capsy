@@ -1,10 +1,11 @@
-import ProfileimageForm from "./modal/ProfileImageForm";
+import ProfileHeader from "./ProfileHeader";
+import ProfileContainer from "./ProfileContainer";
 
 export default function MyPage() {
   return (
     <>
-      <h1>My Page</h1>
-      <ProfileimageForm />
+      <ProfileHeader />
+      <ProfileContainer />
     </>
   );
 }

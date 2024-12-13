@@ -21,18 +21,15 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
 
+  // 개별 입력값의 형식만 검증하는 함수
   const validateInput = (name: string, value: string) => {
     const numValue = parseInt(value);
-    const today = new Date();
-    const currentYear = today.getFullYear();
-  
+    
+    // 기본 형식 검증만 수행
     switch (name) {
       case "year":
         if (!/^\d{4}$/.test(value)) {
           return "연도는 4자리 숫자여야 합니다";
-        }
-        if (numValue < currentYear) {
-          return "현재 연도보다 이전의 연도는 선택할 수 없습니다";
         }
         break;
       case "month":
@@ -52,36 +49,38 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
         }
         break;
     }
-  
-    // 날짜가 모두 입력된 경우 전체 날짜 유효성 검사
-    if (date.year && date.month && date.day) {
-      const selectedDate = new Date(
-        parseInt(date.year),
-        parseInt(date.month) - 1,
-        parseInt(date.day)
-      );
-      
-      // 선택된 날짜가 오늘보다 이전인 경우
-      if (selectedDate < today) {
-        switch(name) {
-          case "year":
-            return "미래의 날짜를 선택해주세요";
-          case "month":
-            if (parseInt(date.year) === currentYear) {
-              return "미래의 날짜를 선택해주세요";
-            }
-            break;
-          case "day":
-            if (parseInt(date.year) === currentYear && 
-                parseInt(date.month) === (today.getMonth() + 1)) {
-              return "미래의 날짜를 선택해주세요";
-            }
-            break;
-        }
-      }
-    }
-  
     return "";
+  };
+
+  // 전체 날짜의 유효성을 검증하는 함수
+  const validateFullDate = () => {
+    const { year, month, day } = date;
+    if (!year || !month || !day) {
+      return {
+        isValid: false,
+        error: "날짜를 모두 입력해주세요"
+      };
+    }
+
+    const selectedDate = new Date(
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day)
+    );
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // 시간 제거
+
+    if (selectedDate <= today) {
+      return {
+        isValid: false,
+        error: "미래의 날짜를 선택해주세요"
+      };
+    }
+
+    return {
+      isValid: true,
+      error: ""
+    };
   };
 
   const handleInputChange = (name: string, value: string) => {
@@ -90,11 +89,13 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
       return;
     }
 
+    // 최대 길이 제한
     if (name === "year" && value.length > 4) return;
     if ((name === "month" || name === "day") && value.length > 2) return;
 
     setDate((prev) => ({ ...prev, [name]: value }));
 
+    // 입력 중에는 형식 검증만 수행
     const error = validateInput(name, value);
     setErrors((prev) => ({
       ...prev,
@@ -103,9 +104,21 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
   };
 
   const handleSubmit = () => {
+    // 각 필드의 기본 형식 검증
     const newErrors: ValidationErrors = {};
     let hasErrors = false;
 
+    // 먼저 모든 필드가 입력되었는지 확인
+    if (!date.year || !date.month || !date.day) {
+      setErrors({
+        year: !date.year ? "연도를 입력해주세요" : "",
+        month: !date.month ? "월을 입력해주세요" : "",
+        day: !date.day ? "일을 입력해주세요" : "",
+      });
+      return;
+    }
+
+    // 각 필드의 형식 검증
     Object.entries(date).forEach(([name, value]) => {
       const error = validateInput(name, value);
       if (error) {
@@ -114,25 +127,26 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
       }
     });
 
-    if (!date.year || !date.month || !date.day) {
-      hasErrors = true;
-      if (!date.year) newErrors.year = "연도를 입력해주세요";
-      if (!date.month) newErrors.month = "월을 입력해주세요";
-      if (!date.day) newErrors.day = "일을 입력해주세요";
+    if (hasErrors) {
+      setErrors(newErrors);
+      return;
     }
 
-    setErrors(newErrors);
-
-    if (!hasErrors) {
-      onClose();
-      onSubmit(date);
+    // 모든 필드가 입력되었고 형식이 올바른 경우에만 전체 날짜 검증
+    const { isValid, error } = validateFullDate();
+    if (!isValid) {
+      setErrors({ year: error }); // 날짜 관련 에러는 year 필드에 표시
+      return;
     }
+
+    // 모든 검증을 통과한 경우
+    onSubmit(date);
+    onClose();
   };
 
   // 첫 번째 에러 메시지 가져오기
   const getErrorMessage = () => {
-    const errorMessages = Object.values(errors).filter((error) => error);
-    return errorMessages[0] || "";
+    return Object.values(errors).find(error => error) || "";
   };
 
   return (
@@ -151,7 +165,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
                 placeholder="year"
                 value={date.year}
                 onChange={(e) => handleInputChange("year", e.target.value)}
-                isError={Boolean(errors.year)}
+                isError={errors.year}
               />
             </div>
             <span className="text-lg text-gray-400">/</span>
@@ -161,7 +175,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
                 placeholder="month"
                 value={date.month}
                 onChange={(e) => handleInputChange("month", e.target.value)}
-                isError={Boolean(errors.month)}
+                isError={errors.month}
               />
             </div>
             <span className="text-lg text-gray-400">/</span>
@@ -171,7 +185,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
                 placeholder="day"
                 value={date.day}
                 onChange={(e) => handleInputChange("day", e.target.value)}
-                isError={Boolean(errors.day)}
+                isError={errors.day}
               />
             </div>
             <button onClick={handleSubmit} className="px-4 py-2 text-white rounded w-fit bg-primary">

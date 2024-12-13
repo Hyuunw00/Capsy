@@ -2,7 +2,7 @@ import axios from "axios";
 import { tokenService } from "../utils/token";
 
 const axiosInstance = axios.create({
-  baseURL: "https://5th.fe.dev-cos.com:5003",
+  baseURL: "https://5th.fe.dev-cos.com:5005",
   headers: {
     "Content-Type": "application/json",
   },

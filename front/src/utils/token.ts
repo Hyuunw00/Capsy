@@ -1,5 +1,5 @@
-const TOKEN_KEY = 'accessToken';
-const USER_KEY = 'user';
+const TOKEN_KEY = "accessToken";
+const USER_KEY = "user";
 
 export const tokenService = {
   // 토큰 저장
@@ -36,5 +36,5 @@ export const tokenService = {
   // 로그아웃
   clearAll: () => {
     sessionStorage.clear();
-  }
+  },
 };

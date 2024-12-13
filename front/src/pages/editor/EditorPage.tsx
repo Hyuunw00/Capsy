@@ -13,8 +13,10 @@ export default function EditorPage() {
   const [activeTab, setActiveTab] = useState("general");
   const [showModal, setShowModal] = useState(false);
   const [saveModal, setSaveModal] = useState(false);
+  const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [createdPostId, setCreatedPostId] = useState<string | null>(null);
 
   // 업로드 받은 이미지 상태
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
@@ -26,64 +28,6 @@ export default function EditorPage() {
     day: "",
   });
 
-  // 저장 버튼 클릭 시 유효성 검사
-  const handleSaveClick = async () => {
-    // 텍스트 입력 검증
-    if (!text.trim()) {
-      alert("텍스트를 입력해주세요.");
-      return;
-    }
-  
-    // 타임캡슐 작성 시 필수 항목 검증
-    if (activeTab === "timeCapsule") {
-      if (uploadedImages.length === 0) {
-        alert("타임캡슐에는 이미지 첨부가 필수입니다.");
-        return;
-      }
-      if (!selectedDate.year || !selectedDate.month || !selectedDate.day) {
-        alert("타임캡슐에는 날짜 지정이 필수입니다.");
-        return;
-      }
-    }
-  
-    try {
-      let response;
-      const channelId = activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST;
-      
-      // 이미지가 있는 경우와 없는 경우를 구분하여 API 호출
-      if (uploadedImages.length > 0) {
-        const formData = new FormData();
-        formData.append('title', text);
-        formData.append('channelId', channelId);
-        
-        // 모든 이미지 파일 추가
-        uploadedImages.forEach((image, _) => {
-          formData.append('image', image);
-        });
-  
-        response = await createPost(formData);
-      } else {
-        // 이미지가 없는 경우
-        response = await createPost({
-          title: text,
-          channelId: channelId
-        });
-      }
-  
-      console.log('게시물 생성 성공:', response);
-      setSaveModal(true);
-      
-      // 성공 후 상세 페이지로 이동
-      if (response?._id) {
-        navigate(`/post/${response._id}`);
-      }
-  
-    } catch (error) {
-      console.error('게시물 생성 실패:', error);
-      alert('게시물 작성에 실패했습니다.');
-    }
-  };
-  
   // 프리뷰에서 선택한 사진을 배열에서 제거하는 함수
   const handleDeleteFile = (indexToDelete: number) => {
     setUploadedImages((prev) => prev.filter((_, index) => index !== indexToDelete));
@@ -142,6 +86,68 @@ export default function EditorPage() {
     setShowModal(false);
   };
 
+  // 저장 버튼 클릭 시 유효성 검사
+  const handleSaveClick = async () => {
+    if (!title.trim()) {
+      alert("제목을 입력해주세요.");
+      return;
+    }
+
+    if (!text.trim()) {
+      alert("내용을 입력해주세요.");
+      return;
+    }
+
+    if (activeTab === "timeCapsule") {
+      if (uploadedImages.length === 0) {
+        alert("타임캡슐에는 이미지 첨부가 필수입니다.");
+        return;
+      }
+      if (!selectedDate.year || !selectedDate.month || !selectedDate.day) {
+        alert("타임캡슐에는 날짜 지정이 필수입니다.");
+        return;
+      }
+    }
+
+    try {
+      const channelId = activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST;
+
+      // 커스텀 데이터 만들기
+      const customData = {
+        title: title,
+        content: text.split('\n').join('\\n'),
+        ...(activeTab === "timeCapsule" && {
+          closeAt: (() => {
+            const date = new Date(
+              `${selectedDate.year}-${selectedDate.month.padStart(2, "0")}-${selectedDate.day.padStart(2, "0")}`,
+            );
+            date.setHours(date.getHours() + 9);
+            return date.toISOString();
+          })(),
+        }),
+      };
+
+      const formData = new FormData();
+      formData.append("title", JSON.stringify(customData));
+      formData.append("channelId", channelId);
+
+      if (uploadedImages.length > 0) {
+        uploadedImages.forEach((image) => {
+          formData.append("image", image);
+        });
+      }
+
+      const response = await createPost(formData);
+      setSaveModal(true);
+
+      if (response?._id) {
+        setCreatedPostId(response._id);
+        setSaveModal(true);
+      }
+    } catch (error) {
+      console.error("게시물 생성 실패:", error);
+    }
+  };
 
   return (
     <div className="relative flex flex-col h-dvh">
@@ -194,10 +200,18 @@ export default function EditorPage() {
         </div>
       </nav>
       <main className="flex-1 px-4 py-4 h-2/5">
+        <h2 className="text-lg font-semibold h-fit">
+          <textarea
+            placeholder="제목 없음"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full text-gray-600 placeholder-gray-300 resize-none h-7 focus:outline-none"
+          />
+        </h2>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="flex-1 w-full mt-2 overflow-scroll text-gray-600 placeholder-gray-300 resize-none h-96 focus:outline-none"
+          className="flex-1 w-full mt-2 overflow-scroll text-gray-600 placeholder-gray-300 whitespace-pre-wrap resize-none h-96 focus:outline-none"
           placeholder={
             activeTab === "general"
               ? "포스트를 작성해주세요."
@@ -217,6 +231,7 @@ export default function EditorPage() {
           isOpen={saveModal}
           onClose={() => setSaveModal(false)}
           isTimeCapsule={activeTab === "timeCapsule"}
+          postId={createdPostId!}
         />
       )}
     </div>

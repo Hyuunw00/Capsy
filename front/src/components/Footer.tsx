@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import logo_white from "../assets/logo_white.svg";
+import footerLogo from '../assets/footer-logo.svg'
 
 interface NavItemProps {
   to: string;
@@ -33,7 +33,7 @@ export default function Footer() {
   return (
     <footer className="absolute bottom-0 flex items-center w-full px-8 py-2 bg-black">
       <nav className="w-full">
-        <ul className="flex items-center justify-around text-white">
+        <ul className="text-white item-around">
           <NavItem
             to="/"
             iconPath="M8.125 12.3749H11.875V6.73618L7.5 3.33368L3.125 6.73618V12.3749H6.875V8.62493H8.125V12.3749ZM13.125 12.9999C13.125 13.1657 13.0592 13.3247 12.9419 13.4419C12.8247 13.5591 12.6658 13.6249 12.5 13.6249H2.5C2.33424 13.6249 2.17527 13.5591 2.05806 13.4419C1.94085 13.3247 1.875 13.1657 1.875 12.9999V6.43118C1.87493 6.33593 1.89664 6.24194 1.93845 6.15636C1.98026 6.07079 2.04108 5.9959 2.11625 5.93743L7.11625 2.04868C7.22596 1.96333 7.361 1.91699 7.5 1.91699C7.639 1.91699 7.77404 1.96333 7.88375 2.04868L12.8837 5.93743C12.9589 5.9959 13.0197 6.07079 13.0616 6.15636C13.1034 6.24194 13.1251 6.33593 13.125 6.43118V12.9999Z"
@@ -45,7 +45,7 @@ export default function Footer() {
             label="작성"
           />
           <li className="flex flex-col items-center">
-            <img src={logo_white} alt="Logo" className="h-10 w-25" />
+            <img src={footerLogo} alt="Logo" className="h-10 w-25" />
           </li>
           <NavItem
             to="/event"
@@ -53,7 +53,7 @@ export default function Footer() {
             label="이벤트"
           />
           <NavItem
-            to="/mypage2" // to="/mypage"
+            to="/mypage"
             iconPath="M7.5 0C5.567 0 4 1.567 4 3.5C4 5.433 5.567 7 7.5 7C9.433 7 11 5.433 11 3.5C11 1.567 9.433 0 7.5 0ZM7.5 1C8.88 1 10 2.12 10 3.5C10 4.88 8.88 6 7.5 6C6.12 6 5 4.88 5 3.5C5 2.12 6.12 1 7.5 1ZM7.5 8C4.467 8 2 10.467 2 13.5V14H13V13.5C13 10.467 10.533 8 7.5 8ZM7.5 9C9.981 9 12 11.019 12 13.5V13H3V13.5C3 11.019 5.019 9 7.5 9Z"
             label="마이"
           />
