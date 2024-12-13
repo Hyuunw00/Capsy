@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import profileImgEditIcon from "../../assets/profile-img-edit-icon.svg";
 import ProfileForm from "./modal/ProfileForm";
-import ProfileImageForm from "./modal/ProfileImageForm";
-import { tokenService } from "../../utils/token";
-import { getMyProfile, uploadUserPhoto } from "../../apis/apis";
 
 export default function ProfileHeader() {
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const username = "@caapsy_human";
+  const posts = 19;
+  const followers = 99;
+  const following = 99;
+  const nickname = "캡시햄찌";
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [user, setUser] = useState<UserLists | null>(null);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [username, setUsername] = useState("");
 
   const openProfileModal = () => setIsProfileModalOpen(true);
   const closeProfileModal = () => setIsProfileModalOpen(false);
@@ -50,8 +49,17 @@ export default function ProfileHeader() {
     }
   };
 
+  const getUserInfo = async () => {
+    const data = await getMyProfile();
+    setUser(data);
+  };
+
+  useEffect(() => {
+    getUserInfo();
+  }, []);
+
   const handleShareProfile = async () => {
-    const profileUrl = "http://localhost:5173/mypage";
+    const profileUrl = `https://mywebsite.com/${username}`;
 
     try {
       await navigator.clipboard.writeText(profileUrl);
@@ -69,7 +77,8 @@ export default function ProfileHeader() {
   return (
     <div className="px-[30px] py-6 mb-[30px] font-pretendard">
       <div className="flex flex-col">
-        <h2 className="text-xl font-bold mb-[20px] text-[20px]">@{user?.fullName}</h2>
+        {/* 유저 이름 */}
+        <h2 className="text-xl font-semibold mb-[20px]">{username}</h2>
 
         <div className="flex items-center justify-evenly">
           <div className="relative w-[90px] h-[90px]">
@@ -104,7 +113,7 @@ export default function ProfileHeader() {
         </div>
 
         <div className="mt-[20px]">
-          <h3 className="text-[16px] font-regular">{username}</h3> {/* username 표시 */}
+          <h3 className="text-[14px] font-regular">{nickname}</h3>
         </div>
 
         <div className="flex space-x-[5px] mt-6">

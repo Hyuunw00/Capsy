@@ -52,22 +52,21 @@ export default function ProfileForm({ onClose, onUsernameUpdate }: ProfileFormPr
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {/* 수정 불가한 아이디 입력란 (fullName) */}
           <InputWithLabel
-            label="아이디" // fullName을 아이디로 표시
-            value={fullName} // fullName 값 표시
-            onChange={(e) => setFullName(e.target.value)} // fullName 수정 방지
-            disabled={true} // 수정 불가
-            placeholder="" // placeholder 비워두기
-            style={{ marginBottom: "10px" }}
+            label="닉네임"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            placeholder="다람쥐헌쳇바퀴어쩌구"
           />
 
-          {/* 수정 가능한 자기소개 입력란 (username) */}
-          <InputWithLabel
-            label="자기소개" // username을 자기소개로 표시
-            value={username} // username 값 표시
-            onChange={(e) => setUsername(e.target.value)} // 수정 가능
-            placeholder="자기소개를 입력하세요" // 자기소개 placeholder
-            style={{ marginBottom: "10px" }}
-          />
+          <div className="w-full mb-4">
+            <label className="block mb-1 ml-1 text-sm text-gray-700">자기소개</label>
+            <textarea
+              value={introduction}
+              onChange={(e) => setIntroduction(e.target.value)}
+              placeholder="이건 text area"
+              className="w-full h-24 px-4 py-2 rounded border text-sm placeholder:text-[#acacac] resize-none"
+            />
+          </div>
 
           <div className="mt-4" style={{ marginTop: "20px" }}>
             <p className="mb-4 text-sm text-gray-500">

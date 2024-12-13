@@ -249,3 +249,23 @@ export const updateUserSettings = async (fullName: string, username: string) => 
     throw error;
   }
 };
+
+//사용자 정보 가져오기 API
+export const getUserProfile = async (userId: string) => {
+  try {
+    const response = await axiosInstance.get(`/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//사용자 정보 가져오기 API
+export const getMyProfile = async () => {
+  try {
+    const response = await axiosInstance.get("/auth-user");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
