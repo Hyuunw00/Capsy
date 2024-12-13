@@ -6,8 +6,8 @@ import Button from "../../components/Button";
 import Logo from "../../components/Logo";
 import { passwordChangeAuth, userLogoutAuth } from "../../apis/auth";
 import { tokenService } from "../../utils/token";
-import { LoginInput } from "../../components/LoginInput";
 import { testPassword } from "../../utils/regex";
+import { AuthInput } from "../../components/AuthInput";
 
 export default function NewPasswordPage() {
   const navigate = useNavigate();
@@ -75,7 +75,7 @@ export default function NewPasswordPage() {
         {/* <p>본인 인증이 완료되었습니다.</p>
           <p>새로운 비밀번호를 설정해주세요.</p> */}
         <div className="flex flex-col gap-2">
-          <LoginInput
+          <AuthInput
             label="새 비밀번호"
             type="password"
             value={auth.password}
@@ -86,7 +86,7 @@ export default function NewPasswordPage() {
             isValid={auth.isPasswordValid}
           />
 
-          <LoginInput
+          <AuthInput
             label="새 비밀번호 확인"
             type="password"
             value={auth.passwordConfirm}

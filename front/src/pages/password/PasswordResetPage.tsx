@@ -2,11 +2,11 @@ import { useRef, useState } from "react";
 import NoticeModal from "../../components/NoticeModal";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
-import { LoginInput } from "../../components/LoginInput";
 import { testEmail, testPassword } from "../../utils/regex";
 import { loginAuth } from "../../apis/auth";
 import { tokenService } from "../../utils/token";
 import NewPasswordPage from "./NewPasswordPage";
+import { AuthInput } from "../../components/AuthInput";
 
 export default function PasswordResetPage() {
   const userEmail = tokenService.getUser().email;
@@ -42,6 +42,7 @@ export default function PasswordResetPage() {
     // 유효성 검사
     if (!testEmail(email) || !testPassword(password)) {
       setAuth({ ...auth, isEmailValid: false, isPasswordValid: false, email: "", password: "" });
+
       return;
     }
     // 로그인한 사용자 이메일이 아닐 경우 return
@@ -78,7 +79,7 @@ export default function PasswordResetPage() {
         <Logo />
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
-            <LoginInput
+            <AuthInput
               label="이메일"
               type="email"
               value={auth.email}
@@ -89,7 +90,7 @@ export default function PasswordResetPage() {
               isValid={auth.isEmailValid}
             />
 
-            <LoginInput
+            <AuthInput
               label="비밀번호"
               type="password"
               value={auth.password}

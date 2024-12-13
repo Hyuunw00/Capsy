@@ -5,7 +5,7 @@ interface InputWithLabelProps extends React.InputHTMLAttributes<HTMLInputElement
   isValid: boolean;
   children?: React.ReactNode;
 }
-export const LoginInput = forwardRef<HTMLInputElement, InputWithLabelProps>((props, ref) => {
+export const AuthInput = forwardRef<HTMLInputElement, InputWithLabelProps>((props, ref) => {
   const { label, error, isValid, children, ...args } = props;
 
   return (

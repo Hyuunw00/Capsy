@@ -4,9 +4,9 @@ import { useLoginStore } from "../../store/loginStore";
 import NoticeModal from "../../components/NoticeModal";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
-import { LoginInput } from "../../components/LoginInput";
 import { testEmail, testPassword } from "../../utils/regex";
 import { loginAuth } from "../../apis/auth";
+import { AuthInput } from "../../components/AuthInput";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -76,7 +76,7 @@ export default function LoginPage() {
         <Logo />
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
-            <LoginInput
+            <AuthInput
               label="이메일"
               type="email"
               value={auth.email}
@@ -87,7 +87,7 @@ export default function LoginPage() {
               isValid={auth.isEmailValid}
             />
 
-            <LoginInput
+            <AuthInput
               label="비밀번호"
               type="password"
               value={auth.password}

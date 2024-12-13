@@ -3,8 +3,8 @@ import { useNavigate } from "react-router";
 import loginLogo from "../../assets/login-logo.svg";
 import NoticeModal from "../../components/NoticeModal";
 import { signupAuth, userLists } from "../../apis/auth";
-import { LoginInput } from "../../components/LoginInput";
 import { testEmail, testId, testPassword, testPasswordConfirm } from "../../utils/regex";
+import { AuthInput } from "../../components/AuthInput";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
@@ -53,7 +53,7 @@ export default function SignUpPage() {
       setOpenModal({ ...openModal, isOpen: true, value: "이미 존재하는 이메일입니다!" });
       setAuth({ ...auth, email: "", isEmailValid: false });
     } else {
-      setOpenModal({ ...openModal, isOpen: true, value: "사용 가능한 이메일입니다!" });
+      auth.isEmailValid && setOpenModal({ ...openModal, isOpen: true, value: "사용 가능한 이메일입니다!" });
     }
   };
 
@@ -68,7 +68,7 @@ export default function SignUpPage() {
       setOpenModal({ ...openModal, isOpen: true, value: "이미 존재하는 아이디입니다!" });
       setAuth({ ...auth, id: "", isIdValid: false });
     } else {
-      setOpenModal({ ...openModal, isOpen: true, value: "사용 가능한 아이디입니다!" });
+      auth.isIdValid && setOpenModal({ ...openModal, isOpen: true, value: "사용 가능한 아이디입니다!" });
     }
   };
 
@@ -100,7 +100,7 @@ export default function SignUpPage() {
           </div>
 
           <div className="flex flex-col gap-[10px]">
-            <LoginInput
+            <AuthInput
               label="이메일"
               type="email"
               value={auth.email}
@@ -115,9 +115,9 @@ export default function SignUpPage() {
               >
                 확인
               </button>
-            </LoginInput>
+            </AuthInput>
 
-            <LoginInput
+            <AuthInput
               label="아이디"
               type="text"
               value={auth.id}
@@ -132,9 +132,9 @@ export default function SignUpPage() {
               >
                 확인
               </button>
-            </LoginInput>
+            </AuthInput>
 
-            <LoginInput
+            <AuthInput
               label="비밀번호"
               type="password"
               value={auth.password}
@@ -142,9 +142,9 @@ export default function SignUpPage() {
               onChange={handleChangePassword}
               error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
               isValid={auth.isPasswordValid}
-            ></LoginInput>
+            ></AuthInput>
 
-            <LoginInput
+            <AuthInput
               label="비밀번호 확인"
               type="password"
               value={auth.passwordConfirm}
@@ -152,7 +152,7 @@ export default function SignUpPage() {
               onChange={handleChangePasswordConfirm}
               error="동일하지 않은 비밀번호"
               isValid={auth.isPasswordConfirmValid}
-            ></LoginInput>
+            ></AuthInput>
 
             <button
               onClick={handleSubmit}
