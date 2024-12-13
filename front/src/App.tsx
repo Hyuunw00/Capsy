@@ -18,6 +18,7 @@ import Loading from "./components/Loading";
 import CapsuleListPage from "./components/CapsuleListPage";
 import AlarmListPage from "./components/AlarmListPage";
 import Error404 from "./components/Error404";
+import UserInfoPage from "./pages/userinfo/UserInfoPage";
 
 export default function App() {
   // 새로고침할때마다 session storage에서 token 받아와서 로그인
@@ -46,17 +47,18 @@ export default function App() {
     <>
       <Routes>
         <Route element={<RootLayout />}>
-          <Route path="/" element={<MainPage />} />
-          <Route path="/event" element={<Event />} />
-
           <Route element={<Private />}>
+            <Route path="/mypage" element={<MyPage />} />
             <Route path="/editor" element={<EditorPage />} />
             <Route path="/detail/:postId" element={<PostDetailPage />} />
-            <Route path="/mypage" element={<MyPage />} />
             <Route path="/resetpassword" element={<PasswordResetPage />} />
-            <Route path="/capsule-list" element={<CapsuleListPage />} /> {/* 추가된 경로 */}
-            <Route path="/alarm-list" element={<AlarmListPage />} /> {/* 추가된 경로 */}
+            <Route path="/capsule-list" element={<CapsuleListPage />} />
+            <Route path="/alarm-list" element={<AlarmListPage />} />
           </Route>
+
+          <Route path="/" element={<MainPage />} />
+          <Route path="/event" element={<Event />} />
+          <Route path="/userinfo/:fullname" element={<UserInfoPage />} />
 
           <Route element={<NonPrivate />}>
             <Route path="/login" element={<Login />} />

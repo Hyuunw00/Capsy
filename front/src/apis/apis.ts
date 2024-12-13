@@ -2,6 +2,8 @@ import axiosInstance from "./axiosInstance";
 
 export const CHANNEL_ID_TIMECAPSULE = "675c3793afaf9312bedbccd3";
 export const CHANNEL_ID_POST = "675c379fafaf9312bedbccd7";
+export const CHANNEL_ID_EVENT = "675c65b6adb5881a22f7c224";
+
 
 // Post -------------------------------------------------------------------------
 
@@ -199,6 +201,51 @@ export const unFollowUser = async (id: string) => {
 export const getMyProfile = async () => {
   try {
     const response = await axiosInstance.get("/auth-user");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//사용자정보 가져오기
+export const getUserProfile = async (userId: string) => {
+  try {
+    const response = await axiosInstance.get(`/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const uploadUserPhoto = async (imageFile: File) => {
+  try {
+    // FormData 객체 생성
+    const formData = new FormData();
+    formData.append("isCover", "false"); // isCover를 반드시 false로 설정
+    formData.append("image", imageFile); // Binary 형태의 이미지 파일 추가
+
+    // API 호출
+    const response = await axiosInstance.post("/users/upload-photo", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data", // FormData를 전송할 때 필요
+      },
+    });
+
+    // 응답 데이터 반환 (User 객체 예상)
+    return response.data;
+  } catch (error) {
+    console.error("Failed to upload photo:", error);
+    throw error;
+  }
+};
+
+// 사용자 정보 업데이트 API (fullName과 username)
+export const updateUserSettings = async (fullName: string, username: string) => {
+  try {
+    const response = await axiosInstance.put("/settings/update-user", {
+      fullName,
+      username,
+    });
     return response.data;
   } catch (error) {
     throw error;
