@@ -188,7 +188,7 @@ export default function Header() {
         >
           <img src={NotificationIcon} alt="Notification" className="object-contain w-full h-full" />
           {notifications.length > 0 && (
-            <div className="absolute -top-1 -right-1 w-[5px] h-[5px] bg-secondary rounded-full" />
+            <div className="absolute w-2 h-2 rounded-full -top-1 -right-1 bg-secondary" />
           )}
         </button>
         {isLoggedIn && (
