@@ -88,6 +88,7 @@ export const createComment = async (data: any) => {
     throw error;
   }
 };
+
 export const deleteComment = async (commentId: string) => {
   try {
     const response = await axiosInstance.delete("/comments/delete", {
@@ -137,7 +138,7 @@ export const getNotifications = async () => {
 // 알림 확인 API
 export const seenNotifications = async () => {
   try {
-    const response = await axiosInstance.get(`/notifications/seen`);
+    const response = await axiosInstance.put(`/notifications/seen`);
     return response.data;
   } catch (error) {
     throw error;
@@ -170,7 +171,7 @@ export const followUser = async (userId: string) => {
 
     // 댓글 작성 후 알림 생성
     await createNotifications({
-      notificationType: "COMMENT",
+      notificationType: "FOLLOW",
       notificationTypeId: response.data._id,
       userId: response.data.author._id,
       postId: response.data.post,

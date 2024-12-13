@@ -22,9 +22,6 @@ export default function PageHeader() {
 
       <img src={logo_black} alt="Logo" style={{ width: "75px", height: "30px" }} />
 
-      <img src={logo_black} alt="Logo" style={{ width: "75px", height: "30px" }} />
-
-      <img src={Notification} alt="Notification" style={{ width: "20px", height: "20px" }} />
       <img src={Notification} alt="Notification" style={{ width: "20px", height: "20px" }} />
     </nav>
   );

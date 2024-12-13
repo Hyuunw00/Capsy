@@ -1,5 +1,5 @@
+import { useNavigate } from "react-router-dom";
 import { Notification, NotifyModalProps } from "../../types/notification";
-// import { tokenService } from "../../utils/token";
 import Button from "../Button";
 
 const NotifyModal = ({
@@ -10,13 +10,21 @@ const NotifyModal = ({
   onReadNotification,
   onMoveToPost,
 }: NotifyModalProps) => {
-  // const user = tokenService.getUser();
+  const navigate = useNavigate();
+
+  const handleMoveToPost = (notification: Notification) => {
+    console.log("이동을 해야 하는데 :", notification);
+    if (notification.postId) {
+      onMoveToPost(notification);
+      navigate(`/detail/${notification.postId}`);
+    }
+  };
 
   const renderNotification = (notification: Notification) => {
     switch (notification.type) {
       case "FOLLOW":
         return (
-          <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center justify-between py-2">
             <p>{notification.user?.fullName || notification.userId}님이 팔로우를 요청했습니다</p>
             <div className="flex gap-2">
               <Button
@@ -37,9 +45,9 @@ const NotifyModal = ({
       case "LIKE":
       case "COMMENT":
         return (
-          <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center justify-between py-2">
             <p>
-              {notification.postId} 게시물에 새로운
+              게시물에 새로운
               {notification.type === "LIKE" ? " 좋아요" : " 댓글"}이 있습니다
             </p>
             <div className="flex gap-2">
@@ -50,7 +58,7 @@ const NotifyModal = ({
                 확인
               </Button>
               <Button
-                onClick={() => onMoveToPost(notification)}
+                onClick={() => handleMoveToPost(notification)}
                 className="px-2 py-0.5 h-7 items-center text-white rounded w-fit bg-black text-sm"
               >
                 이동
