@@ -117,7 +117,9 @@ export default function EditorPage() {
         title: title,
         content: text,
         ...(activeTab === "timeCapsule" && {
-          closeAt: `${selectedDate.year}-${selectedDate.month.padStart(2, "0")}-${selectedDate.day.padStart(2, "0")}`,
+          closeAt: new Date(
+            `${selectedDate.year}-${selectedDate.month.padStart(2, '0')}-${selectedDate.day.padStart(2, '0')}`
+          ).toISOString()
         }),
       };
 
