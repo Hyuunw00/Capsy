@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router";
-import { getPostDetail } from "../../apis/apis";
+import { getPostDetail, createComment } from "../../apis/apis";
 import thumbnail1 from "../../assets/random-thumnail/random-thumnail-black-1.png";
 import thumbnail2 from "../../assets/random-thumnail/random-thumnail-black-2.png";
 import thumbnail3 from "../../assets/random-thumnail/random-thumnail-black-3.png";
@@ -14,7 +14,11 @@ export default function PostDetailPage() {
   const [commentText, setCommentText] = useState(""); // 댓글 상태 관리
   const [post, setPost] = useState<PostDetail | null>(null); // 포스트 데이터 상태 관리
   const { postId } = useParams<{ postId: string }>();
-  // const postId = "675a57eb18d96f4540eb68d2";
+  const randomThumbnail = useMemo(() => {
+    // 이미지 없을 시 랜덤 썸네일 설정
+    const thumbnails = [thumbnail1, thumbnail2, thumbnail3, thumbnail4, thumbnail5, thumbnail6];
+    return thumbnails[Math.floor(Math.random() * thumbnails.length)];
+  }, []);
 
   // 포스트 데이터 불러오기
   useEffect(() => {
@@ -46,24 +50,38 @@ export default function PostDetailPage() {
     setIsFollowing(!isFollowing);
   };
 
-  // 이미지 없을 경우 랜덤 썸네일 로직
-  const randomThumbnail = useMemo(() => {
-    const thumbnails = [thumbnail1, thumbnail2, thumbnail3, thumbnail4, thumbnail5, thumbnail6];
-    return thumbnails[Math.floor(Math.random() * thumbnails.length)];
-  }, []);
-
   // 댓글 아이템
-  const CommentItem = ({ author, content }: PostComment) => (
+  const CommentItem = ({ author, comment }: PostComment) => (
     <li className="py-[4px]">
       <div className="font-semibold">@{author.fullName}</div>
-      <div className="mt-[9.14px]">{content}</div>
+      <div className="mt-[9.14px]">{comment}</div>
     </li>
   );
 
   // 댓글 제출 로직
-  const handleSubmitComment = (e: React.FormEvent) => {
+  const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    setCommentText("");
+    if (!commentText.trim()) return;
+
+    try {
+      const newComment = await createComment({
+        postId: postId,
+        comment: commentText,
+      });
+
+      // 댓글 상태 업데이트
+      setPost((prevPost) => {
+        if (!prevPost) return prevPost;
+        return {
+          ...prevPost,
+          comments: [...prevPost.comments, newComment],
+        };
+      });
+
+      setCommentText("");
+    } catch (error) {
+      console.error("댓글을 작성하는데 실패했습니다.:", error);
+    }
   };
 
   if (!post) {
@@ -108,7 +126,7 @@ export default function PostDetailPage() {
       <section aria-label="Comment List" className="px-[20px] mt-[20px] pb-[100px] text-sm">
         <ul className="flex flex-col gap-[12px]">
           {post.comments.map((comment) => (
-            <CommentItem key={comment._id} author={comment.author} content={comment.content} />
+            <CommentItem key={comment._id} author={comment.author} comment={comment.comment} />
           ))}
         </ul>
       </section>
