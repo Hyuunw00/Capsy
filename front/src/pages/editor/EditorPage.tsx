@@ -115,15 +115,15 @@ export default function EditorPage() {
       // 커스텀 데이터 만들기
       const customData = {
         title: title,
-        content: text,
+        content: text.split('\n').join('\\n'),
         ...(activeTab === "timeCapsule" && {
           closeAt: (() => {
             const date = new Date(
-              `${selectedDate.year}-${selectedDate.month.padStart(2, '0')}-${selectedDate.day.padStart(2, '0')}`
+              `${selectedDate.year}-${selectedDate.month.padStart(2, "0")}-${selectedDate.day.padStart(2, "0")}`,
             );
-            date.setHours(date.getHours() + 9); // 서버 시간과 맞추기 : UTC+9 적용
+            date.setHours(date.getHours() + 9);
             return date.toISOString();
-          })()
+          })(),
         }),
       };
 
@@ -211,7 +211,7 @@ export default function EditorPage() {
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="flex-1 w-full mt-2 overflow-scroll text-gray-600 placeholder-gray-300 resize-none h-96 focus:outline-none"
+          className="flex-1 w-full mt-2 overflow-scroll text-gray-600 placeholder-gray-300 whitespace-pre-wrap resize-none h-96 focus:outline-none"
           placeholder={
             activeTab === "general"
               ? "포스트를 작성해주세요."

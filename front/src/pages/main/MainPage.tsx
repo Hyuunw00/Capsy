@@ -283,7 +283,7 @@ export default function MainPage() {
   return (
     <>
       <MainSearch onBackClick={handleBackClick} />
-      <div className="px-8 mt-3 relative">
+      <div className="relative px-8 mt-3">
         <div className="flex justify-between">
           {/* 키워드에 대한 검색 결과 */}
           <div>
@@ -299,7 +299,7 @@ export default function MainPage() {
               <div className="flex justify-end">
                 <button
                   onClick={toggleDropdown}
-                  className="inline-flex justify-around items-center bg-white focus:outline-none"
+                  className="inline-flex items-center justify-around bg-white focus:outline-none"
                 >
                   {selectedOption}
                   <img src={img_bottom} alt="선택" />
@@ -339,14 +339,15 @@ export default function MainPage() {
                 <img src={item.image} alt={item.title} className="w-full h-auto rounded-[10px] object-cover" />
               ) : (
                 <div className="w-full h-40 bg-gray-200 rounded-[10px] relative">
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-xl ">
+                  <div className="absolute text-xl text-white transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 ">
                     <p className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ maxWidth: "calc(12ch)" }}>
                       {item.title ? getContent(item.title) : "텍스트 없음"}
                     </p>
                   </div>
                 </div>
               )}
-              {item.channel.name === "TIMECAPSULE" && (
+              {/* {item.channel.name === "TIMECAPSULE" && ( */}
+              {item.channel?.name === "CAPSULETEST" && (
                 <div className="absolute top-1.5 right-1.5 bg-black bg-opacity-40 w-[30px] h-[30px] flex item-center justify-center rounded-full">
                   <img src={img_capsule} alt="캡슐" className="w-[16px]" />
                 </div>
@@ -366,7 +367,8 @@ export default function MainPage() {
                     handleLikeClick(item._id);
                   }}
                 />
-                {item.channel.name === "TIMECAPSULE" && (
+                {/* {item.channel.name === "TIMECAPSULE" && ( */}
+                {item.channel?.name === "CAPSULETEST" && (
                   <img
                     src={notiStatus[index] ? img_fillNoti : img_noti}
                     alt="noti"
