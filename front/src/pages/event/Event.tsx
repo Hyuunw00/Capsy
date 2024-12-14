@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../apis/axiosInstance";
 import NotificationModal from "../../components/NotificationModal";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { tokenService } from "../../utils/token";
 import { useLoginStore } from "../../store/loginStore";
 import eventBanner from "../../assets/holiday-event-banner.png";
 import eventTimecapsuleThumbnail from "../../assets/event-timeCapsule-thumbnail.png";
-import NoticeModal from "../../components/NoticeModal";
 import img_heart from "../../assets/Heart_Curved.svg";
 import img_fillHeart from "../../assets/heart-fill.svg";
 import img_noti from "../../assets/Notification-white.svg";
@@ -15,6 +14,8 @@ import { CHANNEL_ID_EVENT } from "../../apis/apis";
 import Loading from "../../components/Loading";
 
 import eventWriteIcon from "../../assets/event-capsule-icon.svg";
+import TimeCapsuleModal from "../../components/TimeCapsuleModal";
+import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
 
 interface Like {
   _id: string;
@@ -82,7 +83,8 @@ export default function Event() {
   const [eventCapsuleData, setEventCapsuleData] = useState<Post[]>([]);
 
   // 타입 캡슐 버튼 클릭시 모달
-  const [openModal, setOpenModal] = useState({ isOpen: false, value: "아직 미개봉된 캡슐입니다." });
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState({ imgSrc: "", neonText: "", whiteText: "" });
 
   // 각 게시물 좋아요, 알림 상태 관리
   const [userData, _] = useState(() => {
@@ -179,6 +181,21 @@ export default function Event() {
     }
   };
 
+  // 포스트 컴포넌트 클릭 시
+  const handleImageClick = (item: any) => {
+    setModalData({
+      imgSrc: img_lock_timeCapsule,
+      neonText: "미개봉 이벤트 타임 캡슐입니다!",
+      whiteText: "예약 시 알림을 받을 수 있어요",
+    });
+    setShowModal(true);
+  };
+
+  // 타임캡슐 모달 컴포넌트 X 버튼 클릭 시
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
   // 데이터 call
   useEffect(() => {
     const updateData = async (eventCapsuleChannelId: string) => {
@@ -222,10 +239,13 @@ export default function Event() {
           </div>
         </NotificationModal>
       )}
-      {openModal.isOpen && (
-        <NoticeModal title="알림" onClose={() => setOpenModal((prev) => ({ ...prev, isOpen: false }))}>
-          {openModal.value}
-        </NoticeModal>
+      {showModal && (
+        <TimeCapsuleModal
+          imgSrc={modalData.imgSrc}
+          neonText={modalData.neonText}
+          whiteText={modalData.whiteText}
+          onClose={handleCloseModal}
+        />
       )}
 
       {/* 이벤트 배너 */}
@@ -245,7 +265,7 @@ export default function Event() {
               <div
                 key={index}
                 className="flex flex-col rounded-[10px] items-center justify-center cursor-pointer"
-                onClick={() => setOpenModal((prev) => ({ ...prev, isOpen: true }))}
+                onClick={handleImageClick}
               >
                 <div
                   className="w-full inline-block break-inside-avoid relative  overflow-hidden cursor-pointer"
