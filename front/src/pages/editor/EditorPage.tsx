@@ -121,7 +121,7 @@ export default function EditorPage() {
             const date = new Date(
               `${selectedDate.year}-${selectedDate.month.padStart(2, "0")}-${selectedDate.day.padStart(2, "0")}`,
             );
-            date.setHours(date.getHours() + 9);
+            date.setHours(date.getHours() - 9);
             return date.toISOString();
           })(),
         }),
