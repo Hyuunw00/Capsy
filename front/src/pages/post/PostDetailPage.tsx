@@ -4,6 +4,7 @@ import { getPostDetail, createComment, deleteComment } from "../../apis/apis";
 import { Link } from "react-router";
 import { tokenService } from "../../utils/token";
 import { Modal } from "../../components/Modal";
+import { elapsedText } from "./ElapsedText";
 import thumbnail1 from "../../assets/random-thumnail/random-thumnail-black-1.png";
 import thumbnail2 from "../../assets/random-thumnail/random-thumnail-black-2.png";
 import thumbnail3 from "../../assets/random-thumnail/random-thumnail-black-3.png";
@@ -56,7 +57,7 @@ export default function PostDetailPage() {
   };
 
   // 댓글 아이템
-  const CommentItem = ({ author, comment, _id, onDelete, isCurrentUser }: CommentItemProps) => {
+  const CommentItem = ({ author, comment, _id, createdAt, onDelete, isCurrentUser }: CommentItemProps) => {
     return (
       <div className="flex justify-between items-start p-3">
         <div className="flex gap-3">
@@ -76,6 +77,7 @@ export default function PostDetailPage() {
             <Link to={`/userinfo/${author.fullName}`} className="font-bold">
               {author.fullName}
             </Link>
+            <span className="text-gray-500 text-xs ml-2">{elapsedText(new Date(createdAt))}</span>
             <p className="mt-1">{comment}</p>
           </div>
         </div>
@@ -168,9 +170,7 @@ export default function PostDetailPage() {
               <Link to={`/userinfo/${post.author.fullName}`} className="font-bold">
                 @{post.author.fullName}
               </Link>
-              <span className="text-xs font-normal text-[#888888]">
-                {new Date(post.createdAt).getMonth() + 1}월 {new Date(post.createdAt).getDate()}일
-              </span>
+              <span className="text-xs font-normal text-[#888888]">{elapsedText(new Date(post.createdAt))}</span>
             </div>
           </div>
 
@@ -193,9 +193,13 @@ export default function PostDetailPage() {
         </div>
 
         {/* 포스트 타이틀, 내용 렌더링 */}
-        <div className="px-5 mt-5">
-          <h2 className="font-semibold text-lg ">{parsePostContent(post.title).title}</h2>
+        <div className="px-5 mt-5 relative">
+          <h2 className="font-semibold text-lg">{parsePostContent(post.title).title}</h2>
           <p className="mt-2.5 text-base">{parsePostContent(post.title).content}</p>
+          <span className="text-xs font-normal text-[#888888]">
+            {new Date(post.createdAt).getFullYear()}년 {new Date(post.createdAt).getMonth() + 1}월 {""}
+            {new Date(post.createdAt).getDate()}일
+          </span>
         </div>
 
         {/* 영역 구분선 */}
@@ -214,6 +218,7 @@ export default function PostDetailPage() {
                   author={comment.author}
                   comment={comment.comment}
                   _id={comment._id}
+                  createdAt={comment.createdAt} //
                   onDelete={handleDeleteComment}
                   isCurrentUser={currentUser?._id === comment.author._id}
                 />

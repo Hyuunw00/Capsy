@@ -196,6 +196,7 @@ interface PostDetail {
       image?: string;
     };
     comment: string;
+    createdAt: string;
   }>;
   __v: number;
 }
@@ -213,6 +214,7 @@ interface CommentItemProps {
   };
   comment: string;
   _id: string;
+  createdAt: string;
   onDelete: (id: string) => void;
   isCurrentUser: boolean;
 }
