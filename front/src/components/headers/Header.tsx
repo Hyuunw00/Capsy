@@ -3,59 +3,59 @@ import logo_black from "../../assets/logo_black.svg";
 import NotificationIcon from "../../assets/Notification.svg";
 import NotifyModal from "./NotifyModal";
 import { tokenService } from "../../utils/token";
-import { followUser, getNotifications, seenNotifications } from "../../apis/apis";
+import { followUser, getNotifications, getPostDetail, seenNotifications } from "../../apis/apis";
 import { Notification } from "../../types/notification";
 
-const mapApiResponseToNotification = (apiResponse: any): Notification => {
-  // 댓글 알림
-  if (apiResponse.comment) {
-    return {
-      type: "COMMENT",
-      userId: apiResponse.author._id,
-      postId: apiResponse.post._id,
-      notificationTypeId: apiResponse._id,
-      user: {
-        fullName: apiResponse.author.fullName,
-      },
-    };
-  }
+// const mapApiResponseToNotification = (apiResponse: any): Notification => {
+//   // 댓글 알림
+//   if (apiResponse.comment) {
+//     return {
+//       type: "COMMENT",
+//       userId: apiResponse.author._id,
+//       postId: apiResponse.post._id,
+//       notificationTypeId: apiResponse._id,
+//       user: {
+//         fullName: apiResponse.author.fullName,
+//       },
+//     };
+//   }
 
-  // 팔로우 알림
-  if (apiResponse.follow) {
-    return {
-      type: "FOLLOW",
-      userId: apiResponse.user._id,
-      notificationTypeId: apiResponse._id,
-      user: {
-        fullName: apiResponse.user.fullName,
-      },
-    };
-  }
+//   // 팔로우 알림
+//   if (apiResponse.follow) {
+//     return {
+//       type: "FOLLOW",
+//       userId: apiResponse.user._id,
+//       notificationTypeId: apiResponse._id,
+//       user: {
+//         fullName: apiResponse.user.fullName,
+//       },
+//     };
+//   }
 
-  // 좋아요 알림
-  if (apiResponse.like) {
-    return {
-      type: "LIKE",
-      userId: apiResponse.author._id,
-      postId: apiResponse.post._id,
-      notificationTypeId: apiResponse._id,
-      user: {
-        fullName: apiResponse.author.fullName,
-      },
-    };
-  }
+//   // 좋아요 알림
+//   if (apiResponse.like) {
+//     return {
+//       type: "LIKE",
+//       userId: apiResponse.author._id,
+//       postId: apiResponse.post._id,
+//       notificationTypeId: apiResponse._id,
+//       user: {
+//         fullName: apiResponse.author.fullName,
+//       },
+//     };
+//   }
 
-  // 기본값으로 COMMENT 반환
-  return {
-    type: "COMMENT",
-    userId: apiResponse.author._id,
-    postId: apiResponse.post._id,
-    notificationTypeId: apiResponse._id,
-    user: {
-      fullName: apiResponse.author.fullName,
-    },
-  };
-};
+//   // 기본값으로 COMMENT 반환
+//   return {
+//     type: "COMMENT",
+//     userId: apiResponse.author._id,
+//     postId: apiResponse.post._id,
+//     notificationTypeId: apiResponse._id,
+//     user: {
+//       fullName: apiResponse.author.fullName,
+//     },
+//   };
+// };
 
 export default function Header() {
   const [showNoticeModal, setShowNoticeModal] = useState<boolean>(false);
@@ -112,28 +112,43 @@ export default function Header() {
       setNotifications([]);
       return;
     }
-
+  
     try {
       const response = await getNotifications();
-      // seen이 false인 알림만 필터링하여 변환
-      const formattedNotifications = response
-        .filter((notification: any) => !notification.seen)
-        .map((notification: any) => ({
-          type: notification.comment ? "COMMENT" : notification.follow ? "FOLLOW" : "LIKE",
-          userId: notification.author._id,
-          postId: notification.post,
-          notificationTypeId: notification._id,
-          user: {
-            fullName: notification.user.fullName,
-          },
-        }));
+      const formattedNotifications = await Promise.all(
+        response
+          .filter((notification: any) => !notification.seen)
+          .map(async (notification: any) => {
+            let postTitle;
+            if (notification.post) {
+              try {
+                const postDetail = await getPostDetail(notification.post);
+                const parsedTitle = JSON.parse(postDetail.title);
+                postTitle = parsedTitle.title;
+              } catch (error) {
+                postTitle = "삭제된 게시물";
+              }
+            }
+  
+            return {
+              type: notification.comment ? "COMMENT" : notification.follow ? "FOLLOW" : "LIKE",
+              userId: notification.author._id,
+              postId: notification.post,
+              postTitle,
+              notificationTypeId: notification._id,
+              user: {
+                fullName: notification.user.fullName,
+              },
+            };
+          })
+      );
       setNotifications(formattedNotifications);
     } catch (error) {
       console.error("알림을 불러오는데 실패했습니다", error);
       setNotifications([]);
     }
   };
-
+  
   useEffect(() => {
     const checkAndFetchNotifications = () => {
       const currentToken = tokenService.getToken();
