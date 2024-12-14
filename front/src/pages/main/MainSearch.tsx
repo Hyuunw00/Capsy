@@ -87,11 +87,11 @@ const Tab2 = ({ setIsFocused, onBackClick }: Tab2Props) => {
             onKeyDown={handleKeyDown}
             autoFocus
           />
-          <button className="bg-black w-[15px] h-[14px] rounded-[7px] mr-[4px]" onClick={handleClose}>
-            <img src={img_close} alt="취소" />
+          <button className="bg-bg-400 w-7 h-6 rounded-[50px] mr-2" onClick={handleClose}>
+            <img className="w-full h-full" src={img_close} alt="취소" />
           </button>
-          <button onClick={handleSearch}>
-            <img src={img_search} alt="검색" />
+          <button className="w-6 h-6" onClick={handleSearch}>
+            <img className="w-full h-full" src={img_search} alt="검색" />
           </button>
         </div>
       </div>
