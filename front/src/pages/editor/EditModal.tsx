@@ -24,7 +24,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
   // 개별 입력값의 형식만 검증하는 함수
   const validateInput = (name: string, value: string) => {
     const numValue = parseInt(value);
-    
+
     // 기본 형식 검증만 수행
     switch (name) {
       case "year":
@@ -58,28 +58,24 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
     if (!year || !month || !day) {
       return {
         isValid: false,
-        error: "날짜를 모두 입력해주세요"
+        error: "날짜를 모두 입력해주세요",
       };
     }
 
-    const selectedDate = new Date(
-      parseInt(year),
-      parseInt(month) - 1,
-      parseInt(day)
-    );
+    const selectedDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
     const today = new Date();
     today.setHours(0, 0, 0, 0); // 시간 제거
 
     if (selectedDate <= today) {
       return {
         isValid: false,
-        error: "미래의 날짜를 선택해주세요"
+        error: "미래의 날짜를 선택해주세요",
       };
     }
 
     return {
       isValid: true,
-      error: ""
+      error: "",
     };
   };
 
@@ -146,7 +142,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
 
   // 첫 번째 에러 메시지 가져오기
   const getErrorMessage = () => {
-    return Object.values(errors).find(error => error) || "";
+    return Object.values(errors).find((error) => error) || "";
   };
 
   return (
@@ -164,6 +160,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
                 label="year"
                 placeholder="year"
                 value={date.year}
+                disable={false}
                 onChange={(e) => handleInputChange("year", e.target.value)}
                 isError={errors.year}
               />
@@ -174,6 +171,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
                 label="month"
                 placeholder="month"
                 value={date.month}
+                disable={false}
                 onChange={(e) => handleInputChange("month", e.target.value)}
                 isError={errors.month}
               />
@@ -184,6 +182,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
                 label="day"
                 placeholder="day"
                 value={date.day}
+                disable={false}
                 onChange={(e) => handleInputChange("day", e.target.value)}
                 isError={errors.day}
               />

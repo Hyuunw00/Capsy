@@ -6,11 +6,12 @@ import EditModal from "./EditModal";
 import EditPreview from "./EditPreview";
 import EditComplete from "./EditComplete";
 import { createPost } from "../../apis/apis";
-import { CHANNEL_ID_TIMECAPSULE, CHANNEL_ID_POST } from "../../apis/apis";
+import { CHANNEL_ID_EVENT } from "../../apis/apis";
+import EventEditModal from "./EventEditModal";
 
-export default function EditorPage() {
+export default function EventEditorPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("general");
+  const activeTab = "event";
   const [showModal, setShowModal] = useState(false);
   const [saveModal, setSaveModal] = useState(false);
   const [title, setTitle] = useState("");
@@ -73,7 +74,6 @@ export default function EditorPage() {
         return;
       }
     }
-
     setUploadedImages((prev) => [...prev, ...files]);
 
     if (fileInputRef.current) {
@@ -98,7 +98,7 @@ export default function EditorPage() {
       return;
     }
 
-    if (activeTab === "timeCapsule") {
+    if (activeTab === "event") {
       if (uploadedImages.length === 0) {
         alert("타임캡슐에는 이미지 첨부가 필수입니다.");
         return;
@@ -110,21 +110,19 @@ export default function EditorPage() {
     }
 
     try {
-      const channelId = activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST;
+      const channelId = CHANNEL_ID_EVENT;
 
       // 커스텀 데이터 만들기
       const customData = {
         title: title,
-        content: text.split('\n').join('\\n'),
-        ...(activeTab === "timeCapsule" && {
-          closeAt: (() => {
-            const date = new Date(
-              `${selectedDate.year}-${selectedDate.month.padStart(2, "0")}-${selectedDate.day.padStart(2, "0")}`,
-            );
-            date.setHours(date.getHours() - 9);
-            return date.toISOString();
-          })(),
-        }),
+        content: text.split("\n").join("\\n"),
+        closeAt: (() => {
+          const date = new Date(
+            `${selectedDate.year}-${selectedDate.month.padStart(2, "0")}-${selectedDate.day.padStart(2, "0")}`,
+          );
+          date.setHours(date.getHours() + 9);
+          return date.toISOString();
+        })(),
       };
 
       const formData = new FormData();
@@ -151,26 +149,10 @@ export default function EditorPage() {
 
   return (
     <div className="relative flex flex-col h-dvh">
-      <nav className="border-b">
-        <div className="flex items-center">
-          <button
-            className={`py-3 px-6 border-b-2 w-1/2 transition ${
-              activeTab === "general" ? "text-primary border-primary" : "text-gray-400 border-transparent"
-            }`}
-            onClick={() => setActiveTab("general")}
-          >
-            일반 포스트
-          </button>
-          <button
-            className={`py-3 px-6 border-b-2 w-1/2 transition ${
-              activeTab === "timeCapsule" ? "text-[#4D15FF] border-[#4D15FF]" : "text-gray-400 border-transparent"
-            }`}
-            onClick={() => setActiveTab("timeCapsule")}
-          >
-            타임캡슐
-          </button>
-        </div>
-      </nav>
+      <button className={`py-3 px-6 border-b-2 w-full transition ${"text-[#4D15FF] border-[#4D15FF]"}`}>
+        이벤트 타임캡슐
+      </button>
+
       <nav className="flex items-center justify-between px-4 py-3 border-b border-b-gray-100">
         <div className="flex items-center gap-4">
           <input
@@ -184,7 +166,7 @@ export default function EditorPage() {
           <button onClick={handlePictureClick} className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded">
             <img src={pictureIcon} alt="사진 선택 아이콘" />
           </button>
-          {activeTab === "timeCapsule" && (
+          {activeTab === "event" && (
             <button
               className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded"
               onClick={() => setShowModal(true)}
@@ -212,25 +194,21 @@ export default function EditorPage() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           className="flex-1 w-full mt-2 overflow-scroll text-gray-600 placeholder-gray-300 whitespace-pre-wrap resize-none h-96 focus:outline-none"
-          placeholder={
-            activeTab === "general"
-              ? "포스트를 작성해주세요."
-              : "타임캡슐을 작성해주세요.\n타임캡슐은 이미지 첨부 및 날짜 지정이 필수입니다."
-          }
+          placeholder={"타임캡슐을 작성해주세요.\n타임캡슐은 이미지 첨부 및 날짜 지정이 필수입니다."}
         />
         <EditPreview
           images={uploadedImages}
-          showDatePreview={activeTab === "timeCapsule"}
+          showDatePreview={activeTab === "event"}
           date={selectedDate}
           onDelete={handleDeleteFile}
         />
       </main>
-      {showModal && <EditModal onClose={() => setShowModal(false)} onSubmit={handleDateSubmit} />}
+      {showModal && <EventEditModal onClose={() => setShowModal(false)} onSubmit={handleDateSubmit} />}
       {saveModal && (
         <EditComplete
           isOpen={saveModal}
           onClose={() => setSaveModal(false)}
-          isTimeCapsule={activeTab === "timeCapsule"}
+          isTimeCapsule={activeTab === "event"}
           postId={createdPostId!}
         />
       )}

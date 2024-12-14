@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../apis/axiosInstance";
 import NotificationModal from "../../components/NotificationModal";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { tokenService } from "../../utils/token";
 import { useLoginStore } from "../../store/loginStore";
 import eventBanner from "../../assets/holiday-event-banner.png";
@@ -13,6 +13,8 @@ import img_noti from "../../assets/Notification-white.svg";
 import img_fillNoti from "../../assets/Notification-fill.svg";
 import { CHANNEL_ID_EVENT } from "../../apis/apis";
 import Loading from "../../components/Loading";
+
+import eventWriteIcon from "../../assets/event-capsule-icon.svg";
 
 interface Like {
   _id: string;
@@ -80,7 +82,7 @@ export default function Event() {
   const [eventCapsuleData, setEventCapsuleData] = useState<Post[]>([]);
 
   // 타입 캡슐 버튼 클릭시 모달
-  const [openModal, setOpenModal] = useState({ isOpen: false, value: "" });
+  const [openModal, setOpenModal] = useState({ isOpen: false, value: "아직 미개봉된 캡슐입니다." });
 
   // 각 게시물 좋아요, 알림 상태 관리
   const [userData, _] = useState(() => {
@@ -150,6 +152,22 @@ export default function Event() {
     });
   };
 
+  // 게시글 제목 가져오기
+  const getTitle = (jsonString: any) => {
+    try {
+      const parsedData = JSON.parse(jsonString);
+      return parsedData.title || jsonString;
+    } catch (error) {
+      // 기존의 데이터가 잘못 들어가있어 console을 잡아먹어 주석 처리
+      // console.error("JSON parse error: ", error);
+      return jsonString;
+    }
+  };
+
+  //  이벤트 캡슐 게시글 이동 버튼
+  const handleClickEventEdit = () => {
+    navigate("/eventeditor");
+  };
   const handleLogout = async () => {
     try {
       await axiosInstance.post("/logout");
@@ -210,33 +228,35 @@ export default function Event() {
         </NoticeModal>
       )}
 
+      {/* 이벤트 배너 */}
       <img className="w-[600px] h-[500px]  " src={eventBanner} alt="이벤트 배너" />
 
-      <div>
-        <div className="mt-8">
-          {/* 캡슐 제목 */}
-          <div className="flex justify-between items-center text-[14px] font-pretendard px-[30px]">
-            <div className="flex items-center">
-              <span className="font-regular">크리스마스 타임 캡슐</span>
-            </div>
+      <div className="relative">
+        {/* 캡슐 제목 */}
+        <div className="flex justify-between items-center text-[14px] font-pretendard px-[30px]">
+          <div className="flex items-center">
+            <span className="text-[16px] font-pretendard font-semibold">크리스마스 타임 캡슐</span>
           </div>
-          {/* 캡슐 목록 */}
-          <div className="w-[600px] p-5">
-            <div className="grid grid-cols-3 gap-[10px]">
-              {eventCapsuleData.map((item, index) => (
+        </div>
+        {/* 캡슐 목록 */}
+        <div className="w-[600px] p-5">
+          <div className="grid grid-cols-3 gap-[10px]">
+            {eventCapsuleData.map((item, index) => (
+              <div
+                className="flex flex-col rounded-[10px] items-center justify-center cursor-pointer"
+                onClick={() => setOpenModal((prev) => ({ ...prev, isOpen: true }))}
+              >
                 <div
                   key={index}
-                  className="w-full inline-block break-inside-avoid relative mb-[10px] overflow-hidden cursor-pointer"
+                  className="w-full inline-block break-inside-avoid relative  overflow-hidden cursor-pointer"
                   // 모달창
-                  onClick={() => setOpenModal((prev) => ({ ...prev, isOpen: true }))}
                 >
                   <div>
                     <img
                       src={eventTimecapsuleThumbnail}
                       alt="이벤트 타입캡슐 로고"
-                      className="w-full h-auto rounded-[10px] object-cover"
+                      className="w-full h-auto  object-cover rounded-t-[10px]"
                     />
-                    <div></div>
                   </div>
 
                   <div className="absolute bottom-0 right-0 px-2.5 py-2 flex flex-col justify-center items-center space-y-1">
@@ -250,7 +270,7 @@ export default function Event() {
                       }}
                     />
                     {/* {item.channel.name === "TIMECAPSULE" && ( */}
-                    {item.channel?.name === "CAPSULETEST" && (
+                    {item.channel?.name === "EVENTTEST" && (
                       //  알림 이미지
                       <img
                         src={notiStatus[index] ? img_fillNoti : img_noti}
@@ -264,9 +284,34 @@ export default function Event() {
                     )}
                   </div>
                 </div>
-              ))}
-            </div>
+                {/* 게시글 작성자 및 제목 가져오기 */}
+                <div className={` bottom-0 left-0 px-2.5 py-2 w-full text-white rounded-b-[10px]  bg-custom-gradient `}>
+                  <p
+                    className="inline-block font-semibold"
+                    onClick={(e) => {
+                      navigate(`/userInfo/${item.author.fullName}`);
+                      e.stopPropagation();
+                      console.log("누른 아이디: ", item.author.fullName);
+                    }}
+                  >
+                    @{item.author.fullName}
+                  </p>
+                  <p className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ maxWidth: "calc(18ch)" }}>
+                    {getTitle(item.title)}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
+        </div>
+        {/* 이벤트 캡슐 게시글 작성 버튼 */}
+        <div className="fixed bottom-[80px] right-6 z-50">
+          <button
+            className="bg-black w-[72px] h-[72px] rounded-[36px] flex justify-center items-center"
+            onClick={handleClickEventEdit}
+          >
+            <img src={eventWriteIcon} alt="이벤트 캡슐 작성 버튼" className="w-[40px] h-[40px]" />
+          </button>
         </div>
       </div>
 
