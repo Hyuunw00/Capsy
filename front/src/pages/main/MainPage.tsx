@@ -7,6 +7,7 @@ import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE } from "../../apis/apis";
 import MainSearch from "./MainSearch";
 import MainSearchModal from "./MainSearchModal";
 import Loading from "../../components/Loading";
+import TimeCapsuleModal from "../../components/TimeCapsuleModal";
 
 import img_bottom from "../../assets/bottom-arrow.svg";
 import img_capsule from "../../assets/icon_capsule.svg";
@@ -16,6 +17,8 @@ import img_noti from "../../assets/Notification-white.svg";
 import img_fillNoti from "../../assets/Notification-fill.svg";
 // import img_noti_disable from "../../assets/Notification-disabled.svg";
 import img_scroll from "../../assets/scroll-icon.svg";
+import img_timeCapsule from "../../assets/time-capsule.png";
+import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
 
 interface Like {
   _id: string;
@@ -95,6 +98,9 @@ export default function MainPage() {
   const [likeStatus, setLikeStatus] = useState<{ [key: string]: boolean }>({});
   // 로딩중인지에 대한 상태
   const [loading, setLoading] = useState<boolean>(true);
+  // 모달 상태 관리
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState({ imgSrc: "", neonText: "", whiteText: "" });
 
   // 전역 상태 변수
   const isFocused = useMainSearchStore((state) => state.isFocused);
@@ -124,6 +130,28 @@ export default function MainPage() {
       top: 0,
       behavior: "smooth",
     });
+  };
+
+  // 포스트 컴포넌트 클릭 시
+  const handleImageClick = (item: any) => {
+    const isCapsuleTest = item.channel?.name === "CAPSULETEST";
+    const isBeforeCloseAt = new Date().toISOString() < (getCloseAt(item.title)?.toISOString() ?? "");
+
+    if (isCapsuleTest && isBeforeCloseAt) {
+      setModalData({
+        imgSrc: img_lock_timeCapsule,
+        neonText: "미개봉 타임 캡슐입니다!",
+        whiteText: "예약 시 알림을 받을 수 있어요",
+      });
+      setShowModal(true);
+    } else {
+      navigate(`/detail/${item._id}`);
+    }
+  };
+
+  // 타임캡슐 모달 컴포넌트 X 버튼 클릭 시
+  const handleCloseModal = () => {
+    setShowModal(false);
   };
 
   // 좋아요 버튼 클릭 이벤트 핸들러
@@ -204,6 +232,20 @@ export default function MainPage() {
     }
   };
 
+  // 타임캡슐의 closeAt 날짜 가져오기
+  const getCloseAt = (jsonString: any): Date | null => {
+    try {
+      const parsedData = JSON.parse(jsonString);
+      if (parsedData.closeAt) {
+        return new Date(parsedData.closeAt);
+      }
+      return null;
+    } catch (error) {
+      console.error("JSON parse error: ", error);
+      return null;
+    }
+  };
+
   // 데이터 call
   useEffect(() => {
     const updateData = async (postChannelId: string, capsuleChannelId: string) => {
@@ -269,6 +311,7 @@ export default function MainPage() {
     // console.log("filterData", filterData);
     // console.log("postData", postData);
     // console.log("capsuleData", capsuleData);
+    // console.log("Date", new Date().toISOString());
   }, [data, filterData]);
 
   // 검색된 게시물에대한 코드
@@ -351,10 +394,25 @@ export default function MainPage() {
             <div
               key={index}
               className="w-full inline-block break-inside-avoid relative mb-[10px] overflow-hidden cursor-pointer"
-              onClick={() => navigate(`/detail/${item._id}`)}
+              onClick={() => handleImageClick(item)}
+              // onClick={() => navigate(`/detail/${item._id}`)}
             >
               {item.image ? (
-                <img src={item.image} alt={item.title} className="w-full h-auto rounded-[10px] object-cover" />
+                <>
+                  <img src={item.image} alt={item.title} className="w-full h-auto rounded-[10px] object-cover" />
+
+                  {item.channel?.name === "CAPSULETEST" && (
+                    <>
+                      <div className="absolute top-1.5 right-1.5 bg-black bg-opacity-40 w-[30px] h-[30px] flex items-center justify-center rounded-full">
+                        <img src={img_capsule} alt="캡슐" className="w-[16px]" />
+                      </div>
+
+                      {new Date().toISOString() < (getCloseAt(item.title)?.toISOString() ?? "") && (
+                        <div className="absolute inset-0" style={{ backdropFilter: "blur(10px)" }}></div>
+                      )}
+                    </>
+                  )}
+                </>
               ) : (
                 <div className="w-full h-40 bg-white border border-[#E7E7E7] border-1 rounded-[10px] relative">
                   <div className="px-2.5 py-2.5 text-[16px] ">
@@ -429,6 +487,16 @@ export default function MainPage() {
           </button>
         </div>
       </div>
+
+      {/* 모달 보여주는 부분 */}
+      {showModal && (
+        <TimeCapsuleModal
+          imgSrc={modalData.imgSrc}
+          neonText={modalData.neonText}
+          whiteText={modalData.whiteText}
+          onClose={handleCloseModal}
+        />
+      )}
     </>
   );
 }
