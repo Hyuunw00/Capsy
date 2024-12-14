@@ -25,13 +25,8 @@ const NotifyModal = ({
     switch (notification.type) {
       case "FOLLOW":
         return (
-          <div 
-            key={notificationKey} 
-            className="flex items-center justify-between py-2"
-          >
-            <p>
-              {notification.user?.fullName || notification.userId}님이 팔로우를 요청했습니다
-            </p>
+          <div key={notificationKey} className="flex items-center justify-between py-2">
+            <p>{notification.user?.fullName || notification.userId}님이 팔로우를 요청했습니다</p>
             <div className="flex gap-2">
               <Button
                 onClick={() => onRejectFollow(notification)}
@@ -52,12 +47,9 @@ const NotifyModal = ({
       case "LIKE":
       case "COMMENT":
         return (
-          <div 
-            key={notificationKey} 
-            className="flex items-center justify-between py-2"
-          >
+          <div key={notificationKey} className="flex items-center justify-between py-2 hover:bg-gray-50">
             <p>
-              게시물에 새로운
+              <strong>{notification.postTitle || "게시물"}</strong>에 새로운
               {notification.type === "LIKE" ? " 좋아요" : " 댓글"}이 있습니다
             </p>
             <div className="flex gap-2">
@@ -76,7 +68,6 @@ const NotifyModal = ({
             </div>
           </div>
         );
-
       default:
         return null;
     }
@@ -93,9 +84,7 @@ const NotifyModal = ({
       {notifications?.length > 0 ? (
         notifications.map((notification) => renderNotification(notification))
       ) : (
-        <p className="py-4 text-center text-gray-500">
-          알림이 없습니다
-        </p>
+        <p className="py-4 text-center text-gray-500">알림이 없습니다</p>
       )}
     </div>
   );

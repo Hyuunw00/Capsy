@@ -151,9 +151,12 @@ export const getNotifications = async () => {
 };
 
 // 알림 확인 API
-export const seenNotifications = async () => {
+export const seenNotifications = async (id : string) => {
   try {
-    const response = await axiosInstance.put(`/notifications/seen`);
+    const response = await axiosInstance.put(`/notifications/seen`, {
+      id : id
+    });
+    // 이 때 id는 좋아요 생성 -> 응답 _id / 댓글 생성 -> 응답의 _id
     return response.data;
   } catch (error) {
     throw error;
