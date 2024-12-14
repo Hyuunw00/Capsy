@@ -8,6 +8,7 @@ import { passwordChangeAuth, userLogoutAuth } from "../../apis/auth";
 import { tokenService } from "../../utils/token";
 import { testPassword } from "../../utils/regex";
 import { AuthInput } from "../../components/AuthInput";
+import NotificationModal from "../../components/NotificationModal";
 
 export default function NewPasswordPage() {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ export default function NewPasswordPage() {
 
   const passwordRef = useRef<HTMLInputElement>(null);
   const passwordConfirmRef = useRef<HTMLInputElement>(null);
+  const [successModal, setSuccessModal] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,11 +42,16 @@ export default function NewPasswordPage() {
       return;
     }
 
-    //  비밀번호 유효성 검사와 비밀번호 값 비교
-    if (!testPassword(password) || password !== passwordConfirm) {
-      console.log("2");
+    // 비밀번호 형식 검사
+    if (!testPassword(password)) {
+      setAuth({ ...auth, isPasswordValid: false, password: "" });
+      return;
+    }
 
-      setAuth({ ...auth, isPasswordConfirmValid: false, isPasswordValid: false, password: "", passwordConfirm: "" });
+    // 비밀번호 동일 여부 검사
+    if (password === passwordConfirm) {
+      setAuth({ ...auth, isPasswordConfirmValid: false, passwordConfirm: "" });
+      setOpenModal({ isOpen: true, value: "현재 비밀번호와 다른 비밀번호를 입력해주세요." });
       return;
     }
 
@@ -53,7 +60,7 @@ export default function NewPasswordPage() {
       await Promise.all([passwordChangeAuth(password), userLogoutAuth()]);
       logout();
       tokenService.clearAll();
-      navigate(`/login`);
+      setSuccessModal(true);
     } catch (error) {
       console.error(error);
       // setOpenModal({ ...openModal, isOpen: true, value: "비밀번호 오류" });
@@ -65,9 +72,8 @@ export default function NewPasswordPage() {
   return (
     <>
       {openModal.isOpen && (
-        <NoticeModal onClose={() => setOpenModal({ ...openModal, isOpen: false })} title="알림">
-          비밀번호가 다릅니다. <br />
-          다시 입력해주세요.
+        <NoticeModal onClose={() => setOpenModal({ ...openModal, isOpen: false })} title="동일한 비밀번호">
+          기존과 동일한 비밀번호를 입력하셨습니다.<br/> 다른 비밀번호로 변경해주세요
         </NoticeModal>
       )}
       <form onSubmit={handleSubmit} className="px-12">
@@ -92,16 +98,25 @@ export default function NewPasswordPage() {
             value={auth.passwordConfirm}
             onChange={(e) => setAuth({ ...auth, passwordConfirm: e.target.value })}
             placeholder="새 비밀번호 확인"
-            error="동일한 비밀번호 입력"
+            error="기존과 동일한 비밀번호입니다"
             ref={passwordConfirmRef}
             isValid={auth.isPasswordConfirmValid}
           />
 
-          <Button className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] text-[12px] rounded-[6px] mt-[20px]">
+          <Button className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] rounded-md mt-[20px]">
             확인
           </Button>
         </div>
       </form>
+      <NotificationModal
+        isOpen={successModal}
+        title="비밀번호 변경 완료 🎉"
+        description="확인 버튼을 누르면 로그인 페이지로 이동합니다!"
+      >
+        <button onClick={() => navigate("/login")} className="w-full py-2 text-white bg-black rounded-md">
+          확인
+        </button>
+      </NotificationModal>
     </>
   );
 }

@@ -10,7 +10,7 @@ const NoticeModal = ({ title, children, onClose }: NoticeModalProps) => {
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/30" />
-      <div className="absolute top-32 left-12 shadow-md z-50 w-[80%] p-4 bg-white rounded-lg">
+      <div className="absolute top-2/4 left-2/4 -translate-x-1/2 -translate-y-1/2 shadow-md z-50 w-[60%] p-4 bg-white rounded-lg">
         <h5 className="mb-3 text-black">{title}</h5>
         <p className="mb-4">{children}</p>
         <button onClick={onClose} className="w-full py-2 text-white bg-black rounded">

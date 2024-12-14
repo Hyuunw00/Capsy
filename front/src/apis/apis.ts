@@ -4,7 +4,6 @@ export const CHANNEL_ID_TIMECAPSULE = "675c3793afaf9312bedbccd3";
 export const CHANNEL_ID_POST = "675c379fafaf9312bedbccd7";
 export const CHANNEL_ID_EVENT = "675c65b6adb5881a22f7c224";
 
-
 // Post -------------------------------------------------------------------------
 
 // 포스트 생성 API
@@ -73,19 +72,33 @@ export const getPostDetail = async (postId: string) => {
 // Comments --------------------------------------------------------------------
 
 // 특정 포스트에 댓글 달기 API
-export const createComment = async (data: any) => {
+export const createComment = async (data: {
+  comment: string;
+  postId: string;
+  postAuthorId?: string;
+}) => {
   try {
-    const response = await axiosInstance.post(`/comments/create`, data);
+    const postAuthorId = data.postAuthorId || (await getPostDetail(data.postId)).author._id;
 
-    // 댓글 작성 후 알림 생성
+    // 댓글 생성 시 post 필드를 반드시 포함
+    const commentData = {
+      comment: data.comment,
+      postId: data.postId
+    };
+
+    // 댓글 생성 요청
+    const commentResponse = await axiosInstance.post(`/comments/create`, commentData);
+
+    // 알림 생성
     await createNotifications({
       notificationType: "COMMENT",
-      notificationTypeId: response.data._id,
-      userId: response.data.author._id,
-      postId: response.data.post,
+      notificationTypeId: commentResponse.data._id,
+      userId: postAuthorId,
+      postId: data.postId,
     });
 
-    return response.data;
+    // 업데이트된 포스트 정보를 반환
+    return await getPostDetail(data.postId);
   } catch (error) {
     throw error;
   }

@@ -59,7 +59,7 @@ export default function PostDetailPage() {
   // 댓글 아이템
   const CommentItem = ({ author, comment, _id, createdAt, onDelete, isCurrentUser }: CommentItemProps) => {
     return (
-      <div className="flex justify-between items-start p-3">
+      <div className="flex items-start justify-between p-3">
         <div className="flex gap-3">
           {/* 프로필 이미지 */}
           <Link to={`/userinfo/${author.fullName}`}>
@@ -77,14 +77,14 @@ export default function PostDetailPage() {
             <Link to={`/userinfo/${author.fullName}`} className="font-bold">
               {author.fullName}
             </Link>
-            <span className="text-gray-500 text-xs ml-2">{elapsedText(new Date(createdAt))}</span>
+            <span className="ml-2 text-xs text-gray-500">{elapsedText(new Date(createdAt))}</span>
             <p className="mt-1">{comment}</p>
           </div>
         </div>
 
         {/* 삭제 버튼 */}
         {isCurrentUser && (
-          <button onClick={() => onDelete(_id)} className="text-gray-400 hover:text-opacity-60 transition-colors">
+          <button onClick={() => onDelete(_id)} className="text-gray-400 transition-colors hover:text-opacity-60">
             <svg width="10" height="10" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clipPath="url(#clip0_957_4884)">
                 <path
@@ -109,22 +109,24 @@ export default function PostDetailPage() {
   // 댓글 제출 로직
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!commentText.trim()) return;
+    if (!commentText.trim() || !post?._id || !post?.author._id) return; // 수정 : 타입 에러때문에 각 요소별로 타입 지정 했습니다 (윤슬)
 
     try {
-      await createComment({
+      // createComment의 반환값을 바로 사용하도록 수정 (윤슬)
+      const updatedPost = await createComment({
         comment: commentText,
-        postId: post?._id,
+        postId: post._id,
+        postAuthorId: post.author._id // 수정 : 이미 있는 작성자 ID 전달 (윤슬)
       });
 
       // 댓글 작성 후 포스트 정보 새로고침
-      const updatedPost = await getPostDetail(post?._id as string);
       setPost(updatedPost);
       setCommentText(""); // 입력창 초기화
     } catch (error) {
       console.error("댓글 작성 실패:", error);
     }
   };
+
   // 댓글 삭제 로직
   const handleDeleteComment = (commentId: string) => {
     setDeleteCommentId(commentId);
@@ -189,12 +191,12 @@ export default function PostDetailPage() {
         <hr className="border-t border-gray200" />
         {/* 포스트 이미지 렌더링 */}
         <div className="relative w-[600px] h-[600px] bg-gray-50 mx-auto">
-          <img src={post.image || randomThumbnail} className="w-full h-full object-contain" alt="post-image" />
+          <img src={post.image || randomThumbnail} className="object-contain w-full h-full" alt="post-image" />
         </div>
 
         {/* 포스트 타이틀, 내용 렌더링 */}
-        <div className="px-5 mt-5 relative">
-          <h2 className="font-semibold text-lg">{parsePostContent(post.title).title}</h2>
+        <div className="relative px-5 mt-5">
+          <h2 className="text-lg font-semibold">{parsePostContent(post.title).title}</h2>
           <p className="mt-2.5 text-base">{parsePostContent(post.title).content}</p>
           <span className="text-xs font-normal text-[#888888]">
             {new Date(post.createdAt).getFullYear()}년 {new Date(post.createdAt).getMonth() + 1}월 {""}
@@ -272,13 +274,13 @@ export default function PostDetailPage() {
 
       {/* 댓글 삭제 모달 */}
       <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
-        <p className="text-center mb-4">댓글을 삭제하시겠습니까?</p>
-        <div className="flex justify-end gap-2 w-full">
+        <p className="mb-4 text-center">댓글을 삭제하시겠습니까?</p>
+        <div className="flex justify-end w-full gap-2">
           <button className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => setShowDeleteModal(false)}>
             취소
           </button>
           <button
-            className="px-4 py-2 bg-primary text-white rounded transition-opacity hover:opacity-40"
+            className="px-4 py-2 text-white transition-opacity rounded bg-primary hover:opacity-40"
             onClick={confirmDelete}
           >
             삭제
