@@ -20,6 +20,7 @@ export default function PostDetailPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false); // 댓글 삭제 모달 상태 관리
   const [deleteCommentId, setDeleteCommentId] = useState<string>(""); // 삭제할 댓글 ID 상태 관리
   const { postId } = useParams<{ postId: string }>(); // URL 파라미터에서 postId 추출
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const currentUser = tokenService.getUser(); // 현재 로그인한 사용자 정보
   const randomThumbnail = useMemo(() => {
     const thumbnails = [thumbnail1, thumbnail2, thumbnail3, thumbnail4, thumbnail5, thumbnail6];
@@ -47,7 +48,7 @@ export default function PostDetailPage() {
       return JSON.parse(jsonString) as PostItemProps;
     } catch (error) {
       //console.error("포스트를 불러오는데 실패했습니다.:", error);
-      return { title: "", content: "" };
+      return { title: "", content: "", image: [] };
     }
   };
 
@@ -55,6 +56,31 @@ export default function PostDetailPage() {
   const handleFollowClick = () => {
     setIsFollowing(!isFollowing);
   };
+
+  // 이전, 다음 이미지 이동시켜주는 버튼
+  const ArrowButton = ({ direction, onClick }: { direction: "left" | "right"; onClick: () => void }) => (
+    <div
+      className={`absolute top-0 ${direction === "left" ? "left-0" : "right-0"} w-1/3 h-full group cursor-pointer`}
+      onClick={onClick}
+    >
+      <div className="absolute top-0 w-full h-full group-hover:bg-transparent">
+        <button
+          className={`absolute top-1/2 ${direction === "left" ? "left-0" : "right-0"} transform -translate-y-1/2 w-10 h-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity`}
+        >
+          <svg width="24" height="24" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d={
+                direction === "left"
+                  ? "M6.7675 7.50002L9.86125 10.5938L8.9775 11.4775L5 7.50002L8.9775 3.52252L9.86125 4.40627L6.7675 7.50002Z"
+                  : "M8.2325 7.50002L5.13875 4.40627L6.0225 3.52252L10 7.50002L6.0225 11.4775L5.13875 10.5938L8.2325 7.50002Z"
+              }
+              className="fill-primary"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
 
   // 댓글 아이템
   const CommentItem = ({ author, comment, _id, createdAt, onDelete, isCurrentUser }: CommentItemProps) => {
@@ -116,7 +142,7 @@ export default function PostDetailPage() {
       const updatedPost = await createComment({
         comment: commentText,
         postId: post._id,
-        postAuthorId: post.author._id // 수정 : 이미 있는 작성자 ID 전달 (윤슬)
+        postAuthorId: post.author._id, // 수정 : 이미 있는 작성자 ID 전달 (윤슬)
       });
 
       // 댓글 작성 후 포스트 정보 새로고침
@@ -150,6 +176,22 @@ export default function PostDetailPage() {
   if (!post) {
     return <Loading />;
   }
+  // 새로운 형식으로 처리한 이미지(들)
+  const postImages = parsePostContent(post.title).image ? parsePostContent(post.title).image! : [];
+  // file형식으로 처리한 이미지 1개 -> 나중에 이미지 처리 형식 바꾸면 제거할 예정
+  const pastImage = post.image;
+
+  const handleNextImage = () => {
+    if (currentImageIndex < postImages.length - 1) {
+      setCurrentImageIndex((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (currentImageIndex > 0) {
+      setCurrentImageIndex((prev) => prev - 1);
+    }
+  };
 
   return (
     <>
@@ -189,9 +231,50 @@ export default function PostDetailPage() {
           )}
         </div>
         <hr className="border-t border-gray200" />
+
         {/* 포스트 이미지 렌더링 */}
-        <div className="relative w-[600px] h-[600px] bg-gray-50 mx-auto">
-          <img src={post.image || randomThumbnail} className="object-contain w-full h-full" alt="post-image" />
+        <div className="relative w-[600px] h-[600px] bg-gray-50 mx-auto overflow-hidden">
+          <div
+            className="flex w-full transition-transform duration-300 ease-in-out"
+            style={{
+              transform: `translateX(-${currentImageIndex * 100}%)`,
+            }}
+          >
+            {postImages.length > 0 ? (
+              postImages.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  className="min-w-full w-0 aspect-square object-cover"
+                  alt={`post-image-${index}`}
+                />
+              ))
+            ) : (
+              <img
+                src={pastImage ? pastImage : randomThumbnail}
+                className="w-full h-full object-contain"
+                alt="post-image"
+              />
+            )}
+          </div>
+          {/* 이전 이미지 버튼 */}
+          {currentImageIndex > 0 && <ArrowButton direction="left" onClick={handlePrevImage} />}
+          {/* 다음 이미지 버튼 */}
+          {currentImageIndex < postImages.length - 1 && <ArrowButton direction="right" onClick={handleNextImage} />}
+          {/* 이미지 인디케이터 */}
+          {postImages.length > 1 && (
+            <div className="absolute bottom-3.5 left-1/2 transform -translate-x-1/2 flex gap-1.5">
+              {postImages.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                    index === currentImageIndex ? "bg-primary" : "bg-gray-100"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+          {/* <img src={post.image || randomThumbnail} className="w-full h-full object-contain" alt="post-image" /> */}
         </div>
 
         {/* 포스트 타이틀, 내용 렌더링 */}

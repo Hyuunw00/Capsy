@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import pictureIcon from "../../assets/pick-picture-icon.svg";
 import dateIcon from "../../assets/pick-date-icon.svg";
-import EditModal from "./EditModal";
 import EditPreview from "./EditPreview";
 import EditComplete from "./EditComplete";
 import { createPost } from "../../apis/apis";
@@ -35,15 +34,11 @@ export default function EventEditorPage() {
   };
 
   const validateFile = (file: File): { isValid: boolean; error?: string } => {
-    const VIDEO_MAX_SIZE = 4 * 1024 * 1024 * 1024; // 4GB
     const IMG_MAX_SIZE = 30 * 1024 * 1024; // 30MB
 
     if (file.type.startsWith("video/")) {
       if (!["video/mp4", "video/quicktime"].includes(file.type)) {
-        return { isValid: false, error: "비디오는 MP4 또는 MOV 형식만 가능합니다." };
-      }
-      if (file.size > VIDEO_MAX_SIZE) {
-        return { isValid: false, error: "비디오 크기는 4GB 이하여야 합니다." };
+        return { isValid: false, error: "비디오는 불가능합니다." };
       }
     } else if (file.type.startsWith("image/")) {
       if (!["image/jpeg", "image/png"].includes(file.type)) {
@@ -109,8 +104,21 @@ export default function EventEditorPage() {
       }
     }
 
+    // 다중 이미지일 경우
     try {
       const channelId = CHANNEL_ID_EVENT;
+
+      // 이미지 파일 base64로 인코딩
+      const incodingImages = uploadedImages.map((file) => {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject("Base64 인코딩 실패");
+          reader.readAsDataURL(file); // Base64 인코딩
+        });
+      });
+      const base64Images = await Promise.all(incodingImages);
+      console.log(base64Images);
 
       // 커스텀 데이터 만들기
       const customData = {
@@ -123,21 +131,16 @@ export default function EventEditorPage() {
           date.setHours(date.getHours() + 9);
           return date.toISOString();
         })(),
+        image: base64Images, // 인코딩된 문자열 배열
       };
 
       const formData = new FormData();
       formData.append("title", JSON.stringify(customData));
       formData.append("channelId", channelId);
 
-      if (uploadedImages.length > 0) {
-        uploadedImages.forEach((image) => {
-          formData.append("image", image);
-        });
-      }
-
       const response = await createPost(formData);
+      console.log(response);
       setSaveModal(true);
-
       if (response?._id) {
         setCreatedPostId(response._id);
         setSaveModal(true);

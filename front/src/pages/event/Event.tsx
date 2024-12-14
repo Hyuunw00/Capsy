@@ -152,11 +152,11 @@ export default function Event() {
     });
   };
 
-  // 게시글 제목 가져오기
-  const getTitle = (jsonString: any) => {
+  // 파싱된 title 필드 가져오기
+  const getParsedData = (jsonString: any) => {
     try {
       const parsedData = JSON.parse(jsonString);
-      return parsedData.title || jsonString;
+      return parsedData || jsonString;
     } catch (error) {
       // 기존의 데이터가 잘못 들어가있어 console을 잡아먹어 주석 처리
       // console.error("JSON parse error: ", error);
@@ -243,17 +243,24 @@ export default function Event() {
           <div className="grid grid-cols-3 gap-[10px]">
             {eventCapsuleData.map((item, index) => (
               <div
+                key={index}
                 className="flex flex-col rounded-[10px] items-center justify-center cursor-pointer"
                 onClick={() => setOpenModal((prev) => ({ ...prev, isOpen: true }))}
               >
                 <div
-                  key={index}
                   className="w-full inline-block break-inside-avoid relative  overflow-hidden cursor-pointer"
                   // 모달창
                 >
                   <div>
+                    {/*  게시물 이미지 */}
                     <img
-                      src={eventTimecapsuleThumbnail}
+                      src={
+                        // getParsedData(item.title)?.image
+                        //   ? //  제일 첫번째 이미지 썸네일로 보여주기
+                        //     getParsedData(item.title).image[0]
+                        //   : eventTimecapsuleThumbnail
+                        eventTimecapsuleThumbnail
+                      }
                       alt="이벤트 타입캡슐 로고"
                       className="w-full h-auto  object-cover rounded-t-[10px]"
                     />
@@ -297,7 +304,7 @@ export default function Event() {
                     @{item.author.fullName}
                   </p>
                   <p className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ maxWidth: "calc(18ch)" }}>
-                    {getTitle(item.title)}
+                    {getParsedData(item.title).title}
                   </p>
                 </div>
               </div>
