@@ -19,6 +19,7 @@ import CapsuleListPage from "./components/CapsuleListPage";
 import AlarmListPage from "./components/AlarmListPage";
 import Error404 from "./components/Error404";
 import UserInfoPage from "./pages/userinfo/UserInfoPage";
+import EventEditorPage from "./pages/editor/EventEditorPage";
 
 export default function App() {
   // 새로고침할때마다 session storage에서 token 받아와서 로그인
@@ -50,6 +51,7 @@ export default function App() {
           <Route element={<Private />}>
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/editor" element={<EditorPage />} />
+            <Route path="/eventeditor" element={<EventEditorPage />} />
             <Route path="/detail/:postId" element={<PostDetailPage />} />
             <Route path="/resetpassword" element={<PasswordResetPage />} />
             <Route path="/capsule-list" element={<CapsuleListPage />} />
