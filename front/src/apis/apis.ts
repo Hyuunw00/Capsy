@@ -2,6 +2,8 @@ import axiosInstance from "./axiosInstance";
 
 export const CHANNEL_ID_TIMECAPSULE = "675c3793afaf9312bedbccd3";
 export const CHANNEL_ID_POST = "675c379fafaf9312bedbccd7";
+export const CHANNEL_ID_EVENT = "675c65b6adb5881a22f7c224";
+
 
 // Post -------------------------------------------------------------------------
 
