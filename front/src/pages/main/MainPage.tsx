@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../apis/axiosInstance";
 import { useMainSearchStore } from "../../store/mainSearchStore";
-import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE } from "../../apis/apis";
+import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE, createNotifications } from "../../apis/apis";
 
 import MainSearch from "./MainSearch";
 import MainSearchModal from "./MainSearchModal";
@@ -128,6 +128,17 @@ export default function MainPage() {
         post.likes.push(newLike);
         console.log("좋아요 추가 완료!", post.likes);
         setLikeStatus((prevState) => ({ ...prevState, [postId]: true }));
+
+        // 작성자가 자신의 게시글에 좋아요를 누를때는 알림  x
+        if (post.author._id === userId) return;
+
+        // 좋아요 알림 생성
+        await createNotifications({
+          notificationType: "LIKE",
+          notificationTypeId: response.data._id,
+          userId: post.author._id,
+          postId: post._id,
+        });
       } else {
         // 좋아요를 눌렀었다면 취소
         const likeId = userLikes[0]._id;
