@@ -163,6 +163,7 @@ interface CustomPostData {
   closeAt?: string; // YYYY-MM-DD 형식의 공개 날짜
 }
 interface PostDetail {
+  likes?: any;
   _id: string;
   title: string;
   image: string;
@@ -218,4 +219,57 @@ interface CommentItemProps {
   createdAt: string;
   onDelete: (id: string) => void;
   isCurrentUser: boolean;
+}
+
+interface Like {
+  _id: string;
+  user: string;
+  post: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Channel {
+  authRequired: boolean;
+  posts: string[];
+  _id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Author {
+  role: string;
+  emailVerified: boolean;
+  banned: boolean;
+  isOnline: boolean;
+  posts: string[];
+  likes: string[];
+  comments: string[];
+  followers: string[];
+  following: string[];
+  notifications: string[];
+  messages: string[];
+  _id: string;
+  fullName: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+  username: string | null;
+  image: string;
+  imagePublicId: string;
+}
+
+interface Post {
+  likes: Like[];
+  comments: string[];
+  _id: string;
+  title: string;
+  image?: string;
+  imagePublicId?: string;
+  channel: Channel;
+  author: Author;
+  createdAt: string;
+  updatedAt: string;
 }
