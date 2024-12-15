@@ -205,13 +205,13 @@ export default function EditorPage() {
             placeholder="제목 없음"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full text-gray-600 placeholder-gray-300 bg-white resize-none h-7 focus:outline-none dark:bg-black"
+            className="w-full text-gray-600 placeholder-gray-300 bg-white resize-none h-7 focus:outline-none dark:bg-black dark:text-gray-100"
           />
         </h2>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="flex-1 w-full mt-2 overflow-x-hidden overflow-y-scroll text-gray-600 placeholder-gray-300 whitespace-pre-wrap bg-white resize-none h-96 focus:outline-none dark:bg-black"
+          className="flex-1 w-full mt-2 overflow-x-hidden overflow-y-scroll text-gray-600 placeholder-gray-300 whitespace-pre-wrap bg-white resize-none h-96 focus:outline-none dark:bg-black dark:text-gray-100"
           placeholder={
             activeTab === "general"
               ? "포스트를 작성해주세요."
