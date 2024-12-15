@@ -1,6 +1,6 @@
 import { forwardRef, useState } from "react";
-import eyesOpen from '../assets/password-eyes-open.svg';
-import eyesClose from '../assets/password-eyes-close.svg';
+import eyesOpen from '../assets/passwordIcon/eyes-open.svg';
+import eyesClose from '../assets/passwordIcon/eyes-close.svg';
 
 interface InputWithLabelProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -39,7 +39,7 @@ export const AuthInput = forwardRef<HTMLInputElement, InputWithLabelProps>((prop
               className="absolute -translate-y-1/2 right-3 top-1/2"
             >
               <img 
-                src={showPassword ? eyesClose : eyesOpen} 
+                src={showPassword ? eyesOpen : eyesClose} 
                 alt={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
                 className="w-6 h-6 transition"
               />

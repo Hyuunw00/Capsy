@@ -5,6 +5,8 @@ import NotifyModal from "./NotifyModal";
 import { tokenService } from "../../utils/token";
 import { followUser, getNotifications, getPostDetail, seenNotifications } from "../../apis/apis";
 import { Notification } from "../../types/notification";
+import LightMode from "../../assets/Light-mode.svg";
+import DarkMode from "../../assets/Dark-mode.svg";
 
 export default function Header() {
   const [showNoticeModal, setShowNoticeModal] = useState<boolean>(false);
@@ -14,6 +16,7 @@ export default function Header() {
     message: "",
   });
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!tokenService.getToken());
+  const [isLight, setIsLight] = useState(false);
 
   const showToastMessage = (message: string) => {
     setToast({ show: true, message });
@@ -68,7 +71,7 @@ export default function Header() {
       setNotifications([]);
       return;
     }
-  
+
     try {
       const response = await getNotifications();
       const formattedNotifications = await Promise.all(
@@ -85,7 +88,7 @@ export default function Header() {
                 postTitle = "삭제된 게시물";
               }
             }
-  
+
             return {
               type: notification.comment ? "COMMENT" : notification.follow ? "FOLLOW" : "LIKE",
               userId: notification.author._id,
@@ -97,7 +100,7 @@ export default function Header() {
                 fullName: notification.user.fullName,
               },
             };
-          })
+          }),
       );
       setNotifications(formattedNotifications);
     } catch (error) {
@@ -105,7 +108,7 @@ export default function Header() {
       setNotifications([]);
     }
   };
-  
+
   useEffect(() => {
     const checkAndFetchNotifications = () => {
       const currentToken = tokenService.getToken();
@@ -152,15 +155,22 @@ export default function Header() {
     <>
       <nav className="flex items-center justify-between px-8 py-4">
         <img src={logo_black} alt="Logo" className="w-[75px] h-[30px]" />
-        <button
-          onClick={() => isLoggedIn && setShowNoticeModal((prev) => !prev)}
-          className={`flex items-center justify-center w-5 h-5 relative ${
-            !isLoggedIn ? "invisible pointer-events-none" : ""
-          }`}
-        >
-          <img src={NotificationIcon} alt="Notification" className="object-contain w-full h-full" />
-          {notifications.length > 0 && <div className="absolute w-2 h-2 rounded-full -top-1 -right-1 bg-secondary" />}
-        </button>
+
+        <div className="gap-2 item-middle">
+          <button onClick={() => setIsLight(!isLight)}>
+            <img src={isLight ? LightMode : DarkMode} alt={isLight ? "라이트모드 아이콘" : "다크모드 아이콘"} />
+          </button>
+          <button
+            onClick={() => isLoggedIn && setShowNoticeModal((prev) => !prev)}
+            className={`flex items-center justify-center w-5 h-5 relative ${
+              !isLoggedIn ? "invisible pointer-events-none" : ""
+            }`}
+          >
+            <img src={NotificationIcon} alt="Notification" className="object-contain w-full h-full" />
+            {notifications.length > 0 && <div className="absolute w-2 h-2 rounded-full -top-1 -right-1 bg-secondary" />}
+          </button>
+        </div>
+
         {isLoggedIn && (
           <NotifyModal
             isVisible={showNoticeModal}
@@ -173,7 +183,7 @@ export default function Header() {
         )}
       </nav>
       {toast.show && (
-        <div className="fixed p-4 text-white transition-opacity bg-black rounded shadow-lg top-4 right-4">
+        <div className="fixed px-4 py-2 text-white transition-opacity bg-black rounded shadow-lg top-4 right-4">
           {toast.message}
         </div>
       )}

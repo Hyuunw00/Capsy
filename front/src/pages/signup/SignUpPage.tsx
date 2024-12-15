@@ -156,7 +156,7 @@ export default function SignUpPage() {
 
             <button
               onClick={handleSubmit}
-              className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] text-[12px] rounded-[6px]"
+              className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] rounded-[6px]"
             >
               회원가입
             </button>
