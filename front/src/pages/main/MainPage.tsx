@@ -389,7 +389,7 @@ export default function MainPage() {
                   className="inline-block font-semibold"
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigate(`/detail/${item.author.fullName}`);
+                    navigate(`/userinfo/${item.author.fullName}`);
                   }}
                 >
                   @{item.author.fullName}
