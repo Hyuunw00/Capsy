@@ -49,9 +49,9 @@ export default function NewPasswordPage() {
     }
 
     // 비밀번호 동일 여부 검사
-    if (password === passwordConfirm) {
+    if (password !== passwordConfirm) {
       setAuth({ ...auth, isPasswordConfirmValid: false, passwordConfirm: "" });
-      setOpenModal({ isOpen: true, value: "현재 비밀번호와 다른 비밀번호를 입력해주세요." });
+      setOpenModal({ isOpen: true, value: "새 비밀번호와 동일한 비밀번호를 입력해주세요." });
       return;
     }
 
@@ -73,7 +73,7 @@ export default function NewPasswordPage() {
     <>
       {openModal.isOpen && (
         <NoticeModal onClose={() => setOpenModal({ ...openModal, isOpen: false })} title="동일한 비밀번호">
-          기존과 동일한 비밀번호를 입력하셨습니다.<br/> 다른 비밀번호로 변경해주세요
+          {openModal.value}
         </NoticeModal>
       )}
       <form onSubmit={handleSubmit} className="px-12">
@@ -98,7 +98,7 @@ export default function NewPasswordPage() {
             value={auth.passwordConfirm}
             onChange={(e) => setAuth({ ...auth, passwordConfirm: e.target.value })}
             placeholder="새 비밀번호 확인"
-            error="기존과 동일한 비밀번호입니다"
+            error="동일하지 않은 비밀번호입니다"
             ref={passwordConfirmRef}
             isValid={auth.isPasswordConfirmValid}
           />
