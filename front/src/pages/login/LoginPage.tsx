@@ -4,7 +4,9 @@ import { useLoginStore } from "../../store/loginStore";
 import NoticeModal from "../../components/NoticeModal";
 import Button from "../../components/Button";
 import Logo from "../../components/Logo";
-import { testEmail, testPassword } from "../../utils/regex";
+import { LoginInput } from "../../components/LoginInput";
+
+import { emailRegex, passwordRegex } from "../../utils/regex";
 import { loginAuth } from "../../apis/auth";
 import { AuthInput } from "../../components/AuthInput";
 
