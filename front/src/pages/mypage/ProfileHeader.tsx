@@ -4,11 +4,15 @@ import ProfileForm from "./modal/ProfileForm";
 import ProfileImageForm from "./modal/ProfileImageForm";
 import { tokenService } from "../../utils/token";
 import { getMyProfile, uploadUserPhoto } from "../../apis/apis";
+import { useNavigate } from "react-router-dom";
 
 export default function ProfileHeader() {
+  const navigate = useNavigate();
+
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+
   const [user, setUser] = useState<UserLists | null>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [username, setUsername] = useState("");
@@ -51,7 +55,7 @@ export default function ProfileHeader() {
   };
 
   const handleShareProfile = async () => {
-    const profileUrl = "http://localhost:5173/mypage";
+    const profileUrl = "http://localhost:5173/userinfo/:fullname";
 
     try {
       await navigator.clipboard.writeText(profileUrl);
@@ -64,6 +68,14 @@ export default function ProfileHeader() {
 
   const handleUsernameUpdate = (newUsername: string) => {
     setUsername(newUsername);
+  };
+
+  const goToFollowersPage = () => {
+    navigate(`/userinfo/${user?.fullName}/myfollower`, { state: { followers: user?.followers } });
+  };
+
+  const goToFollowingPage = () => {
+    navigate(`/userinfo/${user?.fullName}/myfollowing`, { state: { following: user?.following } });
   };
 
   return (
@@ -92,11 +104,11 @@ export default function ProfileHeader() {
               <span className="font-semibold text-[14px]">{user?.posts.length}</span>
               <span className="font-normal text-[14px]">게시물</span>
             </div>
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center cursor-pointer" onClick={goToFollowersPage}>
               <span className="font-semibold text-[14px]">{user?.followers.length}</span>
               <span className="font-normal text-[14px]">팔로워</span>
             </div>
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center cursor-pointer" onClick={goToFollowingPage}>
               <span className="font-semibold text-[14px]">{user?.following.length}</span>
               <span className="font-normal text-[14px]">팔로잉</span>
             </div>
