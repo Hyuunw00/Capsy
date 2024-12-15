@@ -204,6 +204,7 @@ interface PostDetail {
 interface PostItemProps {
   title: string;
   content?: string;
+  image?: string[];
 }
 
 interface CommentItemProps {
