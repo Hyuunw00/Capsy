@@ -15,9 +15,11 @@ export default function RootLayout() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="fixed top-0 left-1/2 -translate-x-1/2 z-10 bg-white w-[600px]">{renderHeader()}</header>
-      <main className="flex-1 mt-[60px] mb-[55px]  h-[calc(100vh-115px)]">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-black">
+      <header className="fixed top-0 left-1/2 -translate-x-1/2 z-10 bg-white dark:bg-black w-[600px]">
+        {renderHeader()}
+      </header>
+      <main className="flex-1 mt-[60px] mb-[55px] h-[calc(100vh-115px)]">
         <Outlet />
       </main>
       <footer className="fixed bottom-0 left-1/2 -translate-x-1/2 z-10 bg-black w-[600px]">

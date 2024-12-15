@@ -155,7 +155,7 @@ export default function EditorPage() {
         <div className="flex items-center">
           <button
             className={`py-3 px-6 border-b-2 w-1/2 transition ${
-              activeTab === "general" ? "text-primary border-primary" : "text-gray-400 border-transparent"
+              activeTab === "general" ? "text-primary border-primary dark:text-secondary dark:border-secondary" : "text-gray-400 border-transparent dark:text-gray-200"
             }`}
             onClick={() => setActiveTab("general")}
           >
@@ -163,7 +163,7 @@ export default function EditorPage() {
           </button>
           <button
             className={`py-3 px-6 border-b-2 w-1/2 transition ${
-              activeTab === "timeCapsule" ? "text-[#4D15FF] border-[#4D15FF]" : "text-gray-400 border-transparent"
+              activeTab === "timeCapsule" ? "text-primary border-primary dark:text-secondary dark:border-secondary" : "text-gray-400 border-transparent dark:text-gray-200"
             }`}
             onClick={() => setActiveTab("timeCapsule")}
           >
@@ -171,7 +171,7 @@ export default function EditorPage() {
           </button>
         </div>
       </nav>
-      <nav className="flex items-center justify-between px-4 py-3 border-b border-b-gray-100">
+      <nav className="flex items-center justify-between px-4 py-3 border-b border-b-gray-100 dark:border-b-gray-500">
         <div className="flex items-center gap-4">
           <input
             type="file"
@@ -194,7 +194,7 @@ export default function EditorPage() {
           )}
         </div>
         <div className="flex items-center gap-4">
-          <button onClick={handleSaveClick} className="px-4 py-1 text-sm text-white bg-black rounded">
+          <button onClick={handleSaveClick} className="px-4 py-1 text-sm text-white bg-black rounded dark:bg-secondary dark:text-black">
             저장
           </button>
         </div>
@@ -205,13 +205,13 @@ export default function EditorPage() {
             placeholder="제목 없음"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full text-gray-600 placeholder-gray-300 resize-none h-7 focus:outline-none"
+            className="w-full text-gray-600 placeholder-gray-300 bg-white resize-none h-7 focus:outline-none dark:bg-black dark:text-gray-100"
           />
         </h2>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="flex-1 w-full mt-2 overflow-y-scroll overflow-x-hidden text-gray-600 placeholder-gray-300 whitespace-pre-wrap resize-none h-96 focus:outline-none"
+          className="flex-1 w-full mt-2 overflow-x-hidden overflow-y-scroll text-gray-600 placeholder-gray-300 whitespace-pre-wrap bg-white resize-none h-96 focus:outline-none dark:bg-black dark:text-gray-100"
           placeholder={
             activeTab === "general"
               ? "포스트를 작성해주세요."

@@ -1,52 +1,28 @@
-import { forwardRef, useState } from "react";
-import eyesOpen from "../assets/password-eyes-open.svg";
-import eyesClose from "../assets/password-eyes-close.svg";
-
+import { forwardRef } from "react";
 interface InputWithLabelProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
   isValid: boolean;
   children?: React.ReactNode;
 }
-
 export const AuthInput = forwardRef<HTMLInputElement, InputWithLabelProps>((props, ref) => {
-  const { label, error, isValid, children, type, ...args } = props;
-  const [showPassword, setShowPassword] = useState(false);
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  const { label, error, isValid, children, ...args } = props;
 
   return (
     <>
       <div>
-        <label htmlFor="email" className="text-sm mb-[5px] block">
+        <label htmlFor="email" className="text-sm mb-[5px] block text-black dark:text-gray-100">
           {label}
         </label>
-        <div className="flex gap-2 items-center">
-          <div className="relative flex-1">
-            <input
-              {...args}
-              ref={ref}
-              type={type === "password" ? (showPassword ? "text" : "password") : type}
-              autoComplete="current-password"
-              className={`w-full h-[48px] px-[12px] py-[14px] rounded-[6px] border text-[16px]
-              ${!isValid ? "border-red-500" : ""}`}
-            />
-            {type === "password" && (
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute -translate-y-1/2 right-3 top-1/2"
-              >
-                <img
-                  src={showPassword ? eyesClose : eyesOpen}
-                  alt={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
-                  className="w-6 h-6 transition"
-                />
-              </button>
-            )}
-          </div>
+
+        <div className="flex items-center gap-4">
+          <input
+            {...args}
+            ref={ref}
+            autoComplete="current-password"
+            className={`flex-1 h-[48px] px-[12px] py-[14px] rounded-[6px] border text-[16px] 
+          ${!isValid ? "border-red-500" : ""}`}
+          />
           {children}
         </div>
 
