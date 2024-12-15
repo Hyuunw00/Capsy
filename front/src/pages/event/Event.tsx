@@ -179,6 +179,20 @@ export default function Event() {
     }
   };
 
+  // 타임캡슐의 closeAt 날짜 가져오기
+  const getCloseAt = (jsonString: any): Date | null => {
+    try {
+      const parsedData = JSON.parse(jsonString);
+      if (parsedData.closeAt) {
+        return new Date(parsedData.closeAt);
+      }
+      return null;
+    } catch (error) {
+      console.error("JSON parse error: ", error);
+      return null;
+    }
+  };
+
   //  이벤트 캡슐 게시글 이동 버튼
   const handleClickEventEdit = () => {
     navigate("/eventeditor");
@@ -196,12 +210,17 @@ export default function Event() {
 
   // 포스트 컴포넌트 클릭 시
   const handleImageClick = (item: any) => {
-    setModalData({
-      imgSrc: img_lock_timeCapsule,
-      neonText: "미개봉 이벤트 타임 캡슐입니다!",
-      whiteText: "예약 시 알림을 받을 수 있어요",
-    });
-    setShowModal(true);
+    const isBeforeCloseAt = new Date().toISOString() < (getCloseAt(item.title)?.toISOString() ?? "");
+    if (isBeforeCloseAt) {
+      setModalData({
+        imgSrc: img_lock_timeCapsule,
+        neonText: "미개봉 이벤트 타임 캡슐입니다!",
+        whiteText: "예약 시 알림을 받을 수 있어요",
+      });
+      setShowModal(true);
+    } else {
+      navigate(`/detail/${item._id}`);
+    }
   };
 
   // 타임캡슐 모달 컴포넌트 X 버튼 클릭 시
@@ -274,74 +293,80 @@ export default function Event() {
         {/* 캡슐 목록 */}
         <div className="w-[600px] p-5">
           <div className="grid grid-cols-3 gap-[10px]">
-            {eventCapsuleData.map((item, index) => (
-              <div
-                key={index}
-                className="flex flex-col rounded-[10px] items-center justify-center cursor-pointer"
-                onClick={handleImageClick}
-              >
-                <div
-                  className="w-full inline-block break-inside-avoid relative  overflow-hidden cursor-pointer"
-                  // 모달창
-                >
-                  <div>
-                    {/*  게시물 이미지 */}
-                    <img
-                      src={
-                        // getParsedData(item.title)?.image
-                        //   ? //  제일 첫번째 이미지 썸네일로 보여주기
-                        //     getParsedData(item.title).image[0]
-                        //   : eventTimecapsuleThumbnail
-                        eventTimecapsuleThumbnail
-                      }
-                      alt="이벤트 타입캡슐 로고"
-                      className="w-full h-auto  object-cover rounded-t-[10px]"
-                    />
-                  </div>
-
-                  <div className="absolute bottom-0 right-0 px-2.5 py-2 flex flex-col justify-center items-center space-y-1">
-                    {/* 좋아요 이미지 */}
-                    <img
-                      src={likeStatus[item._id] ? img_fillHeart : img_heart}
-                      className="object-contain cursor-pointer flex-shrink-0 w-[24px] h-[24px]"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleLikeClick(item._id);
-                      }}
-                    />
-                    {/* {item.channel.name === "TIMECAPSULE" && ( */}
-                    {item.channel?.name === "EVENTTEST" && (
-                      //  알림 이미지
-                      <img
-                        src={notiStatus[index] ? img_fillNoti : img_noti}
-                        alt="noti"
-                        className="object-contain cursor-pointer flex-shrink-0 w-[21px] h-[21px]"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleNotiClick(index);
-                        }}
-                      />
-                    )}
-                  </div>
-                </div>
-                {/* 게시글 작성자 및 제목 가져오기 */}
-                <div className={` bottom-0 left-0 px-2.5 py-2 w-full text-white rounded-b-[10px]  bg-custom-gradient `}>
-                  <p
-                    className="inline-block font-semibold"
-                    onClick={(e) => {
-                      navigate(`/userInfo/${item.author.fullName}`);
-                      e.stopPropagation();
-                      console.log("누른 아이디: ", item.author.fullName);
-                    }}
+            {eventCapsuleData.map(
+              (item, index) =>
+                // 현재 날짜가 캡슐이 풀리는 날짜보다 이전일때만 보여줌
+                new Date().toISOString() < (getCloseAt(item.title)?.toISOString() ?? "") && (
+                  <div
+                    key={index}
+                    className="flex flex-col rounded-[10px] items-center justify-center cursor-pointer"
+                    onClick={() => handleImageClick(item)}
                   >
-                    @{item.author.fullName}
-                  </p>
-                  <p className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ maxWidth: "calc(18ch)" }}>
-                    {getParsedData(item.title).title}
-                  </p>
-                </div>
-              </div>
-            ))}
+                    <div
+                      className="w-full inline-block break-inside-avoid relative  overflow-hidden cursor-pointer"
+                      // 모달창
+                    >
+                      <div>
+                        {/*  게시물 이미지 */}
+                        <img
+                          src={
+                            // getParsedData(item.title)?.image
+                            //   ? //  제일 첫번째 이미지 썸네일로 보여주기
+                            //     getParsedData(item.title).image[0]
+                            //   : eventTimecapsuleThumbnail
+                            eventTimecapsuleThumbnail
+                          }
+                          alt="이벤트 타입캡슐 로고"
+                          className="w-full h-auto  object-cover rounded-t-[10px]"
+                        />
+                      </div>
+
+                      <div className="absolute bottom-0 right-0 px-2.5 py-2 flex flex-col justify-center items-center space-y-1">
+                        {/* 좋아요 이미지 */}
+                        <img
+                          src={likeStatus[item._id] ? img_fillHeart : img_heart}
+                          className="object-contain cursor-pointer flex-shrink-0 w-[24px] h-[24px]"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLikeClick(item._id);
+                          }}
+                        />
+                        {/* {item.channel.name === "TIMECAPSULE" && ( */}
+                        {item.channel?.name === "EVENTTEST" && (
+                          //  알림 이미지
+                          <img
+                            src={notiStatus[index] ? img_fillNoti : img_noti}
+                            alt="noti"
+                            className="object-contain cursor-pointer flex-shrink-0 w-[21px] h-[21px]"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleNotiClick(index);
+                            }}
+                          />
+                        )}
+                      </div>
+                    </div>
+                    {/* 게시글 작성자 및 제목 가져오기 */}
+                    <div
+                      className={` bottom-0 left-0 px-2.5 py-2 w-full text-white rounded-b-[10px]  bg-custom-gradient `}
+                    >
+                      <p
+                        className="inline-block font-semibold"
+                        onClick={(e) => {
+                          navigate(`/userInfo/${item.author.fullName}`);
+                          e.stopPropagation();
+                          console.log("누른 아이디: ", item.author.fullName);
+                        }}
+                      >
+                        @{item.author.fullName}
+                      </p>
+                      <p className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ maxWidth: "calc(18ch)" }}>
+                        {getParsedData(item.title).title}
+                      </p>
+                    </div>
+                  </div>
+                ),
+            )}
           </div>
         </div>
         {/* 이벤트 캡슐 게시글 작성 버튼 */}
