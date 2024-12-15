@@ -115,7 +115,7 @@ export default function EditorPage() {
       // 커스텀 데이터 만들기
       const customData = {
         title: title,
-        content: text.split('\n').join('\\n'),
+        content: text.split("\n").join("\\n"),
         ...(activeTab === "timeCapsule" && {
           closeAt: (() => {
             const date = new Date(
@@ -211,7 +211,7 @@ export default function EditorPage() {
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="flex-1 w-full mt-2 overflow-scroll text-gray-600 placeholder-gray-300 whitespace-pre-wrap resize-none h-96 focus:outline-none"
+          className="flex-1 w-full mt-2 overflow-y-scroll overflow-x-hidden text-gray-600 placeholder-gray-300 whitespace-pre-wrap resize-none h-96 focus:outline-none"
           placeholder={
             activeTab === "general"
               ? "포스트를 작성해주세요."
