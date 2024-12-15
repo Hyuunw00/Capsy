@@ -1,5 +1,11 @@
-const UserInfoPage = () => {
-  return <div>User Info Page</div>;
-};
+import ProfileHeader from "./ProfileHeader";
+import ProfileContainer from "./ProfileContainer";
 
-export default UserInfoPage; // default export 추가
+export default function UserInfoPage() {
+  return (
+    <>
+      <ProfileHeader />
+      <ProfileContainer />
+    </>
+  );
+}
