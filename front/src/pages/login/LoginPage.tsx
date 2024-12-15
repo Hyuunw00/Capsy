@@ -45,6 +45,7 @@ export default function LoginPage() {
     // 유효성 검사
     if (!testEmail(email) || !testPassword(password)) {
       setAuth({ ...auth, isEmailValid: false, isPasswordValid: false, email: "", password: "" });
+      setOpenModal({ ...openModal, isOpen: true, value: "입력 형식에 맞게 작성해주세요!" });
       return;
     }
     // 고유성 검사
