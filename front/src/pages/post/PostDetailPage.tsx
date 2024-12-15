@@ -11,7 +11,11 @@ import thumbnail3 from "../../assets/random-thumnail/random-thumnail-black-3.png
 import thumbnail4 from "../../assets/random-thumnail/random-thumnail-white-1.png";
 import thumbnail5 from "../../assets/random-thumnail/random-thumnail-white-2.png";
 import thumbnail6 from "../../assets/random-thumnail/random-thumnail-white-3.png";
+import img_heart from "../../assets/Heart_Curved.svg";
+import img_fillHeart from "../../assets/heart-fill.svg";
+import img_comment from "../../assets/fi-rs-comment.svg";
 import Loading from "../../components/Loading";
+import axiosInstance from "../../apis/axiosInstance";
 
 export default function PostDetailPage() {
   const [isFollowing, setIsFollowing] = useState(false); // 팔로우 상태 관리
@@ -26,6 +30,12 @@ export default function PostDetailPage() {
     const thumbnails = [thumbnail1, thumbnail2, thumbnail3, thumbnail4, thumbnail5, thumbnail6];
     return thumbnails[Math.floor(Math.random() * thumbnails.length)];
   }, []); // 이미지 없을 시 랜덤 썸네일 설정
+  const [likeStatus, setLikeStatus] = useState<{ [key: string]: boolean }>({}); // 좋아요 상태 관리
+  // 유저 데이터 관리
+  const [userData, _] = useState(() => {
+    const storedUserData = sessionStorage.getItem("user");
+    return storedUserData ? JSON.parse(storedUserData) : { likes: [] };
+  });
 
   // 포스트 데이터 불러오기
   useEffect(() => {
@@ -34,6 +44,12 @@ export default function PostDetailPage() {
       try {
         const postData = await getPostDetail(postId);
         setPost(postData);
+        // 좋아요 되어있는 상태라면 화면에 표시
+        const isLiked = postData.likes.some((like: Like) => like.user === userData._id); // 좋아요 상태 확인
+        setLikeStatus((prevState) => ({
+          ...prevState,
+          [postId]: isLiked,
+        }));
       } catch (error) {
         // console.error("포스트를 불러오는데 실패했습니다.:", error);
       }
@@ -193,6 +209,38 @@ export default function PostDetailPage() {
     }
   };
 
+  // 좋아요 로직
+  const handleLikeClick = async (postId: string) => {
+    const userId = userData._id;
+    console.log("userId: ", userId);
+
+    const isLiked = post.likes.some((like: Like) => like.user === userId);
+
+    try {
+      if (!isLiked) {
+        // 좋아요 추가
+        const response = await axiosInstance.post("/likes/create", { postId });
+        const newLike = {
+          _id: response.data._id,
+          post: postId,
+          user: userId,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        post.likes.push(newLike);
+        setLikeStatus((prevState) => ({ ...prevState, [postId]: true }));
+      } else {
+        // 좋아요 취소
+        const likeId = post.likes.find((like: Like) => like.user === userId)._id;
+        await axiosInstance.delete("/likes/delete", { data: { id: likeId } });
+        post.likes = post.likes.filter((like: Like) => like._id !== likeId);
+        setLikeStatus((prevState) => ({ ...prevState, [postId]: false }));
+      }
+    } catch (error) {
+      console.error("Error occured: ", error);
+    }
+  };
+
   return (
     <>
       <div className="flex flex-col w-full">
@@ -256,6 +304,22 @@ export default function PostDetailPage() {
                 alt="post-image"
               />
             )}
+            <div className="absolute flex items-center bottom-0 w-full h-[50px] px-4 space-x-2 bg-custom-gradient">
+              {/* 좋아요 버튼 및 좋아요 수 */}
+              <img
+                src={likeStatus[post._id] ? img_fillHeart : img_heart}
+                alt="좋아요"
+                className="w-[24px] h-[24px] cursor-pointer object-contain"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleLikeClick(post._id);
+                }}
+              />
+              <span className="text-white pr-3">{post.likes.length}</span>
+              {/* 댓글 아이콘 및 댓글 수 */}
+              <img src={img_comment} alt="댓글" className="w-[20px] h-[24px]" />
+              <span className="text-white">{post.comments.length}</span>
+            </div>
           </div>
           {/* 이전 이미지 버튼 */}
           {currentImageIndex > 0 && <ArrowButton direction="left" onClick={handlePrevImage} />}
