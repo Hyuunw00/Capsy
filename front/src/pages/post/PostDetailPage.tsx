@@ -283,7 +283,7 @@ export default function PostDetailPage() {
         {/* 포스트 이미지 렌더링 */}
         <div className="relative w-[600px] h-[600px] bg-gray-50 mx-auto overflow-hidden">
           <div
-            className="flex w-full transition-transform duration-300 ease-in-out"
+            className="relative flex justify-center items-center w-full h-full bg-black"
             style={{
               transform: `translateX(-${currentImageIndex * 100}%)`,
             }}
