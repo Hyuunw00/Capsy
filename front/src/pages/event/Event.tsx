@@ -10,7 +10,7 @@ import img_heart from "../../assets/Heart_Curved.svg";
 import img_fillHeart from "../../assets/heart-fill.svg";
 import img_noti from "../../assets/Notification-white.svg";
 import img_fillNoti from "../../assets/Notification-fill.svg";
-import { CHANNEL_ID_EVENT } from "../../apis/apis";
+import { CHANNEL_ID_EVENT, createNotifications } from "../../apis/apis";
 import Loading from "../../components/Loading";
 
 import eventWriteIcon from "../../assets/event-capsule-icon.svg";
@@ -108,6 +108,8 @@ export default function Event() {
     // 캡슐 데이터와 클릭한 post id 비교
     const post = eventCapsuleData.find((post) => post._id === postId);
 
+    console.log(post, userId);
+
     // 포스트 없으면 return
     if (!post) return;
 
@@ -117,9 +119,9 @@ export default function Event() {
     try {
       // 좋아요를 누르지 않았다면 추가
       if (userLikes.length === 0) {
-        const response = await axiosInstance.post("/likes/create", { postId });
+        const likeResponse = await axiosInstance.post("/likes/create", { postId });
         const newLike = {
-          _id: response.data._id,
+          _id: likeResponse.data._id,
           post: postId,
           user: userId,
           createdAt: new Date().toISOString(),
@@ -128,6 +130,17 @@ export default function Event() {
         post.likes.push(newLike);
         console.log("좋아요 추가 완료!", post.likes);
         setLikeStatus((prevState) => ({ ...prevState, [postId]: true }));
+
+        // 작성자가 자신의 게시글에 좋아요를 누를때는 알림  x
+        if (post.author._id === userId) return;
+
+        // 좋아요 알림 생성
+        await createNotifications({
+          notificationType: "LIKE",
+          notificationTypeId: likeResponse.data._id,
+          userId: post.author._id,
+          postId: post._id,
+        });
       } else {
         // 좋아요를 눌렀었다면 취소
         const likeId = userLikes[0]._id;
