@@ -61,12 +61,11 @@ export default function MainSearchModal() {
                     </div>
 
                     <Link
-                      // 만약에 fullName이 중복된 사용자들이 있다면? -> 임시로  _id
                       to={`userinfo/${user.fullName}`}
                       className="block w-[80%] transition-all duration-300 rounded-lg"
                     >
                       <div className="py-[10px] ">
-                        <div className="flex items-center gap-2 font-bold ">
+                        <div className={`flex items-center gap-2 font-bold  ${!user.username && "h-[40px]"}`}>
                           <p className="text-black dark:text-white">@{user.fullName}</p>
                           <div
                             className={`w-[6px] h-[6px]   rounded-full ${
