@@ -17,7 +17,7 @@ const Tab1 = ({ setIsFocused }: Tab1Props) => {
         <img src={img_search} alt="검색" className="pr-2" />
         <input
           type="text"
-          placeholder="열고 싶은 타임 캡슐을 검색하세요."
+          placeholder="사용자 또는 게시글을 검색하세요"
           // value={searchInput}
           // onChange={(e) => setSearchInput(e.target.value)}
           className="w-full h-[14px] my-[4px] outline-none"
@@ -86,6 +86,7 @@ const Tab2 = ({ setIsFocused, onBackClick }: Tab2Props) => {
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             autoFocus
+            maxLength={27}
           />
           <button className="bg-bg-400 w-7 h-6 rounded-[50px] mr-2" onClick={handleClose}>
             <img className="w-full h-full" src={img_close} alt="취소" />
