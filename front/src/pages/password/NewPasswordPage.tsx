@@ -37,21 +37,22 @@ export default function NewPasswordPage() {
     const passwordConfirm = passwordConfirmRef.current?.value.trim();
 
     // 빈값일 경우 return
-    if (!password || !password) {
+    if (!password || !passwordConfirm) {
       setAuth({ ...auth, isPasswordValid: false, isPasswordConfirmValid: false, passwordConfirm: "", password: "" });
       return;
     }
 
     // 비밀번호 형식 검사
     if (!testPassword(password)) {
-      setAuth({ ...auth, isPasswordValid: false, password: "" });
+      setAuth({ ...auth, isPasswordValid: false, password: "", passwordConfirm: "", isPasswordConfirmValid: false });
+      setOpenModal({ isOpen: true, value: "비밀번호 형식에 맞게 작성해주세요!" });
       return;
     }
 
     // 비밀번호 동일 여부 검사
     if (password !== passwordConfirm) {
-      setAuth({ ...auth, isPasswordConfirmValid: false, passwordConfirm: "" });
-      setOpenModal({ isOpen: true, value: "새 비밀번호와 동일한 비밀번호를 입력해주세요." });
+      setAuth({ ...auth, isPasswordValid: true, isPasswordConfirmValid: false, passwordConfirm: "" });
+      setOpenModal({ isOpen: true, value: "새 비밀번호와 동일한 비밀번호를 입력해주세요!" });
       return;
     }
 
@@ -72,7 +73,7 @@ export default function NewPasswordPage() {
   return (
     <>
       {openModal.isOpen && (
-        <NoticeModal onClose={() => setOpenModal({ ...openModal, isOpen: false })} title="동일한 비밀번호">
+        <NoticeModal onClose={() => setOpenModal({ ...openModal, isOpen: false })} title="알림">
           {openModal.value}
         </NoticeModal>
       )}
