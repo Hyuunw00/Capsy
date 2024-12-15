@@ -20,6 +20,8 @@ import AlarmListPage from "./components/AlarmListPage";
 import Error404 from "./components/Error404";
 import UserInfoPage from "./pages/userinfo/UserInfoPage";
 import EventEditorPage from "./pages/editor/EventEditorPage";
+import MyFollowersPage from "./pages/userinfo/MyFollowerPage";
+import MyFollowingPage from "./pages/userinfo/MyFollowingPage";
 
 export default function App() {
   // 새로고침할때마다 session storage에서 token 받아와서 로그인
@@ -61,6 +63,8 @@ export default function App() {
           <Route path="/" element={<MainPage />} />
           <Route path="/event" element={<Event />} />
           <Route path="/userinfo/:fullname" element={<UserInfoPage />} />
+          <Route path="/userinfo/:fullname/myfollower" element={<MyFollowersPage />} />
+          <Route path="/userinfo/:fullname/myfollowing" element={<MyFollowingPage />} />
 
           <Route element={<NonPrivate />}>
             <Route path="/login" element={<Login />} />
