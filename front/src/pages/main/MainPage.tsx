@@ -17,61 +17,8 @@ import img_noti from "../../assets/Notification-white.svg";
 import img_fillNoti from "../../assets/Notification-fill.svg";
 // import img_noti_disable from "../../assets/Notification-disabled.svg";
 import img_scroll from "../../assets/scroll-icon.svg";
-import img_timeCapsule from "../../assets/time-capsule.png";
+// import img_timeCapsule from "../../assets/time-capsule.png";
 import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
-
-interface Like {
-  _id: string;
-  user: string;
-  post: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Channel {
-  authRequired: boolean;
-  posts: string[];
-  _id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Author {
-  role: string;
-  emailVerified: boolean;
-  banned: boolean;
-  isOnline: boolean;
-  posts: string[];
-  likes: string[];
-  comments: string[];
-  followers: string[];
-  following: string[];
-  notifications: string[];
-  messages: string[];
-  _id: string;
-  fullName: string;
-  email: string;
-  createdAt: string;
-  updatedAt: string;
-  username: string | null;
-  image: string;
-  imagePublicId: string;
-}
-
-interface Post {
-  likes: Like[];
-  comments: string[];
-  _id: string;
-  title: string;
-  image?: string;
-  imagePublicId?: string;
-  channel: Channel;
-  author: Author;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export default function MainPage() {
   const navigate = useNavigate();
@@ -393,9 +340,8 @@ export default function MainPage() {
           {filterData.map((item, index) => (
             <div
               key={index}
-              className="w-full inline-block break-inside-avoid relative mb-[10px] overflow-hidden cursor-pointer"
+              className="w-full inline-block break-inside-avoid relative mb-[10px] overflow-hidden cursor-pointer rounded-[10px]"
               onClick={() => handleImageClick(item)}
-              // onClick={() => navigate(`/detail/${item._id}`)}
             >
               {item.image ? (
                 <>
@@ -443,7 +389,7 @@ export default function MainPage() {
                   className="inline-block font-semibold"
                   onClick={(e) => {
                     e.stopPropagation();
-                    console.log("누른 아이디: ", item.author.fullName);
+                    navigate(`/detail/${item.author.fullName}`);
                   }}
                 >
                   @{item.author.fullName}
