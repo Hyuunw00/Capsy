@@ -140,16 +140,15 @@ export default function PageHeader() {
         >
           <img src={Left} alt="Left" className="w-7 h-7 dark:invert" />
         </button>
-        
-        <img src={logo_black} alt="Logo" className="w-[75px] h-[30px] dark:invert" />
-        
+
+        <button onClick={() => navigate('/')}>
+          <img src={logo_black} alt="Logo" className="w-[75px] h-[30px] dark:invert" />
+        </button>
+
         <div className="flex items-center gap-4">
-          <button 
-            onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600"
-          >
-            <img 
-              src={isDark ? LightMode : DarkMode} 
+          <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600">
+            <img
+              src={isDark ? LightMode : DarkMode}
               alt={isDark ? "라이트모드 아이콘" : "다크모드 아이콘"}
               className="w-5 h-5"
             />
@@ -160,18 +159,14 @@ export default function PageHeader() {
               !isLoggedIn ? "invisible pointer-events-none" : ""
             }`}
           >
-            <img 
-              src={NotificationIcon} 
-              alt="Notification" 
-              className="object-contain w-full h-full dark:invert" 
-            />
+            <img src={NotificationIcon} alt="Notification" className="object-contain w-full h-full dark:invert" />
             {notifications.length > 0 && (
               <div className="absolute w-2 h-2 rounded-full -top-1 -right-1 bg-secondary dark:bg-secondary-dark" />
             )}
           </button>
         </div>
       </nav>
-      
+
       {isLoggedIn && (
         <NotifyModal
           isVisible={showNoticeModal}
@@ -182,7 +177,7 @@ export default function PageHeader() {
           onMoveToPost={handleMoveToPost}
         />
       )}
-      
+
       {toast.show && (
         <div className="fixed px-4 py-2 text-white transition-opacity bg-black rounded shadow-lg dark:bg-white dark:text-black top-4 right-4">
           {toast.message}

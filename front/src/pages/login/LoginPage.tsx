@@ -6,11 +6,12 @@ import Button from "../../components/Button";
 import Logo from "../../components/Logo";
 import { testEmail, testPassword } from "../../utils/regex";
 import { loginAuth } from "../../apis/auth";
-import { AuthInput } from "../../components/AuthInput";
+import { AuthInput } from "../../components/AuthInput"
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useLoginStore();
+
 
   const [openModal, setOpenModal] = useState({
     isOpen: false,
@@ -100,10 +101,10 @@ export default function LoginPage() {
             />
           </div>
 
-          <Button className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] rounded-[6px] mt-[20px]">
+          <Button className=" bg-primary dark:bg-secondary text-white dark:text-black  w-full  h-[47px] py-[13px] px-[21px] rounded-[6px] mt-[20px]">
             로그인
           </Button>
-          <Link to="/signup" className="text-center mt-[16px]  text-[#475569] underline">
+          <Link to="/signup" className="text-center mt-[16px]  text-gray-300 dark:text-gray-400 underline">
             회원가입 바로가기
           </Link>
         </div>

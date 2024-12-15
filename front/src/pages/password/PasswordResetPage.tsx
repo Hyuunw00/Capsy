@@ -102,7 +102,7 @@ export default function PasswordResetPage() {
             />
           </div>
 
-          <Button className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] rounded-md mt-[20px]">
+          <Button className="bg-primary dark:bg-secondary text-white dark:text-black  w-full  h-[47px] py-[13px] px-[21px] rounded-md mt-[20px]">
             인증
           </Button>
         </div>

@@ -11,7 +11,7 @@ export const AuthInput = forwardRef<HTMLInputElement, InputWithLabelProps>((prop
   return (
     <>
       <div>
-        <label htmlFor="email" className="text-sm mb-[5px] block">
+        <label htmlFor="email" className="text-sm mb-[5px] block text-black dark:text-gray-100">
           {label}
         </label>
 
