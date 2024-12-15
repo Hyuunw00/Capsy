@@ -344,7 +344,16 @@ export default function PostDetailPage() {
         {/* 포스트 타이틀, 내용 렌더링 */}
         <div className="relative px-5 mt-5">
           <h2 className="text-lg font-semibold">{parsePostContent(post.title).title}</h2>
-          <p className="mt-2.5 text-base">{parsePostContent(post.title).content}</p>
+          <p className="mt-2.5 text-base">
+            {parsePostContent(post.title)
+              .content?.split("\\n")
+              .map((line, index) => (
+                <span key={index}>
+                  {line}
+                  <br />
+                </span>
+              ))}
+          </p>
           <span className="text-xs font-normal text-[#888888]">
             {new Date(post.createdAt).getFullYear()}년 {new Date(post.createdAt).getMonth() + 1}월 {""}
             {new Date(post.createdAt).getDate()}일
