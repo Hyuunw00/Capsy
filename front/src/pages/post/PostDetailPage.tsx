@@ -303,6 +303,22 @@ export default function PostDetailPage() {
               />
             )}
           </div>
+          <div className="absolute flex items-center bottom-0 w-full h-[50px] px-4 space-x-2 bg-custom-gradient">
+            {/* 좋아요 버튼 및 좋아요 수 */}
+            <img
+              src={likeStatus[post._id] ? img_fillHeart : img_heart}
+              alt="좋아요"
+              className="w-[24px] h-[24px] cursor-pointer object-contain"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleLikeClick(post._id);
+              }}
+            />
+            <span className="text-white pr-3">{post.likes.length}</span>
+            {/* 댓글 아이콘 및 댓글 수 */}
+            <img src={img_comment} alt="댓글" className="w-[20px] h-[24px]" />
+            <span className="text-white">{post.comments.length}</span>
+          </div>
           {/* 이전 이미지 버튼 */}
           {currentImageIndex > 0 && <ArrowButton direction="left" onClick={handlePrevImage} />}
           {/* 다음 이미지 버튼 */}
