@@ -1,17 +1,18 @@
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import pictureIcon from "../../assets/pick-picture-icon.svg";
 import dateIcon from "../../assets/pick-date-icon.svg";
+import locationIcon from "../../assets/location-icon.svg";
 import EditModal from "./EditModal";
 import EditPreview from "./EditPreview";
 import EditComplete from "./EditComplete";
 import { createPost } from "../../apis/apis";
 import { CHANNEL_ID_TIMECAPSULE, CHANNEL_ID_POST } from "../../apis/apis";
+import EditLocationModal from "./EditLocationModal";
 
 export default function EditorPage() {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("general");
   const [showModal, setShowModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
   const [saveModal, setSaveModal] = useState(false);
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
@@ -201,12 +202,22 @@ export default function EditorPage() {
           <button onClick={handlePictureClick} className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded">
             <img src={pictureIcon} alt="사진 선택 아이콘" />
           </button>
+
           {activeTab === "timeCapsule" && (
             <button
               className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded"
               onClick={() => setShowModal(true)}
             >
               <img src={dateIcon} alt="날짜 지정 아이콘" />
+            </button>
+          )}
+
+          {activeTab === "timeCapsule" && (
+            <button
+              className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded"
+              onClick={() => setShowLocationModal(true)}
+            >
+              <img src={locationIcon} alt="위치 지정 아이콘" />
             </button>
           )}
         </div>
@@ -246,6 +257,7 @@ export default function EditorPage() {
         />
       </main>
       {showModal && <EditModal onClose={() => setShowModal(false)} onSubmit={handleDateSubmit} />}
+      {showLocationModal && <EditLocationModal onClose={() => setShowLocationModal(false)} />}
       {saveModal && (
         <EditComplete
           isOpen={saveModal}

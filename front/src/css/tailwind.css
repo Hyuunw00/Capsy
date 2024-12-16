@@ -7,6 +7,10 @@
     @apply flex items-center justify-center;
   }
 
+  .item-left {
+    @apply flex items-center justify-start;
+  }
+
   .item-around {
     @apply flex items-center justify-around;
   }
@@ -16,7 +20,7 @@
   }
 
   .item-row {
-    @apply flex flex-col justify-between items-center;
+    @apply flex flex-col items-center justify-between;
   }
 
   .font-inter {
