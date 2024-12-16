@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { getTimeCapsuleChannel, CHANNEL_ID_TIMECAPSULE } from "../../apis/apis";
 
 interface CapsuleListPageState {
   title: string; // 제목 (ex. "공개 완료", "공개 대기")
