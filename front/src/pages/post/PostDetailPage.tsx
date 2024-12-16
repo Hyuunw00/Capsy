@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router";
-import { getPostDetail, createComment, deleteComment } from "../../apis/apis";
+import { getPostDetail, deletePost, createComment, deleteComment } from "../../apis/apis";
 import { Link } from "react-router";
 import { tokenService } from "../../utils/token";
-import { Modal } from "../../components/Modal";
 import { elapsedText } from "./ElapsedText";
 import thumbnail1 from "../../assets/random-thumnail/random-thumnail-black-1.png";
 import thumbnail2 from "../../assets/random-thumnail/random-thumnail-black-2.png";
@@ -16,11 +15,14 @@ import img_fillHeart from "../../assets/heart-fill.svg";
 import img_comment from "../../assets/fi-rs-comment.svg";
 import Loading from "../../components/Loading";
 import axiosInstance from "../../apis/axiosInstance";
+import NotificationModal from "../../components/NotificationModal";
 
 export default function PostDetailPage() {
   const [isFollowing, setIsFollowing] = useState(false); // 팔로우 상태 관리
   const [commentText, setCommentText] = useState(""); // 댓글 상태 관리
   const [post, setPost] = useState<PostDetail | null>(null); // 포스트 데이터 상태 관리
+  const [showPostDeleteModal, setShowPostDeleteModal] = useState(false); // 포스트 삭제 모달 상태 관리
+  const [showDropdown, setShowDropdown] = useState(false); // 더보기 드롭다운 상태 관리
   const [showDeleteModal, setShowDeleteModal] = useState(false); // 댓글 삭제 모달 상태 관리
   const [deleteCommentId, setDeleteCommentId] = useState<string>(""); // 삭제할 댓글 ID 상태 관리
   const { postId } = useParams<{ postId: string }>(); // URL 파라미터에서 postId 추출
@@ -57,6 +59,12 @@ export default function PostDetailPage() {
 
     loadPostDetail();
   }, [postId]);
+  // 더보기 드롭다운 닫기
+  useEffect(() => {
+    const closeDropdown = () => setShowDropdown(false);
+    document.addEventListener("click", closeDropdown);
+    return () => document.removeEventListener("click", closeDropdown);
+  }, []);
 
   // json 파싱
   const parsePostContent = (jsonString: string): PostItemProps => {
@@ -67,10 +75,30 @@ export default function PostDetailPage() {
       return { title: "", content: "", image: [] };
     }
   };
+  // 더보기 드롭다운 토글
+  const toggleDropdown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDropdown(!showDropdown);
+  };
 
   // 임시 팔로우 로직
   const handleFollowClick = () => {
     setIsFollowing(!isFollowing);
+  };
+  // 글 삭제 로직
+  const handlePostDelete = async () => {
+    try {
+      if (!post?._id) {
+        throw new Error("삭제할 게시글을 찾을 수 없습니다.");
+      }
+
+      await deletePost(post._id);
+      window.location.href = "/";
+    } catch (error) {
+      console.error("게시글 삭제 실패:", error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다");
+    } finally {
+      setShowPostDeleteModal(false);
+    }
   };
 
   // 이전, 다음 이미지 이동시켜주는 버튼
@@ -196,11 +224,13 @@ export default function PostDetailPage() {
   const postImages = parsePostContent(post.title).image ? parsePostContent(post.title).image! : [];
   // file형식으로 처리한 이미지 1개 -> 나중에 이미지 처리 형식 바꾸면 제거할 예정
   const pastImage = post.image;
+
   const handleNextImage = () => {
     if (currentImageIndex < postImages.length - 1) {
       setCurrentImageIndex((prev) => prev + 1);
     }
   };
+
   const handlePrevImage = () => {
     if (currentImageIndex > 0) {
       setCurrentImageIndex((prev) => prev - 1);
@@ -265,7 +295,43 @@ export default function PostDetailPage() {
           </div>
 
           {/* 팔로우 버튼 */}
-          {currentUser?._id !== post.author._id && (
+          {currentUser?._id === post.author._id ? (
+            <div className="relative">
+              <button
+                onClick={toggleDropdown}
+                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M4.5 10.5C3.675 10.5 3 11.175 3 12C3 12.825 3.675 13.5 4.5 13.5C5.325 13.5 6 12.825 6 12C6 11.175 5.325 10.5 4.5 10.5ZM19.5 10.5C18.675 10.5 18 11.175 18 12C18 12.825 18.675 13.5 19.5 13.5C20.325 13.5 21 12.825 21 12C21 11.175 20.325 10.5 19.5 10.5ZM12 10.5C11.175 10.5 10.5 11.175 10.5 12C10.5 12.825 11.175 13.5 12 13.5C12.825 13.5 13.5 12.825 13.5 12C13.5 11.175 12.825 10.5 12 10.5Z"
+                    fill="#11152A"
+                  />
+                </svg>
+              </button>
+              {showDropdown && (
+                <div className="absolute right-0 mt-2 w-32 px-[6px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                  <ul className="py-1">
+                    <li>
+                      <button className="w-full text-center px-4 py-2 text-sm font-normal text-gray-600 hover:font-semibold hover:bg-gray-100 transition-all">
+                        수정
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {
+                          setShowPostDeleteModal(true);
+                          setShowDropdown(false);
+                        }}
+                        className="w-full text-center px-4 py-2 text-sm font-normal text-primary hover:font-semibold hover:bg-gray-100 transition-all"
+                      >
+                        삭제
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          ) : (
             <button
               className={`${
                 isFollowing ? "bg-black" : "bg-primary"
@@ -281,7 +347,7 @@ export default function PostDetailPage() {
         {/* 포스트 이미지 렌더링 */}
         <div className="relative w-[600px] h-[600px] bg-gray-50 mx-auto overflow-hidden">
           <div
-            className="flex w-full transition-transform duration-300 ease-in-out"
+            className="relative flex justify-center items-center w-full h-full bg-black"
             style={{
               transform: `translateX(-${currentImageIndex * 100}%)`,
             }}
@@ -291,14 +357,14 @@ export default function PostDetailPage() {
                 <img
                   key={index}
                   src={image}
-                  className="object-cover w-0 min-w-full aspect-square"
+                  className="min-w-full w-0 aspect-square object-cover"
                   alt={`post-image-${index}`}
                 />
               ))
             ) : (
               <img
                 src={pastImage ? pastImage : randomThumbnail}
-                className="object-contain w-full h-full"
+                className="w-full h-full object-contain"
                 alt="post-image"
               />
             )}
@@ -427,20 +493,40 @@ export default function PostDetailPage() {
       </div>
 
       {/* 댓글 삭제 모달 */}
-      <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
-        <p className="mb-4 text-center">댓글을 삭제하시겠습니까?</p>
+      <NotificationModal isOpen={showDeleteModal} title="댓글 삭제" description="댓글을 삭제하시겠습니까?">
         <div className="flex justify-end w-full gap-2">
-          <button className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => setShowDeleteModal(false)}>
+          <button
+            className="w-full py-2 bg-gray-200 rounded hover:bg-gray-300"
+            onClick={() => setShowDeleteModal(false)}
+          >
             취소
           </button>
           <button
-            className="px-4 py-2 text-white transition-opacity rounded bg-primary hover:opacity-40"
+            className="w-full py-2 text-white transition-opacity rounded bg-primary hover:opacity-40"
             onClick={confirmDelete}
           >
             삭제
           </button>
         </div>
-      </Modal>
+      </NotificationModal>
+
+      {/* 포스트 삭제 모달 */}
+      <NotificationModal isOpen={showPostDeleteModal} title="게시글 삭제" description="게시글을 삭제하시겠습니까?">
+        <div className="flex justify-end w-full gap-2">
+          <button
+            className="w-full py-2 bg-gray-200 rounded hover:bg-gray-300"
+            onClick={() => setShowPostDeleteModal(false)}
+          >
+            취소
+          </button>
+          <button
+            className="w-full py-2 text-white transition-opacity rounded bg-primary hover:opacity-40"
+            onClick={handlePostDelete}
+          >
+            삭제
+          </button>
+        </div>
+      </NotificationModal>
     </>
   );
 }
