@@ -229,6 +229,14 @@ interface Like {
   updatedAt: string;
 }
 
+interface FollowData {
+  _id: string;
+  user: string;
+  follower: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface Channel {
   authRequired: boolean;
   posts: string[];
