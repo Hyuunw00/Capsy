@@ -72,18 +72,14 @@ export const getPostDetail = async (postId: string) => {
 // Comments --------------------------------------------------------------------
 
 // 특정 포스트에 댓글 달기 API
-export const createComment = async (data: {
-  comment: string;
-  postId: string;
-  postAuthorId?: string;
-}) => {
+export const createComment = async (data: { comment: string; postId: string; postAuthorId?: string }) => {
   try {
     const postAuthorId = data.postAuthorId || (await getPostDetail(data.postId)).author._id;
 
     // 댓글 생성 시 post 필드를 반드시 포함
     const commentData = {
       comment: data.comment,
-      postId: data.postId
+      postId: data.postId,
     };
 
     // 댓글 생성 요청
@@ -151,10 +147,10 @@ export const getNotifications = async () => {
 };
 
 // 알림 확인 API
-export const seenNotifications = async (id : string) => {
+export const seenNotifications = async (id: string) => {
   try {
     const response = await axiosInstance.put(`/notifications/seen`, {
-      id : id
+      id: id,
     });
     // 이 때 id는 좋아요 생성 -> 응답 _id / 댓글 생성 -> 응답의 _id
     return response.data;
@@ -262,6 +258,16 @@ export const updateUserSettings = async (fullName: string, username: string) => 
       fullName,
       username,
     });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 사용자 fullName으로 검색하는 API
+export const searchUsersByFullName = async (fullName: string) => {
+  try {
+    const response = await axiosInstance.get(`/search/users/${fullName}`);
     return response.data;
   } catch (error) {
     throw error;

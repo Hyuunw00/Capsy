@@ -1,33 +1,31 @@
 import { useEffect, useState } from "react";
-import { tokenService } from "../../utils/token";
-import { getUserProfile } from "../../apis/apis";
+import { useParams } from "react-router-dom"; // useParams 가져오기
+import { tokenService } from "../../utils/token"; // 토큰 서비스
+import { searchUsersByFullName } from "../../apis/apis"; // 사용자 검색 함수
 
 interface User {
   fullName: string;
   username: string;
   image?: string;
-  posts: { id: number; title: string }[];
-  followers: string[];
-  following: string[];
+  posts: { id: number; title: string }[]; // 게시물 목록
+  followers: string[]; // 팔로워 목록
+  following: string[]; // 팔로잉 목록
 }
 
 export default function ProfileHeader() {
-  const [fullName, setFullName] = useState<string>("");
   const [isCopied, setIsCopied] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const path = window.location.pathname;
-    const extractedFullName = path.split("/")[2]; //
-    setFullName(extractedFullName || "");
-  }, []); //풀네임 가져와짐
+  // URL에서 fullName을 추출
+  const { fullname } = useParams<{ fullname: string }>(); // useParams로 fullName 가져오기
 
   useEffect(() => {
+    if (!fullname) return;
+    //(fullname)으로 불러와짐 ex.seul
+
     const getUserInfo = async () => {
-      if (!fullName) return;
-
       try {
-        const userData = await getUserProfile(fullName);
+        const userData = await searchUsersByFullName(fullname);
         setUser(userData);
         tokenService.setUser(userData);
       } catch (error) {
@@ -36,7 +34,7 @@ export default function ProfileHeader() {
     };
 
     getUserInfo();
-  }, [fullName]);
+  }, [fullname]);
 
   const handleShareProfile = async () => {
     const profileUrl = window.location.href;

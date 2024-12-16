@@ -6,8 +6,8 @@ import articleBlack from "../../assets/profile-article-black.svg";
 import articlePurple from "../../assets/profile-article-purple.svg";
 import alarmBlack from "../../assets/profile-alarm-black.svg";
 import alarmPurple from "../../assets/profile-alarm-purple.svg";
-import MySlideHeader from "../../components/MySlideHeader";
-import MySlideContainer from "../../components/MySlideContainer";
+import MySlideHeader from "../mypage/MySlideHeader";
+import MySlideContainer from "../mypage/MySlideContainer";
 
 // 공개 완료 캡슐 아이템 예시
 const openCapsuleItems = Array.from({ length: 20 }, (_, i) => `오픈된 캡슐 ${i + 1}`);

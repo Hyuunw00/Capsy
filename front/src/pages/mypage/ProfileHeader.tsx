@@ -55,7 +55,7 @@ export default function ProfileHeader() {
   };
 
   const handleShareProfile = async () => {
-    const profileUrl = "http://localhost:5173/userinfo/:fullname";
+    const profileUrl = `http://localhost:5173/userinfo/${user?.fullName}`;
 
     try {
       await navigator.clipboard.writeText(profileUrl);
