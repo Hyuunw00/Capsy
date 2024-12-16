@@ -20,8 +20,8 @@ import AlarmListPage from "./pages/mypage/AlarmListPage";
 import Error404 from "./components/Error404";
 import UserInfoPage from "./pages/userinfo/UserInfoPage";
 import EventEditorPage from "./pages/editor/EventEditorPage";
-import MyFollowersPage from "./pages/userinfo/MyFollowerPage";
-import MyFollowingPage from "./pages/userinfo/MyFollowingPage";
+import MyFollowersPage from "./pages/mypage/MyFollowerPage";
+import MyFollowingPage from "./pages/mypage/MyFollowingPage";
 import { useThemeStore } from "./store/themeStore";
 import MapPage from "./pages/MapPage";
 
@@ -31,25 +31,6 @@ export default function App() {
   // 처음에 렌더링될때 isLoggedIn이 false가 되는것을 방지
   const [isLoading, setIsLoading] = useState(true);
   const { isDark } = useThemeStore();
-
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_APP_KEY}&libraries=services,clusterer&autoload=false`;
-    script.async = true;
-
-    script.onload = () => {
-      // @ts-ignore
-      kakao.maps.load(() => {
-        console.log("Kakao maps loaded successfully");
-      });
-    };
-
-    document.head.appendChild(script);
-
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
 
   const getUser = async () => {
     try {
@@ -92,7 +73,6 @@ export default function App() {
             <Route path="/capsule-list" element={<CapsuleListPage />} />
             <Route path="/alarm-list" element={<AlarmListPage />} />
           </Route>
-
           <Route path="/" element={<MainPage />} />
           <Route path="/event" element={<Event />} />
           <Route path="/userinfo/:fullname" element={<UserInfoPage />} />

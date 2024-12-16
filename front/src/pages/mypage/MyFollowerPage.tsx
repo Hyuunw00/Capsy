@@ -10,7 +10,6 @@ const MyFollowerPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 팔로워 정보를 불러오는 함수
   const fetchFollowers = async () => {
     try {
       setIsLoading(true);

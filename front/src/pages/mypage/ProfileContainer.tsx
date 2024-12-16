@@ -10,16 +10,6 @@ import MySlideHeader from "./MySlideHeader";
 import MySlideContainer from "./MySlideContainer";
 import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE, getUserPosts } from "../../apis/apis";
 import { tokenService } from "../../utils/token";
-
-// 공개 완료 캡슐 아이템 예시
-const openCapsuleItems = Array.from({ length: 20 }, (_, i) => `오픈된 캡슐 ${i + 1}`);
-// 공개 대기 캡슐 아이템 예시
-const closeCapsuleItems = Array.from({ length: 20 }, (_, i) => `대기중 캡슐 ${i + 1}`);
-// 공개 완료 예약 아이템 예시
-const openAlarmItems = Array.from({ length: 20 }, (_, i) => `오픈된 예약 ${i + 1}`);
-// 공개 대기 예약 아이템 예시
-const closeAlarmItems = Array.from({ length: 20 }, (_, i) => `대기중 예약 ${i + 1}`);
-
 interface PostType {
   _id: string;
   title: string;
@@ -27,61 +17,98 @@ interface PostType {
   channel?: {
     _id: string;
   };
-  likes: Array<any>; // 좋아요 정보의 정확한 타입을 모르므로 any 사용
-  comments: Array<any>; // 댓글 정보의 정확한 타입을 모르므로 any 사용
+  likes: Array<any>;
+  comments: Array<any>;
   createdAt: string;
   updatedAt: string;
 }
-
+interface ParsedCapsule {
+  title: string;
+  content: string;
+  closeAt: string;
+}
+interface CapsuleItem {
+  id: string;
+  title: string;
+  content: string;
+  image?: string;
+  closeAt: Date;
+}
+// 게시글 내용 가져오기 유틸 함수
+const getContent = (jsonString: string) => {
+  try {
+    const parsedData = JSON.parse(jsonString);
+    return parsedData.content ? parsedData.content.replace(/\\\\n/g, "\n").replace(/\\n/g, "\n") : jsonString;
+  } catch (error) {
+    return jsonString;
+  }
+};
 function ProfileContainer() {
   const [selectedTab, setSelectedTab] = useState("capsules");
-  const [postItems, setPostItems] = useState({});
-  const [capsuleItems, setCapsuleItems] = useState([]);
-  // const [articleItems, setArticleItems] = useState([]);
+  const [postItems, setPostItems] = useState<PostType[]>([]);
   const navigate = useNavigate();
-
   const handleTabClick = (tab: string) => {
     setSelectedTab(tab);
   };
-
+  const handlePostClick = (postId: string) => {
+    navigate(`/detail/${postId}`);
+  };
   const user = tokenService.getUser();
   const userAuthorId = user._id;
-
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const posts = await getUserPosts(userAuthorId);
-        setPostItems(posts);
+        setPostItems(Array.isArray(posts) ? posts : Object.values(posts));
       } catch (error) {
         console.error("포스트 불러오기 실패", error);
       }
     };
     fetchPosts();
   }, [userAuthorId]);
+  const articleItems = postItems.filter((post) => post.channel?._id === CHANNEL_ID_POST);
+  const capsuleItems = postItems.filter((post) => post.channel?._id === CHANNEL_ID_TIMECAPSULE);
+  const categorizeCapsules = () => {
+    const now = new Date();
+    return capsuleItems.reduce<{ opened: CapsuleItem[]; waiting: CapsuleItem[] }>(
+      (acc, item) => {
+        try {
+          const parsed: ParsedCapsule = JSON.parse(item.title);
+          const closeAt = new Date(parsed.closeAt);
 
-  console.log(postItems);
-
-  const postsArray: PostType[] = Object.values(postItems);
-  const articleItems = postsArray.filter((post) => post.channel?._id === CHANNEL_ID_POST);
-
-  console.log(articleItems);
-
-  // 전체보기 클릭 시 캡슐 탭과 예약글 탭 구분
+          const capsuleItem: CapsuleItem = {
+            id: item._id,
+            title: parsed.title,
+            content: parsed.content?.replace(/\\n/g, "\n"),
+            image: item.image,
+            closeAt,
+          };
+          if (closeAt > now) {
+            acc.waiting.push(capsuleItem);
+          } else {
+            acc.opened.push(capsuleItem);
+          }
+        } catch (error) {
+          console.error("Error parsing capsule data:", error);
+        }
+        return acc;
+      },
+      { opened: [], waiting: [] },
+    );
+  };
   const handleShowAllClick = (type: "open" | "close", tabType: "capsules" | "alarms") => {
-    const state =
-      tabType === "capsules"
-        ? type === "open"
-          ? { title: "공개 완료", items: openCapsuleItems }
-          : { title: "공개 대기", items: closeCapsuleItems }
-        : type === "open"
-          ? { title: "공개 완료", items: openAlarmItems }
-          : { title: "공개 대기", items: closeAlarmItems };
-    // tabType에 맞는 페이지로 이동
-    navigate(tabType === "capsules" ? "/capsule-list" : "/alarm-list", { state });
+    const { opened, waiting } = categorizeCapsules();
+    const items = type === "open" ? opened : waiting;
+
+    navigate(tabType === "capsules" ? "/capsule-list" : "/alarm-list", {
+      state: {
+        title: type === "open" ? "공개 완료" : "공개 대기",
+        items,
+      },
+    });
   };
   return (
     <div className="profile-container">
-      {/* Tab Navigation */}
       <div className="flex mb-6 justify-evenly">
         {[
           { tab: "capsules", iconBlack: capsuleBlack, iconPurple: capsulePurple, label: "내 캡슐" },
@@ -90,7 +117,9 @@ function ProfileContainer() {
         ].map(({ tab, iconBlack, iconPurple, label }) => (
           <div
             key={tab}
-            className={`tab flex flex-col items-center cursor-pointer ${selectedTab === tab ? "text-primary" : "text-black"}`}
+            className={`tab flex flex-col items-center cursor-pointer ${
+              selectedTab === tab ? "text-primary" : "text-black"
+            }`}
             onClick={() => handleTabClick(tab)}
           >
             <img src={selectedTab === tab ? iconPurple : iconBlack} alt={label} className="w-[25px] h-[25px] mb-2" />
@@ -98,33 +127,32 @@ function ProfileContainer() {
           </div>
         ))}
       </div>
-
-      {/* Tab Content */}
       <div className="tab-content">
-        {selectedTab === "capsules" && (
-          <>
-            {/* 공개완료 슬라이드 */}
-            <MySlideHeader
-              title="공개완료"
-              count={openCapsuleItems.length}
-              showAllText="전체보기"
-              onShowAllClick={() => handleShowAllClick("open", "capsules")}
-            />
-            <MySlideContainer uniqueKey="open" items={openCapsuleItems.slice(0, 8)} />
+        {selectedTab === "capsules" &&
+          (() => {
+            const { opened, waiting } = categorizeCapsules();
 
-            {/* 공개대기 슬라이드 */}
-            <div className="mt-8 mb-8">
-              <MySlideHeader
-                title="공개대기"
-                count={closeCapsuleItems.length}
-                showAllText="전체보기"
-                onShowAllClick={() => handleShowAllClick("close", "capsules")}
-              />
-              <MySlideContainer uniqueKey="close" items={closeCapsuleItems.slice(0, 8)} />
-            </div>
-          </>
-        )}
-
+            return (
+              <>
+                <MySlideHeader
+                  title="공개완료"
+                  count={opened.length}
+                  showAllText="전체보기"
+                  onShowAllClick={() => handleShowAllClick("open", "capsules")}
+                />
+                <MySlideContainer uniqueKey="open" items={opened} />
+                <div className="mt-8 mb-8">
+                  <MySlideHeader
+                    title="공개대기"
+                    count={waiting.length}
+                    showAllText="전체보기"
+                    onShowAllClick={() => handleShowAllClick("close", "capsules")}
+                  />
+                  <MySlideContainer uniqueKey="close" items={waiting} />
+                </div>
+              </>
+            );
+          })()}
         {selectedTab === "articles" && (
           <div className="px-[30px]">
             <h2 className="text-[16px] font-pretendard flex items-center mb-[10px]">
@@ -132,49 +160,42 @@ function ProfileContainer() {
               <span className="ml-1 font-semibold">{articleItems.length}</span>
             </h2>
             <div className="grid grid-cols-3 gap-[10px] mb-[30px]">
-              {articleItems.map((item: PostType, index) => {
+              {articleItems.map((item, index) => {
                 const content = JSON.parse(item.title);
+                const textContent = getContent(item.title);
                 return (
                   <div
-                    key={index}
-                    className="flex-col w-full item-middle"
+                    key={item._id}
+                    className="flex-col w-full cursor-pointer"
+                    onClick={() => handlePostClick(item._id)}
                   >
-                    <img className="object-contain w-full aspect-[1] bg-gray-200 rounded-[10px]" src={item.image} alt={`일반 포스트 이미지 ${index}`} />
-                    <p>{content.title}</p>
-                    
+                    {item.image ? (
+                      <img
+                        className="object-cover w-full aspect-[1] bg-black rounded-[10px] item-middle"
+                        src={item.image}
+                        alt={`일반 포스트 이미지 ${index}`}
+                      />
+                    ) : (
+                      <div className="w-full aspect-[1] bg-gray-100 rounded-[10px] flex items-start justify-start p-[10px] border border-gray-200">
+                        <p className="text-black text-[14px] font-pretendard font-regular break-words">{textContent}</p>
+                      </div>
+                    )}
+                    <div className="mt-2 font-pretendard font-regular text-left text-[14px]">
+                      <p>{content.title}</p>
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
         )}
-
         {selectedTab === "alarms" && (
           <>
-            {/* 공개완료 예약글 슬라이드 */}
-            <MySlideHeader
-              title="공개완료"
-              count={openAlarmItems.length}
-              showAllText="전체보기"
-              onShowAllClick={() => handleShowAllClick("open", "alarms")}
-            />
-            <MySlideContainer uniqueKey="open" items={openAlarmItems.slice(0, 8)} />
-
-            {/* 공개대기 예약글 슬라이드 */}
-            <div className="mt-8 mb-8">
-              <MySlideHeader
-                title="공개대기"
-                count={closeAlarmItems.length}
-                showAllText="전체보기"
-                onShowAllClick={() => handleShowAllClick("close", "alarms")}
-              />
-              <MySlideContainer uniqueKey="close" items={closeAlarmItems.slice(0, 8)} />
-            </div>
+            <div className="mt-8 text-center text-gray-500">알람 기능은 준비 중입니다.</div>
           </>
         )}
       </div>
     </div>
   );
 }
-
 export default ProfileContainer;
