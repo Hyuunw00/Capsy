@@ -196,13 +196,11 @@ export default function PostDetailPage() {
   const postImages = parsePostContent(post.title).image ? parsePostContent(post.title).image! : [];
   // file형식으로 처리한 이미지 1개 -> 나중에 이미지 처리 형식 바꾸면 제거할 예정
   const pastImage = post.image;
-
   const handleNextImage = () => {
     if (currentImageIndex < postImages.length - 1) {
       setCurrentImageIndex((prev) => prev + 1);
     }
   };
-
   const handlePrevImage = () => {
     if (currentImageIndex > 0) {
       setCurrentImageIndex((prev) => prev - 1);
@@ -283,7 +281,7 @@ export default function PostDetailPage() {
         {/* 포스트 이미지 렌더링 */}
         <div className="relative w-[600px] h-[600px] bg-gray-50 mx-auto overflow-hidden">
           <div
-            className="relative flex justify-center items-center w-full h-full bg-black"
+            className="flex w-full transition-transform duration-300 ease-in-out"
             style={{
               transform: `translateX(-${currentImageIndex * 100}%)`,
             }}
@@ -304,22 +302,6 @@ export default function PostDetailPage() {
                 alt="post-image"
               />
             )}
-            <div className="absolute flex items-center bottom-0 w-full h-[50px] px-4 space-x-2 bg-custom-gradient">
-              {/* 좋아요 버튼 및 좋아요 수 */}
-              <img
-                src={likeStatus[post._id] ? img_fillHeart : img_heart}
-                alt="좋아요"
-                className="w-[24px] h-[24px] cursor-pointer object-contain"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleLikeClick(post._id);
-                }}
-              />
-              <span className="text-white pr-3">{post.likes.length}</span>
-              {/* 댓글 아이콘 및 댓글 수 */}
-              <img src={img_comment} alt="댓글" className="w-[20px] h-[24px]" />
-              <span className="text-white">{post.comments.length}</span>
-            </div>
           </div>
           {/* 이전 이미지 버튼 */}
           {currentImageIndex > 0 && <ArrowButton direction="left" onClick={handlePrevImage} />}

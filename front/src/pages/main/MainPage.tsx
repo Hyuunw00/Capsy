@@ -204,6 +204,20 @@ export default function MainPage() {
     }
   };
 
+  // 타임캡슐의 첫번째 이미지 가져오기
+  const getFirstImage = (jsonString: any) => {
+    try {
+      const parsedData = JSON.parse(jsonString);
+      if (parsedData.image) {
+        return parsedData.image[0];
+      }
+      return null;
+    } catch (error) {
+      console.error("JSON parse error: ", error);
+      return null;
+    }
+  };
+
   // 데이터 call
   useEffect(() => {
     const updateData = async (postChannelId: string, capsuleChannelId: string) => {
@@ -354,9 +368,13 @@ export default function MainPage() {
               className="w-full inline-block break-inside-avoid relative mb-[10px] overflow-hidden cursor-pointer rounded-[10px]"
               onClick={() => handleImageClick(item)}
             >
-              {item.image ? (
+              {getFirstImage(item.title) || item.image ? (
                 <>
-                  <img src={item.image} alt={item.title} className="w-full h-auto rounded-[10px] object-cover" />
+                  <img
+                    src={item.image ? item.image : getFirstImage(item.title)}
+                    alt={item.title}
+                    className="w-full h-auto rounded-[10px] object-cover"
+                  />
 
                   {item.channel?.name === "CAPSULETEST" && (
                     <>
@@ -394,7 +412,7 @@ export default function MainPage() {
                 </div>
               )}
               <div
-                className={`absolute bottom-0 left-0 px-2.5 py-2 w-full text-white rounded-b-[10px] ${item.image ? "bg-custom-gradient" : "bg-[#674EFF]"}`}
+                className={`absolute bottom-0 left-0 px-2.5 py-2 w-full text-white rounded-b-[10px] ${item.image || getFirstImage(item.title) ? "bg-custom-gradient" : "bg-[#674EFF]"}`}
               >
                 <p
                   className="inline-block font-semibold"

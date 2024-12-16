@@ -112,6 +112,18 @@ export default function EditorPage() {
     try {
       const channelId = activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST;
 
+      // 이미지 파일 base64로 인코딩
+      const incodingImages = uploadedImages.map((file) => {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject("Base64 인코딩 실패");
+          reader.readAsDataURL(file); // Base64 인코딩
+        });
+      });
+      const base64Images = await Promise.all(incodingImages);
+      console.log(base64Images);
+
       // 커스텀 데이터 만들기
       const customData = {
         title: title,
@@ -125,17 +137,18 @@ export default function EditorPage() {
             return date.toISOString();
           })(),
         }),
+        image: base64Images, // 인코딩된 문자열 배열
       };
 
       const formData = new FormData();
       formData.append("title", JSON.stringify(customData));
       formData.append("channelId", channelId);
 
-      if (uploadedImages.length > 0) {
-        uploadedImages.forEach((image) => {
-          formData.append("image", image);
-        });
-      }
+      // if (uploadedImages.length > 0) {
+      //   uploadedImages.forEach((image) => {
+      //     formData.append("image", image);
+      //   });
+      // }
 
       const response = await createPost(formData);
       setSaveModal(true);
@@ -155,7 +168,9 @@ export default function EditorPage() {
         <div className="flex items-center">
           <button
             className={`py-3 px-6 border-b-2 w-1/2 transition ${
-              activeTab === "general" ? "text-primary border-primary dark:text-secondary dark:border-secondary" : "text-gray-400 border-transparent dark:text-gray-200"
+              activeTab === "general"
+                ? "text-primary border-primary dark:text-secondary dark:border-secondary"
+                : "text-gray-400 border-transparent dark:text-gray-200"
             }`}
             onClick={() => setActiveTab("general")}
           >
@@ -163,7 +178,9 @@ export default function EditorPage() {
           </button>
           <button
             className={`py-3 px-6 border-b-2 w-1/2 transition ${
-              activeTab === "timeCapsule" ? "text-primary border-primary dark:text-secondary dark:border-secondary" : "text-gray-400 border-transparent dark:text-gray-200"
+              activeTab === "timeCapsule"
+                ? "text-primary border-primary dark:text-secondary dark:border-secondary"
+                : "text-gray-400 border-transparent dark:text-gray-200"
             }`}
             onClick={() => setActiveTab("timeCapsule")}
           >
@@ -194,7 +211,10 @@ export default function EditorPage() {
           )}
         </div>
         <div className="flex items-center gap-4">
-          <button onClick={handleSaveClick} className="px-4 py-1 text-sm text-white bg-black rounded dark:bg-secondary dark:text-black">
+          <button
+            onClick={handleSaveClick}
+            className="px-4 py-1 text-sm text-white bg-black rounded dark:bg-secondary dark:text-black"
+          >
             저장
           </button>
         </div>
