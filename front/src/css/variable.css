@@ -4,6 +4,7 @@
 /* Pretendard 폰트 import */
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
 
+@import url("https://cdn.jsdelivr.net/npm/galmuri/dist/galmuri.css");
 :root {
   /* Object Color */
   --color-primary: #674eff; /* 보라색 */
@@ -47,7 +48,9 @@
     "Noto Sans KR",
     "Apple SD Gothic Neo",
     "맑은 고딕",
-    "Malgun Gothic";
+    "Malgun Gothic",
+    "galmuri4",
+    "galmuri9";
 }
 
 .dark {
