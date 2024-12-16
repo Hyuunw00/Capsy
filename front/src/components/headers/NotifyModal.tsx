@@ -50,7 +50,7 @@ const NotifyModal = ({
           <div key={notificationKey} className="flex items-center justify-between py-2 hover:bg-gray-50">
             <p>
               <strong>{notification.postTitle || "게시물"}</strong>에 새로운
-              {notification.type === "LIKE" ? " 좋아요" : " 댓글"}이 있습니다
+              {notification.type === "LIKE" ? " 좋아요가" : " 댓글이"} 있습니다
             </p>
             <div className="flex gap-2">
               <Button
