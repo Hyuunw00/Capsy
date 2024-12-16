@@ -32,6 +32,28 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const { isDark } = useThemeStore();
 
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_APP_KEY}&libraries=services,clusterer&autoload=false`;
+    script.async = true;
+  
+    const loadKakaoMap = () => {
+      // @ts-ignore
+      window.kakao.maps.load(() => {
+        console.log('Kakao maps loaded successfully');
+      });
+    };
+    
+    script.onload = loadKakaoMap;
+  
+    document.head.appendChild(script);
+  
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+  
+
   const getUser = async () => {
     try {
       if (tokenService.getToken()) {
