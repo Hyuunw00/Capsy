@@ -8,7 +8,7 @@ interface EditModalProps {
 
 function EventEditModal({ onClose, onSubmit }: EditModalProps) {
   //   이벤트 종료 기간
-  const date = { year: "2025", month: "1", day: "1" };
+  const date = { year: "2024", month: "12", day: "17" };
 
   const handleSubmit = () => {
     // 모든 검증을 통과한 경우
