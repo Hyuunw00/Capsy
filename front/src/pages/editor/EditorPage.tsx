@@ -145,6 +145,11 @@ export default function EditorPage() {
           })(),
         }),
         image: base64Images, // 인코딩된 문자열 배열
+        ...(selectedLocation && {
+          capsuleLocation: selectedLocation.address,
+          latitude: selectedLocation.lat,
+          longitude: selectedLocation.lng
+        })
       };
 
       const formData = new FormData();
