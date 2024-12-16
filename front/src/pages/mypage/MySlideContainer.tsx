@@ -2,8 +2,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/swiper-bundle.css";
 
-import leftArrowCircle from "../assets/leftArrowCircle.svg";
-import rightArrowCircle from "../assets/rightArrowCircle.svg";
+import leftArrowCircle from "../../assets/leftArrowCircle.svg";
+import rightArrowCircle from "../../assets/rightArrowCircle.svg";
 
 interface MySlideContainerProps {
   items: string[]; // 전체 아이템 배열
