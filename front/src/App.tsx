@@ -23,6 +23,7 @@ import EventEditorPage from "./pages/editor/EventEditorPage";
 import MyFollowersPage from "./pages/userinfo/MyFollowerPage";
 import MyFollowingPage from "./pages/userinfo/MyFollowingPage";
 import { useThemeStore } from "./store/themeStore";
+import MapPage from "./pages/MapPage";
 
 export default function App() {
   // 새로고침할때마다 session storage에서 token 받아와서 로그인

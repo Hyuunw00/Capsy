@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import footerLogo from '../assets/footer-logo.svg'
 
 interface NavItemProps {
@@ -8,6 +8,7 @@ interface NavItemProps {
 }
 
 export default function Footer() {
+  const navigate = useNavigate();
   const NavItem = ({ to, iconPath, label }: NavItemProps) => (
     <li className="flex flex-col items-center">
       <NavLink
@@ -44,7 +45,7 @@ export default function Footer() {
             iconPath="M10.33 6.05356L9.44625 5.16981L3.625 10.9911V11.8748H4.50875L10.33 6.05356ZM11.2137 5.16981L12.0975 4.28606L11.2137 3.40231L10.33 4.28606L11.2137 5.16981ZM5.02625 13.1248H2.375V10.4729L10.7719 2.07606C10.8891 1.95889 11.048 1.89307 11.2137 1.89307C11.3795 1.89307 11.5384 1.95889 11.6556 2.07606L13.4237 3.84418C13.5409 3.96139 13.6067 4.12033 13.6067 4.28606C13.6067 4.45179 13.5409 4.61073 13.4237 4.72793L5.02688 13.1248H5.02625Z"
             label="작성"
           />
-          <li className="flex flex-col items-center">
+          <li onClick={() => navigate('/map')} className="flex flex-col items-center">
             <img src={footerLogo} alt="Logo" className="h-10 w-25" />
           </li>
           <NavItem
