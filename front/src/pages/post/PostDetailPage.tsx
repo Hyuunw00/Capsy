@@ -368,22 +368,22 @@ export default function PostDetailPage() {
                 alt="post-image"
               />
             )}
-            <div className="absolute flex items-center bottom-0 w-full h-[50px] px-4 space-x-2 bg-custom-gradient">
-              {/* 좋아요 버튼 및 좋아요 수 */}
-              <img
-                src={likeStatus[post._id] ? img_fillHeart : img_heart}
-                alt="좋아요"
-                className="w-[24px] h-[24px] cursor-pointer object-contain"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleLikeClick(post._id);
-                }}
-              />
-              <span className="text-white pr-3">{post.likes.length}</span>
-              {/* 댓글 아이콘 및 댓글 수 */}
-              <img src={img_comment} alt="댓글" className="w-[20px] h-[24px]" />
-              <span className="text-white">{post.comments.length}</span>
-            </div>
+          </div>
+          <div className="absolute flex items-center bottom-0 w-full h-[50px] px-4 space-x-2 bg-custom-gradient z-10">
+            {/* 좋아요 버튼 및 좋아요 수 */}
+            <img
+              src={likeStatus[post._id] ? img_fillHeart : img_heart}
+              alt="좋아요"
+              className="w-[24px] h-[24px] cursor-pointer object-contain"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleLikeClick(post._id);
+              }}
+            />
+            <span className="pr-3 text-white">{post.likes.length}</span>
+            {/* 댓글 아이콘 및 댓글 수 */}
+            <img src={img_comment} alt="댓글" className="w-[20px] h-[24px]" />
+            <span className="text-white">{post.comments.length}</span>
           </div>
           {/* 이전 이미지 버튼 */}
           {currentImageIndex > 0 && <ArrowButton direction="left" onClick={handlePrevImage} />}
@@ -402,7 +402,7 @@ export default function PostDetailPage() {
               ))}
             </div>
           )}
-          {/* <img src={post.image || randomThumbnail} className="w-full h-full object-contain" alt="post-image" /> */}
+          {/* <img src={post.image || randomThumbnail} className="object-contain w-full h-full" alt="post-image" /> */}
         </div>
 
         {/* 포스트 타이틀, 내용 렌더링 */}
