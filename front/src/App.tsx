@@ -36,16 +36,16 @@ export default function App() {
     const script = document.createElement("script");
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_APP_KEY}&libraries=services,clusterer&autoload=false`;
     script.async = true;
-  
+
     script.onload = () => {
       // @ts-ignore
       kakao.maps.load(() => {
-        console.log('Kakao maps loaded successfully');
+        console.log("Kakao maps loaded successfully");
       });
     };
-  
+
     document.head.appendChild(script);
-  
+
     return () => {
       document.head.removeChild(script);
     };
