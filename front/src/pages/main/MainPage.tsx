@@ -341,7 +341,7 @@ export default function MainPage() {
 
               {isOpen && (
                 <div className="absolute items-center rounded-[6px] mt-2 shadow-300 z-10 right-8 bg-white w-[120px] h-[104px]">
-                  <div className="flex flex-col p-2 flex-nowrap space-y-2">
+                  <div className="flex flex-col p-2 space-y-2 flex-nowrap">
                     {["All", "포스트", "타임캡슐"].map((option) => (
                       <button
                         key={option}
@@ -392,7 +392,7 @@ export default function MainPage() {
                 <div className="w-full h-40 bg-white border border-[#E7E7E7] border-1 rounded-[10px] relative">
                   <div className="px-2.5 py-2.5 text-[16px] ">
                     <p
-                      className="overflow-hidden text-ellipsis whitespace-pre-wrap"
+                      className="overflow-hidden whitespace-pre-wrap text-ellipsis"
                       style={{
                         maxWidth: "calc(30ch)",
                         display: "-webkit-box",
