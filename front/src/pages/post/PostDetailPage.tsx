@@ -345,21 +345,18 @@ export default function PostDetailPage() {
         <hr className="border-t border-gray200" />
 
         {/* 포스트 이미지 렌더링 */}
-        <div className="relative w-[600px] h-[600px] bg-gray-50 mx-auto overflow-hidden">
+        <div className="relative w-[600px] h-[600px] bg-black mx-auto overflow-hidden">
           <div
-            className="relative flex justify-center items-center w-full h-full bg-black"
+            className="flex w-full h-full transition-transform duration-300 ease-in-out"
             style={{
               transform: `translateX(-${currentImageIndex * 100}%)`,
             }}
           >
             {postImages.length > 0 ? (
               postImages.map((image, index) => (
-                <img
-                  key={index}
-                  src={image}
-                  className="min-w-full w-0 aspect-square object-cover"
-                  alt={`post-image-${index}`}
-                />
+                <div key={index} className="w-full h-full flex-shrink-0">
+                  <img src={image} className="w-full h-full object-contain" alt={`post-image-${index}`} />
+                </div>
               ))
             ) : (
               <img
