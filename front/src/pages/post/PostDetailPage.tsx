@@ -296,12 +296,12 @@ export default function PostDetailPage() {
                 <div className="absolute right-0 mt-2 w-32 px-[6px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                   <ul className="py-1">
                     <li>
-                      <button className="w-full text-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      <button className="w-full text-center px-4 py-2 text-sm font-normal text-gray-600 hover:bg-gray-100">
                         수정
                       </button>
                     </li>
                     <li>
-                      <button className="w-full text-center px-4 py-2 text-sm text-primary hover:bg-gray-100">
+                      <button className="w-full text-center px-4 py-2 text-sm font-normal text-primary hover:bg-gray-100">
                         삭제
                       </button>
                     </li>
