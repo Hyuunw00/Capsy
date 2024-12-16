@@ -3,7 +3,6 @@ import { Navigation } from "swiper/modules";
 import "swiper/swiper-bundle.css";
 import leftArrowCircle from "../../assets/leftArrowCircle.svg";
 import rightArrowCircle from "../../assets/rightArrowCircle.svg";
-
 interface CapsuleItem {
   id: string;
   title: string;
@@ -11,15 +10,12 @@ interface CapsuleItem {
   image?: string;
   closeAt?: Date;
 }
-
 interface MySlideContainerProps {
   items: CapsuleItem[];
   uniqueKey: string;
 }
-
 function MySlideContainer({ items, uniqueKey }: MySlideContainerProps) {
   const now = new Date();
-
   return (
     <div className="relative w-full overflow-hidden px-[30px]">
       <Swiper
@@ -35,7 +31,6 @@ function MySlideContainer({ items, uniqueKey }: MySlideContainerProps) {
       >
         {items.map((item) => {
           const isWaiting = item.closeAt && item.closeAt > now;
-
           return (
             <SwiperSlide key={item.id} className="flex items-center justify-center">
               <div className="w-full">
@@ -50,9 +45,7 @@ function MySlideContainer({ items, uniqueKey }: MySlideContainerProps) {
                       />
                       {isWaiting && (
                         <div className="absolute inset-0 flex items-center justify-center backdrop-blur-md bg-black/30">
-                          <p className="text-sm text-white">
-                            {item.closeAt?.toLocaleDateString()} 공개 예정
-                          </p>
+                          <p className="text-sm text-white">{item.closeAt?.toLocaleDateString()} 공개 예정</p>
                         </div>
                       )}
                     </>
@@ -61,24 +54,19 @@ function MySlideContainer({ items, uniqueKey }: MySlideContainerProps) {
                       <p className="text-sm line-clamp-3">{item.content}</p>
                       {isWaiting && (
                         <div className="absolute inset-0 flex items-center justify-center backdrop-blur-md bg-black/30">
-                          <p className="text-sm text-white">
-                            {item.closeAt?.toLocaleDateString()} 공개 예정
-                          </p>
+                          <p className="text-sm text-white">{item.closeAt?.toLocaleDateString()} 공개 예정</p>
                         </div>
                       )}
                     </div>
                   )}
                 </div>
                 {/* 타이틀 */}
-                <div className="mt-2 text-[14px] font-pretendard text-left">
-                  {item.title}
-                </div>
+                <div className="mt-2 text-[14px] font-pretendard text-left">{item.title}</div>
               </div>
             </SwiperSlide>
           );
         })}
       </Swiper>
-
       {/* 커스텀 화살표 버튼 */}
       <button
         className={`absolute left-0 top-1/2 transform -translate-y-[100%] bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-prev-${uniqueKey}`}
@@ -95,5 +83,4 @@ function MySlideContainer({ items, uniqueKey }: MySlideContainerProps) {
     </div>
   );
 }
-
 export default MySlideContainer;

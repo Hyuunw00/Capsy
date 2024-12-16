@@ -10,7 +10,6 @@ import MySlideHeader from "./MySlideHeader";
 import MySlideContainer from "./MySlideContainer";
 import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE, getUserPosts } from "../../apis/apis";
 import { tokenService } from "../../utils/token";
-
 interface PostType {
   _id: string;
   title: string;
@@ -23,13 +22,11 @@ interface PostType {
   createdAt: string;
   updatedAt: string;
 }
-
 interface ParsedCapsule {
   title: string;
   content: string;
   closeAt: string;
 }
-
 interface CapsuleItem {
   id: string;
   title: string;
@@ -37,7 +34,6 @@ interface CapsuleItem {
   image?: string;
   closeAt: Date;
 }
-
 // 게시글 내용 가져오기 유틸 함수
 const getContent = (jsonString: string) => {
   try {
@@ -47,23 +43,18 @@ const getContent = (jsonString: string) => {
     return jsonString;
   }
 };
-
 function ProfileContainer() {
   const [selectedTab, setSelectedTab] = useState("capsules");
   const [postItems, setPostItems] = useState<PostType[]>([]);
   const navigate = useNavigate();
-
   const handleTabClick = (tab: string) => {
     setSelectedTab(tab);
   };
-
   const handlePostClick = (postId: string) => {
     navigate(`/detail/${postId}`);
   };
-
   const user = tokenService.getUser();
   const userAuthorId = user._id;
-
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -75,10 +66,8 @@ function ProfileContainer() {
     };
     fetchPosts();
   }, [userAuthorId]);
-
   const articleItems = postItems.filter((post) => post.channel?._id === CHANNEL_ID_POST);
   const capsuleItems = postItems.filter((post) => post.channel?._id === CHANNEL_ID_TIMECAPSULE);
-
   const categorizeCapsules = () => {
     const now = new Date();
     return capsuleItems.reduce<{ opened: CapsuleItem[]; waiting: CapsuleItem[] }>(
@@ -86,41 +75,38 @@ function ProfileContainer() {
         try {
           const parsed: ParsedCapsule = JSON.parse(item.title);
           const closeAt = new Date(parsed.closeAt);
-          
+
           const capsuleItem: CapsuleItem = {
             id: item._id,
             title: parsed.title,
-            content: parsed.content?.replace(/\\n/g, '\n'),
+            content: parsed.content?.replace(/\\n/g, "\n"),
             image: item.image,
-            closeAt
+            closeAt,
           };
-
           if (closeAt > now) {
             acc.waiting.push(capsuleItem);
           } else {
             acc.opened.push(capsuleItem);
           }
         } catch (error) {
-          console.error('Error parsing capsule data:', error);
+          console.error("Error parsing capsule data:", error);
         }
         return acc;
       },
-      { opened: [], waiting: [] }
+      { opened: [], waiting: [] },
     );
   };
-
   const handleShowAllClick = (type: "open" | "close", tabType: "capsules" | "alarms") => {
     const { opened, waiting } = categorizeCapsules();
     const items = type === "open" ? opened : waiting;
-    
-    navigate(tabType === "capsules" ? "/capsule-list" : "/alarm-list", { 
-      state: { 
-        title: type === "open" ? "공개 완료" : "공개 대기", 
-        items 
-      } 
+
+    navigate(tabType === "capsules" ? "/capsule-list" : "/alarm-list", {
+      state: {
+        title: type === "open" ? "공개 완료" : "공개 대기",
+        items,
+      },
     });
   };
-
   return (
     <div className="profile-container">
       <div className="flex mb-6 justify-evenly">
@@ -136,49 +122,37 @@ function ProfileContainer() {
             }`}
             onClick={() => handleTabClick(tab)}
           >
-            <img 
-              src={selectedTab === tab ? iconPurple : iconBlack} 
-              alt={label} 
-              className="w-[25px] h-[25px] mb-2" 
-            />
+            <img src={selectedTab === tab ? iconPurple : iconBlack} alt={label} className="w-[25px] h-[25px] mb-2" />
             <span className="text-[16px] font-semibold font-pretendard">{label}</span>
           </div>
         ))}
       </div>
-
       <div className="tab-content">
-        {selectedTab === "capsules" && (() => {
-          const { opened, waiting } = categorizeCapsules();
-          
-          return (
-            <>
-              <MySlideHeader
-                title="공개완료"
-                count={opened.length}
-                showAllText="전체보기"
-                onShowAllClick={() => handleShowAllClick("open", "capsules")}
-              />
-              <MySlideContainer 
-                uniqueKey="open" 
-                items={opened}
-              />
+        {selectedTab === "capsules" &&
+          (() => {
+            const { opened, waiting } = categorizeCapsules();
 
-              <div className="mt-8 mb-8">
+            return (
+              <>
                 <MySlideHeader
-                  title="공개대기"
-                  count={waiting.length}
+                  title="공개완료"
+                  count={opened.length}
                   showAllText="전체보기"
-                  onShowAllClick={() => handleShowAllClick("close", "capsules")}
+                  onShowAllClick={() => handleShowAllClick("open", "capsules")}
                 />
-                <MySlideContainer 
-                  uniqueKey="close" 
-                  items={waiting}
-                />
-              </div>
-            </>
-          );
-        })()}
-
+                <MySlideContainer uniqueKey="open" items={opened} />
+                <div className="mt-8 mb-8">
+                  <MySlideHeader
+                    title="공개대기"
+                    count={waiting.length}
+                    showAllText="전체보기"
+                    onShowAllClick={() => handleShowAllClick("close", "capsules")}
+                  />
+                  <MySlideContainer uniqueKey="close" items={waiting} />
+                </div>
+              </>
+            );
+          })()}
         {selectedTab === "articles" && (
           <div className="px-[30px]">
             <h2 className="text-[16px] font-pretendard flex items-center mb-[10px]">
@@ -190,9 +164,9 @@ function ProfileContainer() {
                 const content = JSON.parse(item.title);
                 const textContent = getContent(item.title);
                 return (
-                  <div 
-                    key={item._id} 
-                    className="flex-col w-full cursor-pointer" 
+                  <div
+                    key={item._id}
+                    className="flex-col w-full cursor-pointer"
                     onClick={() => handlePostClick(item._id)}
                   >
                     {item.image ? (
@@ -203,9 +177,7 @@ function ProfileContainer() {
                       />
                     ) : (
                       <div className="w-full aspect-[1] bg-gray-100 rounded-[10px] flex items-start justify-start p-[10px] border border-gray-200">
-                        <p className="text-black text-[14px] font-pretendard font-regular break-words">
-                          {textContent}
-                        </p>
+                        <p className="text-black text-[14px] font-pretendard font-regular break-words">{textContent}</p>
                       </div>
                     )}
                     <div className="mt-2 font-pretendard font-regular text-left text-[14px]">
@@ -217,17 +189,13 @@ function ProfileContainer() {
             </div>
           </div>
         )}
-
         {selectedTab === "alarms" && (
           <>
-            <div className="mt-8 text-center text-gray-500">
-              알람 기능은 준비 중입니다.
-            </div>
+            <div className="mt-8 text-center text-gray-500">알람 기능은 준비 중입니다.</div>
           </>
         )}
       </div>
     </div>
   );
 }
-
 export default ProfileContainer;
