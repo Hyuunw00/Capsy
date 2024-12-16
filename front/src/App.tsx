@@ -32,6 +32,25 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const { isDark } = useThemeStore();
 
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_APP_KEY}&libraries=services,clusterer&autoload=false`;
+    script.async = true;
+
+    script.onload = () => {
+      // @ts-ignore
+      kakao.maps.load(() => {
+        console.log("Kakao maps loaded successfully");
+      });
+    };
+
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
   const getUser = async () => {
     try {
       if (tokenService.getToken()) {
@@ -73,11 +92,14 @@ export default function App() {
             <Route path="/capsule-list" element={<CapsuleListPage />} />
             <Route path="/alarm-list" element={<AlarmListPage />} />
           </Route>
+
           <Route path="/" element={<MainPage />} />
           <Route path="/event" element={<Event />} />
           <Route path="/userinfo/:fullname" element={<UserInfoPage />} />
           <Route path="/userinfo/:fullname/myfollower" element={<MyFollowersPage />} />
           <Route path="/userinfo/:fullname/myfollowing" element={<MyFollowingPage />} />
+          <Route path="/map" element={<MapPage />} />
+
           <Route element={<NonPrivate />}>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUpPage />} />
