@@ -150,9 +150,10 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
       <button className="absolute right-2 top-1" onClick={onClose}>
         <img className="w-[24px] h-[24px] object-contain" src={closeIcon} alt="닫기 버튼" />
       </button>
-      <h5 className="mb-3 text-primary">날짜 지정 안내</h5>
+      <h5 className="mb-3 text-primary">오픈 날짜 선택</h5>
       <div className="space-y-4">
-        <div className="text-gray-600">타임캡슐 공개 날짜를 지정해주세요.</div>
+        <p className="text-gray-600">타임 캡슐을 오픈할 날짜를 선택해주세요.<br/>
+        해당 타임 캡슐 알림 요청을 받은 다른 사용자들도 해당 날짜에 알림을 받습니다.</p>
         <div className="flex flex-col gap-2">
           <div className="flex items-end gap-2">
             <div className="flex-1">
