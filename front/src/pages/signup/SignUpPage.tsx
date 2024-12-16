@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import loginLogo from "../../assets/login-logo.svg";
 import NoticeModal from "../../components/NoticeModal";
 import { signupAuth, userLists } from "../../apis/auth";
 import { testEmail, testId, testPassword, testPasswordConfirm } from "../../utils/regex";

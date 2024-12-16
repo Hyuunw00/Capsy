@@ -19,7 +19,7 @@ export default function PageHeader() {
     show: false,
     message: "",
   });
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!tokenService.getToken());
+  const [isLoggedIn, _] = useState<boolean>(!!tokenService.getToken());
   const { isDark, toggleTheme } = useThemeStore();
 
   const showToastMessage = (message: string) => {

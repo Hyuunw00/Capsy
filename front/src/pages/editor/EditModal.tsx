@@ -187,7 +187,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
                 isError={errors.day}
               />
             </div>
-            <button onClick={handleSubmit} className="px-4 py-2 text-white rounded w-fit bg-primary">
+            <button onClick={handleSubmit} className="px-4 py-2 text-white bg-black rounded w-fit">
               확인
             </button>
           </div>

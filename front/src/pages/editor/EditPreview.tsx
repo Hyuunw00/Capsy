@@ -59,8 +59,8 @@ const EditPreview = ({ images, showDatePreview, date, onDelete }: EditPreviewPro
       )}
 
       {showDatePreview && date.year && (
-        <li className="pr-8 mt-4 item-between">
-          <h3 className="mb-2">타임캡슐 오픈 날짜</h3>
+        <li className="gap-4 pr-8 mt-4 item-left">
+          <h3>타임캡슐 오픈 날짜</h3>
           <span className="px-2 py-0.5 rounded-3xl bg-bg-200">
             {date.year} / {date.month} / {date.day}
           </span>
