@@ -9,10 +9,16 @@ interface EditPreviewProps {
     month: string;
     day: string;
   };
+  location?: {
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  } | null;
   onDelete: (index: number) => void;
 }
 
-const EditPreview = ({ images, showDatePreview, date, onDelete }: EditPreviewProps) => {
+const EditPreview = ({ images, showDatePreview, date, location, onDelete }: EditPreviewProps) => {
   const isVideo = (file: File) => file.type.startsWith("video/");
 
   return (
@@ -66,8 +72,17 @@ const EditPreview = ({ images, showDatePreview, date, onDelete }: EditPreviewPro
           </span>
         </li>
       )}
+
+      {showDatePreview && location && (
+        <li className="gap-4 pr-8 mt-4 item-left">
+          <h3>타임캡슐 위치</h3>
+          <div className="px-2 py-0.5 rounded-3xl bg-bg-200 item-between gap-2">
+            <h4 className="font-medium">{location.name}</h4>
+            <span className="text-sm text-gray-600">{location.address}</span>
+          </div>
+        </li>
+      )}
     </ul>
   );
 };
-
 export default EditPreview;

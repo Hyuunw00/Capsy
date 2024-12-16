@@ -18,6 +18,12 @@ export default function EditorPage() {
   const [text, setText] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [createdPostId, setCreatedPostId] = useState<string | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<{
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  } | null>(null);
 
   // 업로드 받은 이미지 상태
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
@@ -145,12 +151,6 @@ export default function EditorPage() {
       formData.append("title", JSON.stringify(customData));
       formData.append("channelId", channelId);
 
-      // if (uploadedImages.length > 0) {
-      //   uploadedImages.forEach((image) => {
-      //     formData.append("image", image);
-      //   });
-      // }
-
       const response = await createPost(formData);
       setSaveModal(true);
 
@@ -161,6 +161,11 @@ export default function EditorPage() {
     } catch (error) {
       console.error("게시물 생성 실패:", error);
     }
+  };
+
+  const handleLocationSelect = (location: { name: string; address: string; lat: number; lng: number }) => {
+    setSelectedLocation(location);
+    setShowLocationModal(false);
   };
 
   return (
@@ -253,11 +258,14 @@ export default function EditorPage() {
           images={uploadedImages}
           showDatePreview={activeTab === "timeCapsule"}
           date={selectedDate}
+          location={selectedLocation}
           onDelete={handleDeleteFile}
         />
       </main>
       {showModal && <EditModal onClose={() => setShowModal(false)} onSubmit={handleDateSubmit} />}
-      {showLocationModal && <EditLocationModal onClose={() => setShowLocationModal(false)} />}
+      {showLocationModal && (
+        <EditLocationModal onClose={() => setShowLocationModal(false)} onSelectLocation={handleLocationSelect} />
+      )}
       {saveModal && (
         <EditComplete
           isOpen={saveModal}
