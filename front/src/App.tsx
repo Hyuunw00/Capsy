@@ -25,66 +25,66 @@ import MyFollowingPage from "./pages/userinfo/MyFollowingPage";
 import { useThemeStore } from "./store/themeStore";
 
 export default function App() {
- // 새로고침할때마다 session storage에서 token 받아와서 로그인
- const login = useLoginStore((state) => state.login);
- // 처음에 렌더링될때 isLoggedIn이 false가 되는것을 방지
- const [isLoading, setIsLoading] = useState(true);
- const { isDark } = useThemeStore();
+  // 새로고침할때마다 session storage에서 token 받아와서 로그인
+  const login = useLoginStore((state) => state.login);
+  // 처음에 렌더링될때 isLoggedIn이 false가 되는것을 방지
+  const [isLoading, setIsLoading] = useState(true);
+  const { isDark } = useThemeStore();
 
- const getUser = async () => {
-   try {
-     if (tokenService.getToken()) {
-       login(tokenService.getToken());
-     }
-   } catch (err) {
-     console.error(err);
-   } finally {
-     setIsLoading(false);
-   }
- };
+  const getUser = async () => {
+    try {
+      if (tokenService.getToken()) {
+        login(tokenService.getToken());
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
- useEffect(() => {
-   getUser();
- }, []);
+  useEffect(() => {
+    getUser();
+  }, []);
 
- // 다크모드 초기화를 위한 별도의 useEffect
- useEffect(() => {
-   // isDark 상태에 따라 HTML 클래스 설정
-   if (isDark) {
-     document.documentElement.classList.add('dark');
-   } else {
-     document.documentElement.classList.remove('dark');
-   }
- }, [isDark]); // isDark가 변경될 때마다 실행
+  // 다크모드 초기화를 위한 별도의 useEffect
+  useEffect(() => {
+    // isDark 상태에 따라 HTML 클래스 설정
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDark]); // isDark가 변경될 때마다 실행
 
- if (isLoading) return <Loading />;
+  if (isLoading) return <Loading />;
 
- return (
-   <>
-     <Routes>
-       <Route element={<RootLayout />}>
-         <Route element={<Private />}>
-           <Route path="/mypage" element={<MyPage />} />
-           <Route path="/editor" element={<EditorPage />} />
-           <Route path="/eventeditor" element={<EventEditorPage />} />
-           <Route path="/detail/:postId" element={<PostDetailPage />} />
-           <Route path="/resetpassword" element={<PasswordResetPage />} />
-           <Route path="/capsule-list" element={<CapsuleListPage />} />
-           <Route path="/alarm-list" element={<AlarmListPage />} />
-         </Route>
-         <Route path="/" element={<MainPage />} />
-         <Route path="/event" element={<Event />} />
-         <Route path="/userinfo/:fullname" element={<UserInfoPage />} />
-         <Route path="/userinfo/:fullname/myfollower" element={<MyFollowersPage />} />
-         <Route path="/userinfo/:fullname/myfollowing" element={<MyFollowingPage />} />
-         <Route element={<NonPrivate />}>
-           <Route path="/login" element={<Login />} />
-           <Route path="/signup" element={<SignUpPage />} />
-           <Route path="/signupsuccess" element={<SignUpSuccessPage />} />
-         </Route>
-         <Route path="*" element={<Error404 />} />
-       </Route>
-     </Routes>
-   </>
- );
+  return (
+    <>
+      <Routes>
+        <Route element={<RootLayout />}>
+          <Route element={<Private />}>
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/editor" element={<EditorPage />} />
+            <Route path="/eventeditor" element={<EventEditorPage />} />
+            <Route path="/detail/:postId" element={<PostDetailPage />} />
+            <Route path="/resetpassword" element={<PasswordResetPage />} />
+            <Route path="/capsule-list" element={<CapsuleListPage />} />
+            <Route path="/alarm-list" element={<AlarmListPage />} />
+          </Route>
+          <Route path="/" element={<MainPage />} />
+          <Route path="/event" element={<Event />} />
+          <Route path="/userinfo/:fullname" element={<UserInfoPage />} />
+          <Route path="/userinfo/:fullname/myfollower" element={<MyFollowersPage />} />
+          <Route path="/userinfo/:fullname/myfollowing" element={<MyFollowingPage />} />
+          <Route element={<NonPrivate />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/signupsuccess" element={<SignUpSuccessPage />} />
+          </Route>
+          <Route path="*" element={<Error404 />} />
+        </Route>
+      </Routes>
+    </>
+  );
 }
