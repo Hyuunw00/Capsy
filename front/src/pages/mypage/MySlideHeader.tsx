@@ -9,11 +9,11 @@ function MySlideHeader({ title, count, showAllText, onShowAllClick }: MySlideHea
   return (
     <div className="flex justify-between items-center text-[16px] font-pretendard px-[30px]  mb-[10px]">
       <div className="flex items-center">
-        <span className="font-semibold">{title}</span>
-        <span className="ml-1 font-semibold">{count}</span>
+        <span className="font-semibold text-black dark:text-white">{title}</span>
+        <span className="ml-1 font-semibold text-black dark:text-white">{count}</span>
       </div>
       {onShowAllClick && (
-        <span className="font-regular font-pretendard underline cursor-pointer" onClick={onShowAllClick}>
+        <span className="text-black underline cursor-pointer font-regular font-pretendard dark:text-white" onClick={onShowAllClick}>
           {showAllText}
         </span>
       )}

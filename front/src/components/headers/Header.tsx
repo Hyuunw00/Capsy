@@ -180,7 +180,7 @@ export default function Header() {
               className="object-contain w-full h-full dark:invert" 
             />
             {notifications.length > 0 && (
-              <div className="absolute w-2 h-2 rounded-full -top-1 -right-1 bg-secondary dark:bg-secondary-dark" />
+              <div className="absolute w-2 h-2 rounded-full -top-1 -right-1 bg-secondary" />
             )}
           </button>
         </div>

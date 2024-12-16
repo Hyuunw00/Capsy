@@ -63,9 +63,9 @@ const MyFollowerPage = () => {
 
   return (
     <div className="px-[30px] py-6">
-      <h2 className="text-[16px] font-semibold font-pretendard mb-8">팔로워</h2>
+      <h2 className="text-[16px] font-semibold font-pretendard mb-8  text-black dark:text-white">팔로워</h2>
       {isLoading ? (
-        <div className="flex justify-center items-center h-screen">
+        <div className="flex items-center justify-center h-screen">
           <img src={loadingIconBlack} alt="로딩 중" className="w-16 h-16" />
         </div>
       ) : error ? (
@@ -85,8 +85,8 @@ const MyFollowerPage = () => {
                   alt={follower.fullName}
                   className="w-[40px] h-[40px] rounded-full object-cover"
                 />
-                <div className="ml-4 flex flex-col justify-between">
-                  <span className="text-[16px] font-semibold">{follower.fullName}</span>
+                <div className="flex flex-col justify-between ml-4">
+                  <span className="text-[16px] font-semibold  text-black dark:text-white">{follower.fullName}</span>
                   <span className="text-[14px] text-gray-300">{follower.username}</span>
                 </div>
               </div>
