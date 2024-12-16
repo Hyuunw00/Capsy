@@ -118,12 +118,12 @@ function ProfileContainer() {
           <div
             key={tab}
             className={`tab flex flex-col items-center cursor-pointer ${
-              selectedTab === tab ? "text-primary" : "text-black"
+              selectedTab === tab ? "text-primary dark:text-secondary" : "text-black dark:text-white"
             }`}
             onClick={() => handleTabClick(tab)}
           >
             <img src={selectedTab === tab ? iconPurple : iconBlack} alt={label} className="w-[25px] h-[25px] mb-2" />
-            <span className="text-[16px] font-semibold font-pretendard">{label}</span>
+            <span className="font-semibold font-pretendard">{label}</span>
           </div>
         ))}
       </div>
@@ -155,8 +155,8 @@ function ProfileContainer() {
           })()}
         {selectedTab === "articles" && (
           <div className="px-[30px]">
-            <h2 className="text-[16px] font-pretendard flex items-center mb-[10px]">
-              <span className="font-semibold">일반글</span>
+            <h2 className="text-[16px] font-pretendard flex items-center mb-[10px] text-black dark:text-white">
+              <span className="font-semibold text-black dark:text-white">일반글</span>
               <span className="ml-1 font-semibold">{articleItems.length}</span>
             </h2>
             <div className="grid grid-cols-3 gap-[10px] mb-[30px]">
@@ -177,11 +177,11 @@ function ProfileContainer() {
                       />
                     ) : (
                       <div className="w-full aspect-[1] bg-gray-100 rounded-[10px] flex items-start justify-start p-[10px] border border-gray-200">
-                        <p className="text-black text-[14px] font-pretendard font-regular break-words">{textContent}</p>
+                        <p className="text-black  text-[14px] font-pretendard font-regular break-words">{textContent}</p>
                       </div>
                     )}
                     <div className="mt-2 font-pretendard font-regular text-left text-[14px]">
-                      <p>{content.title}</p>
+                      <p className="text-black dark:text-white">{content.title}</p>
                     </div>
                   </div>
                 );
@@ -191,7 +191,7 @@ function ProfileContainer() {
         )}
         {selectedTab === "alarms" && (
           <>
-            <div className="mt-8 text-center text-gray-500">알람 기능은 준비 중입니다.</div>
+            <div className="mt-8 text-center text-gray-500 dark:text-gray-300">알람 기능은 준비 중입니다.</div>
           </>
         )}
       </div>

@@ -209,13 +209,13 @@ export default function EditorPage() {
             onChange={handleFileChange}
             multiple
           />
-          <button onClick={handlePictureClick} className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded">
+          <button onClick={handlePictureClick} className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded dark:bg-gray-300">
             <img src={pictureIcon} alt="사진 선택 아이콘" />
           </button>
 
           {activeTab === "timeCapsule" && (
             <button
-              className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded"
+              className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded dark:bg-gray-300"
               onClick={() => setShowModal(true)}
             >
               <img src={dateIcon} alt="날짜 지정 아이콘" />
@@ -224,7 +224,7 @@ export default function EditorPage() {
 
           {activeTab === "timeCapsule" && (
             <button
-              className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded"
+              className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded dark:bg-gray-300"
               onClick={() => setShowLocationModal(true)}
             >
               <img src={locationIcon} alt="위치 지정 아이콘" />

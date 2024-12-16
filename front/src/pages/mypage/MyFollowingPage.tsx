@@ -56,23 +56,23 @@ const MyFollowingPage = () => {
 
   return (
     <div className="px-[30px] py-6">
-      <h2 className="text-[16px] font-semibold font-pretendard mb-8">팔로잉</h2>
+      <h2 className="text-[16px] font-semibold font-pretendard mb-8  text-black dark:text-white">팔로잉</h2>
       {isLoading ? (
-        <div className="flex justify-center items-center h-screen">
+        <div className="flex items-center justify-center h-screen">
           <img src={loadingIconBlack} alt="로딩 중" className="w-16 h-16" />
         </div>
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : following.length === 0 ? (
-        <p>팔로잉이 없습니다.</p>
+        <p className="text-black dark:text-white">팔로잉이 없습니다.</p>
       ) : (
         <ul>
           {following.map((user) => (
             <li key={user._id} className="mb-4 font-pretendard">
               <div className="flex items-center pb-4 mb-4">
                 <img src={user.image} alt={user.fullName} className="w-[40px] h-[40px] rounded-full object-cover" />
-                <div className="ml-4 flex flex-col justify-between">
-                  <span className="text-[16px] font-semibold">{user.fullName}</span>
+                <div className="flex flex-col justify-between ml-4">
+                  <span className="text-[16px] font-semibold  text-black dark:text-white">{user.fullName}</span>
                   <span className="text-[14px] text-gray-300">{user.username}</span>
                 </div>
               </div>

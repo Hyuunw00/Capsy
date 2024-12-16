@@ -287,7 +287,7 @@ export default function Event() {
         {/* 캡슐 제목 */}
         <div className="flex justify-between items-center text-[14px] font-pretendard px-[30px]">
           <div className="flex items-center">
-            <span className="text-[16px] font-pretendard font-semibold">크리스마스 타임 캡슐</span>
+            <h3 className="text-[18px] mt-4 font-pretendard font-semibold text-black dark:text-white"><span className="text-[22px]">🎄</span> 크리스마스 타임 캡슐</h3>
           </div>
         </div>
         {/* 캡슐 목록 */}
@@ -300,7 +300,7 @@ export default function Event() {
                 onClick={() => handleImageClick(item)}
               >
                 <div
-                  className="w-full inline-block break-inside-avoid relative  overflow-hidden cursor-pointer"
+                  className="relative inline-block w-full overflow-hidden cursor-pointer break-inside-avoid"
                   // 모달창
                 >
                   <div>
@@ -343,7 +343,7 @@ export default function Event() {
                   </div>
                 </div>
                 {/* 게시글 작성자 및 제목 가져오기 */}
-                <div className={` bottom-0 left-0  py-2 w-full text-[#000000]rounded-b-[10px]   `}>
+                <div className={` bottom-0 left-0  py-2 w-full text-black dark:text-white rounded-b-[10px]   `}>
                   <p
                     className="inline-block font-semibold"
                     onClick={(e) => {
