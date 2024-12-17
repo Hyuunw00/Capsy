@@ -8,6 +8,7 @@ import EditComplete from "./EditComplete";
 import { createPost } from "../../apis/apis";
 import { CHANNEL_ID_TIMECAPSULE, CHANNEL_ID_POST } from "../../apis/apis";
 import EditLocationModal from "./EditLocationModal";
+import NotificationModal from "../../components/NotificationModal";
 
 export default function EditorPage() {
   const [activeTab, setActiveTab] = useState("general");
@@ -40,26 +41,39 @@ export default function EditorPage() {
     setUploadedImages((prev) => prev.filter((_, index) => index !== indexToDelete));
   };
 
-  const validateFile = (file: File): { isValid: boolean; error?: string } => {
-    const VIDEO_MAX_SIZE = 4 * 1024 * 1024 * 1024; // 4GB
-    const IMG_MAX_SIZE = 30 * 1024 * 1024; // 30MB
+  const [notificationModal, setNotificationModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+  });
 
-    if (file.type.startsWith("video/")) {
-      if (!["video/mp4", "video/quicktime"].includes(file.type)) {
-        return { isValid: false, error: "비디오는 MP4 또는 MOV 형식만 가능합니다." };
+  const handleCloseModal = () => {
+    setNotificationModal({
+      isOpen: false,
+      title: "",
+      description: "",
+    });
+  };
+
+  // Base64 문자열 크기 검증 함수
+  const Base64Limit = (base64String: string): { isValid: boolean; error?: string } => {
+    // Base64 문자열의 실제 바이트 크기 계산
+    const sizeInBytes = base64String.length * 0.75; // Base64는 4바이트마다 3바이트의 실제 데이터를 표현
+    const sizeInMB = sizeInBytes / (1024 * 1024);
+
+    // 비디오인 경우 (base64 문자열에 video가 포함되어 있는지 확인)
+    if (base64String.includes('video')) {
+      if (sizeInMB > 4000) { // 4GB
+        return { isValid: false, error: "비디오 크기가 4GB를 초과합니다." };
       }
-      if (file.size > VIDEO_MAX_SIZE) {
-        return { isValid: false, error: "비디오 크기는 4GB 이하여야 합니다." };
+    } else { // 이미지인 경우
+      if (sizeInMB > 10) { // 10MB
+        return { isValid: false, error: "이미지 크기가 30MB를 초과합니다." };
       }
-    } else if (file.type.startsWith("image/")) {
-      if (!["image/jpeg", "image/png"].includes(file.type)) {
-        return { isValid: false, error: "이미지는 JPG 또는 PNG 형식만 가능합니다." };
-      }
-      if (file.size > IMG_MAX_SIZE) {
-        return { isValid: false, error: "이미지 크기는 30MB 이하여야 합니다." };
-      }
-    } else {
-      return { isValid: false, error: "지원하지 않는 파일 형식입니다." };
     }
 
     return { isValid: true };
@@ -70,24 +84,49 @@ export default function EditorPage() {
   };
 
   // 파일이 선택되었을 때 실행되는 함수
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-
-    for (const file of files) {
-      const validation = validateFile(file);
-      if (!validation.isValid) {
-        alert(validation.error);
-        return;
+  
+    try {
+      for (const file of files) {
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+  
+        const base64Validation = Base64Limit(base64);
+        if (!base64Validation.isValid) {
+          // alert 대신 모달로 변경
+          setNotificationModal({
+            isOpen: true,
+            title: "파일 크기 초과",
+            description: "파일의 용량이 너무 큽니다.\n비디오는 4GB 이하, 이미지는 30MB 이하만 업로드 가능합니다."
+          });
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+          return;
+        }
       }
+  
+      setUploadedImages((prev) => [...prev, ...files]);
+    } catch (error) {
+      // alert 대신 모달로 변경 
+      setNotificationModal({
+        isOpen: true,
+        title: "파일 처리 오류",
+        description: "파일 처리 중 오류가 발생했습니다.\n다시 시도해 주세요."
+      });
+      console.error("File processing error:", error);
     }
-
-    setUploadedImages((prev) => [...prev, ...files]);
-
+  
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
-
+    
   const handleDateSubmit = (date: { year: string; month: string; day: string }) => {
     setSelectedDate(date);
     setShowModal(false);
@@ -96,42 +135,61 @@ export default function EditorPage() {
   // 저장 버튼 클릭 시 유효성 검사
   const handleSaveClick = async () => {
     if (!title.trim()) {
-      alert("제목을 입력해주세요.");
+      setNotificationModal({
+        isOpen: true,
+        title: "입력 오류",
+        description: "제목을 입력해주세요."
+      });
       return;
     }
-
+   
     if (!text.trim()) {
-      alert("내용을 입력해주세요.");
+      setNotificationModal({
+        isOpen: true,
+        title: "입력 오류", 
+        description: "내용을 입력해주세요."
+      });
       return;
     }
-
+   
     if (activeTab === "timeCapsule") {
       if (uploadedImages.length === 0) {
-        alert("타임캡슐에는 이미지 첨부가 필수입니다.");
+        setNotificationModal({
+          isOpen: true,
+          title: "필수 항목 누락",
+          description: "타임캡슐에는 이미지 첨부가 필수입니다."
+        });
         return;
       }
       if (!selectedDate.year || !selectedDate.month || !selectedDate.day) {
-        alert("타임캡슐에는 날짜 지정이 필수입니다.");
+        setNotificationModal({
+          isOpen: true,
+          title: "필수 항목 누락",
+          description: "타임캡슐에는 날짜 지정이 필수입니다."
+        });
         return;
       }
     }
-
+   
     try {
       const channelId = activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST;
-
-      // 이미지 파일 base64로 인코딩
-      const incodingImages = uploadedImages.map((file) => {
-        return new Promise<string>((resolve, reject) => {
+   
+      const incodingImages = await Promise.all(uploadedImages.map(async (file) => {
+        const base64 = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = () => resolve(reader.result as string);
           reader.onerror = () => reject("Base64 인코딩 실패");
-          reader.readAsDataURL(file); // Base64 인코딩
+          reader.readAsDataURL(file);
         });
-      });
-      const base64Images = await Promise.all(incodingImages);
-      console.log(base64Images);
-
-      // 커스텀 데이터 만들기
+   
+        const validation = Base64Limit(base64);
+        if (!validation.isValid) {
+          throw new Error(validation.error);
+        }
+   
+        return base64;
+      }));
+   
       const customData = {
         title: title,
         content: text.split("\n").join("\\n"),
@@ -144,30 +202,37 @@ export default function EditorPage() {
             return date.toISOString();
           })(),
         }),
-        image: base64Images, // 인코딩된 문자열 배열
+        image: incodingImages,
         ...(selectedLocation && {
           capsuleLocation: selectedLocation.address,
           latitude: selectedLocation.lat,
           longitude: selectedLocation.lng
         })
       };
-
+   
       const formData = new FormData();
       formData.append("title", JSON.stringify(customData));
       formData.append("channelId", channelId);
-
+   
       const response = await createPost(formData);
-      setSaveModal(true);
-
+   
       if (response?._id) {
         setCreatedPostId(response._id);
         setSaveModal(true);
       }
     } catch (error) {
+      setNotificationModal({
+        isOpen: true,
+        title: "네트워크 에러",
+        description: error instanceof Error 
+          ? error.message 
+          : "네트워크 오류가 발생했습니다.\n잠시 후 다시 시도해주세요."
+      });
       console.error("게시물 생성 실패:", error);
+      return;
     }
-  };
-
+   };
+   
   const handleLocationSelect = (location: { name: string; address: string; lat: number; lng: number }) => {
     setSelectedLocation(location);
     setShowLocationModal(false);
@@ -279,6 +344,18 @@ export default function EditorPage() {
           postId={createdPostId!}
         />
       )}
+      <NotificationModal
+        isOpen={notificationModal.isOpen}
+        title={notificationModal.title}
+        description={notificationModal.description}
+      >
+        <button
+          onClick={handleCloseModal}
+          className="w-full px-4 py-2 text-white bg-black rounded-md"
+        >
+          확인
+        </button>
+      </NotificationModal>
     </div>
   );
 }
