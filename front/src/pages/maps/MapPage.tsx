@@ -2,15 +2,12 @@ import { useEffect, useState, KeyboardEvent } from "react";
 import axiosInstance from "../../apis/axiosInstance";
 import { CHANNEL_ID_TIMECAPSULE } from "../../apis/apis";
 import img_close from "../../assets/purple-close.svg";
-
+import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
 import img_search from "../../assets/Search.svg";
 import { useNavigate } from "react-router";
-
-declare global {
-  interface Window {
-    kakao: any;
-  }
-}
+import TimeCapsuleModal from "../../components/TimeCapsuleModal";
+import img_capsule from "../../assets/icon_capsule.svg";
+import { CustomOverlayMap, Map, MapMarker } from "react-kakao-maps-sdk";
 
 interface Place {
   place_name: string;
@@ -19,16 +16,23 @@ interface Place {
   y: string;
 }
 
-const { kakao } = window as any;
+interface Markers {
+  lat: number;
+  lng: number;
+  title: any;
+  image: string;
+  isBlur: boolean;
+  _id: string;
+}
 
 export default function MapPage() {
   const [searchPlace, setSearchPlace] = useState({
-    x: "126.9784147",
-    y: "37.5666805",
+    lat: "37.5666805",
+    lng: "126.9784147",
   });
 
   const navigate = useNavigate();
-  // 검색 결과를 담는 배열
+  // 검색과 연관된 결과를 담는 배열
   const [searchResults, setSearchResults] = useState<Place[]>([]);
 
   // 필터링된 타임캡슐
@@ -40,8 +44,46 @@ export default function MapPage() {
   // keydown index
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
+  // 모달 상태관리
+  const [modalData, setModalData] = useState({ imgSrc: "", neonText: "", whiteText: "" });
+  const [showModal, setShowModal] = useState(false);
+
+  // 중앙값 상태관리
+  const [mapCenter, setMapCenter] = useState({
+    lat: 37.5666805, // 초기 좌표
+    lng: 126.9784147,
+  });
+
+  // 마커 상태관리
+  const [selectedMarkers, setSelectedMarkers] = useState<Markers[]>([]);
+
+  // 각각의 타임캡슐 마커의 인덱스
+  const [openMarkerIndex, setOpenMarkerIndex] = useState<number | null>(null);
+
+  const handleMarkerClick = (index: number) => {
+    // 클릭한 마커의 인덱스를 setState로 저장하여 해당 마커에 오버레이를 표시하도록 설정
+    setOpenMarkerIndex(index);
+  };
+  const handleCloseOverlay = () => {
+    setOpenMarkerIndex(null);
+  };
+
+  const handleClickCapsule = (marker: Markers) => {
+    if (marker.isBlur) {
+      setModalData({
+        imgSrc: img_lock_timeCapsule,
+        neonText: "미개봉 타임 캡슐입니다!",
+        whiteText: "예약 시 알림을 받을 수 있어요",
+      });
+      setShowModal(true);
+      setOpenMarkerIndex(null);
+      return;
+    }
+    navigate(`detail/${marker._id}`);
+  };
+
   const handleSelectPlace = (place: Place) => {
-    setSearchPlace({ ...searchPlace, x: place.x, y: place.y });
+    setSearchPlace({ ...searchPlace, lng: place.x, lat: place.y });
     setSearchResults([]);
   };
 
@@ -58,7 +100,7 @@ export default function MapPage() {
       case "Enter":
         e.preventDefault();
         if (selectedIndex >= 0) {
-          setSearchPlace({ ...searchPlace, x: searchResults[selectedIndex].x, y: searchResults[selectedIndex].y });
+          setSearchPlace({ ...searchPlace, lng: searchResults[selectedIndex].x, lat: searchResults[selectedIndex].y });
           setSearchInput("");
           setSearchResults([]);
         }
@@ -77,20 +119,10 @@ export default function MapPage() {
     }
   };
 
-  // 초기에 지도 렌더링, 위치 지정된 캡슐테이터를 불러옴
+  // 초기 랜더링
   useEffect(() => {
     if (!window.kakao || !window.kakao.maps) return;
 
-    const container = document.getElementById("map");
-    const options = {
-      center: new window.kakao.maps.LatLng(37.5666805, 126.9784147), // 지도의 중심좌표
-      level: 5,
-    };
-
-    // 지도를 생성
-    const map = new window.kakao.maps.Map(container!, options);
-
-    // 타임캡슐에서 capsuleLocation 커스텀필드가 undefined가 아닌 값들만 불러옴
     const getTimeCapsule = async () => {
       try {
         const { data } = await axiosInstance.get(`/posts/channel/${CHANNEL_ID_TIMECAPSULE}`);
@@ -125,118 +157,169 @@ export default function MapPage() {
   useEffect(() => {
     if (!window.kakao || !window.kakao.maps) return;
 
-    const container = document.getElementById("map");
-    const options = {
-      center: new window.kakao.maps.LatLng(+searchPlace.y, +searchPlace.x), // 지도의 중심좌표
-      level: 5,
-    };
-
-    // 지도를 생성
-    const map = new window.kakao.maps.Map(container!, options);
-
-    // 해당 장소에 마커 생성
-    const markerPosition = new window.kakao.maps.LatLng(+searchPlace.y, +searchPlace.x);
-    const marker = new window.kakao.maps.Marker({
-      position: markerPosition,
+    // 맵 중심 이동
+    setMapCenter({
+      lat: +searchPlace.lat,
+      lng: +searchPlace.lng,
     });
-    marker.setMap(map);
 
-    // 위치를 설정한 타임캡슐만 필터링해서 마커 찍어주기
+    // 장소를 입력한 타임캡슐만 필터링
     const filteredData = capsuleData.filter((post) => getParse(post.title).capsuleLocation !== undefined);
-
-    console.log(filteredData);
 
     if (filteredData.length === 0) {
       console.warn("필터링된 데이터가 없습니다!");
       return;
     }
-
-    filteredData.forEach((post) => {
+    const markers = capsuleData.map((post) => {
       const parsedData = getParse(post.title);
-      if (!parsedData) return;
+      const closeAt = parsedData.closeAt && new Date(parsedData.closeAt);
 
-      const markerPosition = new window.kakao.maps.LatLng(Number(parsedData.latitude), Number(parsedData.longitude));
-      const imageSize = new window.kakao.maps.Size(50, 50);
-      const markerImg = new window.kakao.maps.MarkerImage(parsedData.image[0], imageSize);
-
-      const marker = new window.kakao.maps.Marker({
-        position: markerPosition,
-        image: markerImg,
-      });
-      marker.setMap(map);
-
-      // 정보창 생성
-      const infoContent = `
-        <div style="padding:10px; text-align:center; cursor:pointer " class="kakao-info-window" >
-          <img src=${parsedData.image[0]} alt="타임캡슐 이미지" style="width:100px; height:80px; object-fit:cover;" />
-          <p style="margin-top:5px; font-size:14px;">${parsedData.title}</p>
-        </div>
-     
-    `;
-
-      const infoWindow = new window.kakao.maps.InfoWindow({
-        content: infoContent,
-        removable: true,
-      });
-      // 마커 클릭 이벤트 등록
-      window.kakao.maps.event.addListener(marker, "click", () => {
-        infoWindow.open(map, marker);
-
-        const infoWindowDiv = document.querySelector(".kakao-info-window"); // InfoWindow의 DOM을 찾아서
-        if (infoWindowDiv) {
-          infoWindowDiv.addEventListener("click", () => {
-            navigate(`/detail/${post._id}`); // 상세 페이지 URL로 이동
-          });
-        }
-      });
+      return {
+        lat: Number(parsedData.latitude),
+        lng: Number(parsedData.longitude),
+        title: parsedData.title,
+        image: parsedData.image[0],
+        isBlur: closeAt && new Date().toISOString() < closeAt.toISOString(),
+        _id: post._id,
+      };
     });
-  }, [searchPlace]);
+
+    setSelectedMarkers(markers);
+  }, [searchPlace, capsuleData]);
 
   return (
-    <div className="w-full h-screen">
-      {/* 입력창 */}
-      <form>
-        <div className="px-[20px] py-[10px]">
-          <div className="h-[36px] rounded-[10px] bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-primary)] p-[1px]  ">
-            <div className="flex items-center w-full h-full bg-white rounded-[10px] px-4 overflow-hidden ">
-              <img src={img_search} alt="검색" className="pr-2" />
-              <input
-                type="text"
-                placeholder="장소를 검색해주세요."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="w-full h-[14px] my-[4px] outline-none"
-                onKeyDown={handleKeyDown}
-              />
-              <button
-                type="button"
-                className="bg-bg-400 w-7 h-6 rounded-[50px] mr-2"
-                onClick={() => setSearchInput("")}
-              >
-                <img className="w-full h-full" src={img_close} alt="취소" />
-              </button>
+    <>
+      <div className="w-full h-screen  relative">
+        {/* 입력창 */}
+        <form>
+          <div className="px-[20px] py-[10px]">
+            <div className="h-[36px] rounded-[10px] bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-primary)] p-[1px]  ">
+              <div className="flex items-center w-full h-full bg-white rounded-[10px] px-4 overflow-hidden ">
+                <img src={img_search} alt="검색" className="pr-2" />
+                <input
+                  type="text"
+                  placeholder="장소를 검색해주세요."
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  className="w-full h-[14px] my-[4px] outline-none"
+                  onKeyDown={handleKeyDown}
+                />
+                <button
+                  type="button"
+                  className="bg-bg-400 w-7 h-6 rounded-[50px] mr-2"
+                  onClick={() => setSearchInput("")}
+                >
+                  <img className="w-full h-full" src={img_close} alt="취소" />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </form>
-      {/* 지도 */}
-      <div className="w-full h-full relative ">
-        <div id="map" className="w-full h-full" />
-        {searchResults.length > 0 && (
-          <ul className="absolute left-0 top-[-10px] z-10 mt-1 bg-white w-full overflow-auto  max-h-60 ">
-            {searchResults.map((place, index) => (
-              <li
-                key={`${place.place_name}-${index}`}
-                className={`p-3 cursor-pointer hover:bg-gray-50 border-b border-gray-100 ${index === selectedIndex ? "bg-gray-100" : "hover:bg-gray-50"}`}
-                onClick={() => handleSelectPlace(place)}
-              >
-                <div className="font-medium text-[14px]">{place.place_name}</div>
-                <div className="text-[12px] text-gray-500 mt-1">{place.address_name}</div>
-              </li>
-            ))}
-          </ul>
-        )}
+        </form>
+
+        {/* 지도 */}
+        <Map center={mapCenter} level={5} style={{ width: "100%", height: "100vh" }} className="w-full h-screen">
+          {/* 검색된 장소 마커 */}
+          <MapMarker position={mapCenter} />
+
+          {/* 타임캡슐 마커들 */}
+          {selectedMarkers.map((marker, index) => (
+            <MapMarker
+              key={marker._id}
+              position={{ lat: marker.lat, lng: marker.lng }}
+              onClick={() => handleMarkerClick(index)} // 마커 클릭 시 오버레이 표시
+              image={{
+                src: img_capsule, // 커스텀 이미지 사용
+                size: { width: 50, height: 50 },
+              }}
+            >
+              {/* 기본 UI는 제거하고, 클릭된 마커에 대해서만 CustomOverlayMap 표시 */}
+              {openMarkerIndex === index && (
+                <CustomOverlayMap position={{ lat: marker.lat, lng: marker.lng }}>
+                  <div
+                    style={{
+                      position: "relative",
+                      width: "250px", // 크기 줄임
+                      maxWidth: "300px", // 최대 너비 설정
+                      padding: "10px",
+                      backgroundColor: "#fff",
+                      borderRadius: "8px", // 테두리 라운드 효과
+                      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                    }}
+                    onClick={() => handleClickCapsule(marker)}
+                  >
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "8px", // 위치 조정
+                        right: "8px", // 위치 조정
+                        cursor: "pointer",
+                        zIndex: 30,
+                      }}
+                      onClick={handleCloseOverlay} // 닫기 버튼 클릭 시 오버레이 닫기
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 18 18" fill="none">
+                        <path
+                          d="M14.121 3.879a1 1 0 0 0-1.415 0L9 7.586 5.293 3.879a1 1 0 1 0-1.415 1.415L7.586 9 3.879 12.707a1 1 0 0 0 1.415 1.415L9 10.414l3.707 3.707a1 1 0 1 0 1.415-1.415L10.414 9l3.707-3.707a1 1 0 0 0 0-1.415z"
+                          fill="#000"
+                        />
+                      </svg>
+                    </div>
+                    <div style={{ textAlign: "center", marginBottom: "8px" }}>
+                      <img
+                        src={marker.image}
+                        alt="타임캡슐 이미지"
+                        style={{
+                          width: "220px",
+                          height: "220px",
+                          objectFit: "cover",
+                          borderRadius: "6px",
+                          margin: "0 auto", // 가운데 정렬
+                          filter: marker.isBlur ? "blur(15px)" : "none",
+                        }}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        color: "#333",
+                        marginTop: "5px",
+                      }}
+                    >
+                      {marker.title}
+                    </div>
+                  </div>
+                </CustomOverlayMap>
+              )}
+            </MapMarker>
+          ))}
+
+          {/* 검색 결과 목록 */}
+          {searchResults.length > 0 && (
+            <ul className="absolute left-0 top-[50px] z-10 mt-1 bg-white w-full overflow-auto  max-h-60 ">
+              {searchResults.map((place, index) => (
+                <li
+                  key={index}
+                  className={`p-3 cursor-pointer hover:bg-gray-50 border-b border-gray-100 ${index === selectedIndex ? "bg-gray-100" : "hover:bg-gray-50"}`}
+                  onClick={() => handleSelectPlace(place)}
+                >
+                  <div className="font-medium text-[14px]">{place.place_name}</div>
+                  <div className="text-[12px] text-gray-500 mt-1">{place.address_name}</div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Map>
       </div>
-    </div>
+      {showModal && (
+        <TimeCapsuleModal
+          imgSrc={modalData.imgSrc}
+          neonText={modalData.neonText}
+          whiteText={modalData.whiteText}
+          onClose={() => setShowModal(false)}
+        />
+      )}
+    </>
   );
 }
