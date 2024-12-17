@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Left from "../../assets/Left.svg";
 import logo_black from "../../assets/logo_black.svg";
@@ -13,6 +13,7 @@ import { useThemeStore } from "../../store/themeStore";
 
 export default function PageHeader() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showNoticeModal, setShowNoticeModal] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [toast, setToast] = useState<{ show: boolean; message: string }>({
@@ -25,6 +26,23 @@ export default function PageHeader() {
   const showToastMessage = (message: string) => {
     setToast({ show: true, message });
     setTimeout(() => setToast({ show: false, message: "" }), 5000);
+  };
+
+  const handleBack = () => {
+    if (location.pathname === "/login") {
+      navigate("/");
+      return;
+    }
+
+    if (location.pathname.startsWith("/detail/")) {
+      const { fromEditor } = location.state || {};
+      if (fromEditor) {
+        navigate("/");
+        return;
+      }
+    }
+
+    navigate(-1);
   };
 
   const handleAcceptFollow = async (notification: Notification) => {
@@ -128,16 +146,7 @@ export default function PageHeader() {
   return (
     <>
       <nav className="absolute top-0 z-20 justify-between w-full px-8 py-4 bg-white dark:bg-black item-between">
-        <button
-          onClick={() => {
-            if (location.pathname === "/login") {
-              navigate("/");
-            } else {
-              navigate(-1);
-            }
-          }}
-          className="flex flex-col items-center"
-        >
+        <button onClick={handleBack} className="flex flex-col items-center">
           <img src={Left} alt="Left" className="w-7 h-7 dark:invert" />
         </button>
 
@@ -186,3 +195,4 @@ export default function PageHeader() {
     </>
   );
 }
+

@@ -40,19 +40,39 @@ const FollowerPage = () => {
 
         const user = users[0];
 
+        console.log(user._id); // 9a4b
+
         // 사용자 정보 가져오기
         const userProfile = await getUserProfile(user._id);
         setCurrentUser(userProfile);
-        console.log(setCurrentUser(userProfile));
+        console.log(userProfile.followers);
+
+        // // 팔로워 목록 가져오기
+        // const followersDetails = await Promise.all(
+        //   userProfile.followers.map(async (followerId: string) => {
+        //     try {
+        //       const followerProfile = await getUserProfile(followerId);
+        //       return followerProfile; //
+        //     } catch (err) {
+        //       console.error(`팔로워 정보 로드 실패: ${followerId}`, err);
+        //       return null;
+        //     }
+        //   }),
+        // );
 
         // 팔로워 목록 가져오기
         const followersDetails = await Promise.all(
-          userProfile.followers.map(async (followerId: string) => {
+          userProfile.followers.map(async (followerObj: any) => {
             try {
-              const followerProfile = await getUserProfile(followerId);
-              return followerProfile; //
+              const followerProfile = await getUserProfile(followerObj.follower);
+              return {
+                _id: followerProfile._id,
+                fullName: followerProfile.fullName,
+                username: followerProfile.username,
+                image: followerProfile.image,
+              };
             } catch (err) {
-              console.error(`팔로워 정보 로드 실패: ${followerId}`, err);
+              console.error(`팔로워 정보 로드 실패: ${followerObj.follower}`, err);
               return null;
             }
           }),
