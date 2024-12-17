@@ -42,7 +42,7 @@ export default function ProfileHeader() {
   const handleSaveImage = async (image: File) => {
     try {
       const response = await uploadUserPhoto(image);
-      console.log("Uploaded photo response:", response);
+      // console.log("Uploaded photo response:", response);
       const updatedUser = await getMyProfile();
       setUser(updatedUser);
       setProfileImage(updatedUser.image || null);

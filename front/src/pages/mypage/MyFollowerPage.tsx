@@ -16,7 +16,7 @@ const MyFollowerPage = () => {
       setError(null);
 
       const userData = await getMyProfile();
-      console.log("User Data:", userData);
+      // console.log("User Data:", userData);
 
       const followersData = userData.followers || [];
 

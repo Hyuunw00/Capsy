@@ -9,7 +9,8 @@ import alarmPurple from "../../assets/profile-alarm-purple.svg";
 import SlideHeader from "./SlideHeader";
 import SlideContainer from "./SlideContainer";
 import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE, getUserPosts } from "../../apis/apis";
-import { tokenService } from "../../utils/token";
+import Loading from "../../components/Loading";
+
 interface PostType {
   _id: string;
   title: string;
@@ -22,11 +23,13 @@ interface PostType {
   createdAt: string;
   updatedAt: string;
 }
+
 interface ParsedCapsule {
   title: string;
   content: string;
   closeAt: string;
 }
+
 interface CapsuleItem {
   id: string;
   title: string;
@@ -34,6 +37,11 @@ interface CapsuleItem {
   image?: string;
   closeAt: Date;
 }
+
+interface ProfileContainerProps {
+  userId: string;
+}
+
 // 게시글 내용 가져오기 유틸 함수
 const getContent = (jsonString: string) => {
   try {
@@ -43,31 +51,39 @@ const getContent = (jsonString: string) => {
     return jsonString;
   }
 };
-function ProfileContainer() {
+
+function ProfileContainer({ userId }: ProfileContainerProps) {
   const [selectedTab, setSelectedTab] = useState("capsules");
   const [postItems, setPostItems] = useState<PostType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+
   const handleTabClick = (tab: string) => {
     setSelectedTab(tab);
   };
+
   const handlePostClick = (postId: string) => {
     navigate(`/detail/${postId}`);
   };
-  const user = tokenService.getUser();
-  const userAuthorId = user._id;
+
   useEffect(() => {
     const fetchPosts = async () => {
+      setIsLoading(true);
       try {
-        const posts = await getUserPosts(userAuthorId);
+        const posts = await getUserPosts(userId);
         setPostItems(Array.isArray(posts) ? posts : Object.values(posts));
       } catch (error) {
         console.error("포스트 불러오기 실패", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchPosts();
-  }, [userAuthorId]);
+  }, [userId]);
+
   const articleItems = postItems.filter((post) => post.channel?._id === CHANNEL_ID_POST);
   const capsuleItems = postItems.filter((post) => post.channel?._id === CHANNEL_ID_TIMECAPSULE);
+
   const categorizeCapsules = () => {
     const now = new Date();
     return capsuleItems.reduce<{ opened: CapsuleItem[]; waiting: CapsuleItem[] }>(
@@ -96,6 +112,7 @@ function ProfileContainer() {
       { opened: [], waiting: [] },
     );
   };
+
   const handleShowAllClick = (type: "open" | "close", tabType: "capsules" | "alarms") => {
     const { opened, waiting } = categorizeCapsules();
     const items = type === "open" ? opened : waiting;
@@ -107,6 +124,9 @@ function ProfileContainer() {
       },
     });
   };
+
+  if (isLoading) return <Loading />;
+
   return (
     <div className="profile-container">
       <div className="flex mb-6 justify-evenly">
@@ -177,9 +197,7 @@ function ProfileContainer() {
                       />
                     ) : (
                       <div className="w-full aspect-[1] bg-gray-100 rounded-[10px] flex items-start justify-start p-[10px] border border-gray-200">
-                        <p className="text-black  text-[14px] font-pretendard font-regular break-words">
-                          {textContent}
-                        </p>
+                        <p className="text-black text-[14px] font-pretendard font-regular break-words">{textContent}</p>
                       </div>
                     )}
                     <div className="mt-2 font-pretendard font-regular text-left text-[14px]">
@@ -200,4 +218,5 @@ function ProfileContainer() {
     </div>
   );
 }
+
 export default ProfileContainer;
