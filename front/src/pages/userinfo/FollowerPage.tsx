@@ -60,6 +60,18 @@ const FollowerPage = () => {
         //   }),
         // );
 
+        // // 팔로워 목록 가져오기
+        // const followersDetails = await Promise.all(
+        //   userProfile.followers.map(async (followerId: string) => {
+        //     try {
+        //       const followerProfile = await getUserProfile(followerId);
+        //       return followerProfile; //
+        //     } catch (err) {
+        //       console.error(`팔로워 정보 로드 실패: ${followerId}`, err);
+        //       return null;
+        //     }
+        //   }),
+        // );
         // 팔로워 목록 가져오기
         const followersDetails = await Promise.all(
           userProfile.followers.map(async (followerObj: any) => {
@@ -78,11 +90,12 @@ const FollowerPage = () => {
           }),
         );
 
+        // 팔로워 목록 업데이트, null을 제거
         const validFollowers = followersDetails.filter(Boolean) as UserProfile[];
         setFollowers(validFollowers);
       } catch (err) {
         console.error(err);
-        setError("팔로워 정보를 가져오는 데 실패");
+        setError("팔로워 정보를 가져오는 데 실패했습니다.");
       } finally {
         setIsLoading(false);
       }
@@ -92,7 +105,7 @@ const FollowerPage = () => {
   }, [fullname]);
 
   const handleFollowerClick = (follower: UserProfile) => {
-    navigate(`/userinfo/${follower.fullName}`);
+    navigate(`/userinfo/${follower.fullName}`); // 새 URL로 이동
   };
 
   if (isLoading) {
@@ -112,7 +125,7 @@ const FollowerPage = () => {
       <h2 className="text-[16px] font-semibold font-pretendard mb-8 text-black dark:text-white">
         {currentUser.fullName}님의 팔로워
       </h2>
-      {currentUser.followers.length === 0 ? (
+      {followers.length === 0 ? (
         <p>팔로워가 없습니다.</p>
       ) : (
         <ul>
