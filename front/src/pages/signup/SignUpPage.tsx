@@ -5,6 +5,7 @@ import { signupAuth, userLists } from "../../apis/auth";
 import { testEmail, testId, testPassword, testPasswordConfirm } from "../../utils/regex";
 import { AuthInput } from "../../components/AuthInput";
 import Logo from "../../components/Logo";
+import Logo from "../../components/Logo";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
