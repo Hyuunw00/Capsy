@@ -41,14 +41,27 @@ export default function PostDetailPage() {
 
   // 댓글 작성시 스크롤 최하단으로 이동
   const commentListRef = useRef<HTMLUListElement>(null);
+  const isCommentSubmitted = useRef(false);
+
   const scrollToBottom = () => {
+    if (!isCommentSubmitted.current) return;
+
     setTimeout(() => {
       window.scrollTo({
         top: document.documentElement.scrollHeight,
         behavior: "smooth",
       });
     }, 100);
+
+    isCommentSubmitted.current = false; // 스크롤 후 플래그 초기화
   };
+
+  // useEffect 수정 - 댓글 작성 시에만 스크롤 실행
+  useEffect(() => {
+    if (post?.comments && isCommentSubmitted.current) {
+      scrollToBottom();
+    }
+  }, [post?.comments]);
 
   // 포스트 데이터 불러오기
   useEffect(() => {
@@ -70,11 +83,6 @@ export default function PostDetailPage() {
 
     loadPostDetail();
   }, [postId]);
-
-  // 댓글 리스트가 업데이트될 때마다 스크롤을 최하단으로 내림
-  useEffect(() => {
-    scrollToBottom();
-  }, [post?.comments]);
 
   // 더보기 드롭다운 닫기
   useEffect(() => {
@@ -201,6 +209,7 @@ export default function PostDetailPage() {
 
     try {
       // createComment의 반환값을 바로 사용하도록 수정 (윤슬)
+      isCommentSubmitted.current = true; // 댓글 작성 시 플래그 설정
       const updatedPost = await createComment({
         comment: commentText,
         postId: post._id,
@@ -213,6 +222,7 @@ export default function PostDetailPage() {
       scrollToBottom(); // 댓글이 추가될 때마다 스크롤을 최하단으로 이동
     } catch (error) {
       console.error("댓글 작성 실패:", error);
+      isCommentSubmitted.current = false; // 에러 시 플래그 초기화
     }
   };
 
