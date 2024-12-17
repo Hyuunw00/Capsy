@@ -77,38 +77,42 @@ export default function NewPasswordPage() {
           {openModal.value}
         </NoticeModal>
       )}
-      <form onSubmit={handleSubmit} className="px-12">
-        <Logo />
-        {/* <p>본인 인증이 완료되었습니다.</p>
-          <p>새로운 비밀번호를 설정해주세요.</p> */}
-        <div className="flex flex-col gap-2">
-          <AuthInput
-            label="새 비밀번호"
-            type="password"
-            value={auth.password}
-            onChange={(e) => setAuth({ ...auth, password: e.target.value })}
-            placeholder="새 비밀번호"
-            error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
-            ref={passwordRef}
-            isValid={auth.isPasswordValid}
-          />
 
-          <AuthInput
-            label="새 비밀번호 확인"
-            type="password"
-            value={auth.passwordConfirm}
-            onChange={(e) => setAuth({ ...auth, passwordConfirm: e.target.value })}
-            placeholder="새 비밀번호 확인"
-            error="동일하지 않은 비밀번호입니다"
-            ref={passwordConfirmRef}
-            isValid={auth.isPasswordConfirmValid}
-          />
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-115px)]">
+        <div className="w-full max-w-md px-8 py-8 overflow-y-auto">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-[10px]">
+            <Logo />
+            <div className="flex flex-col gap-2">
+              <AuthInput
+                label="새 비밀번호"
+                type="password"
+                value={auth.password}
+                onChange={(e) => setAuth({ ...auth, password: e.target.value })}
+                placeholder="새 비밀번호"
+                error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
+                ref={passwordRef}
+                isValid={auth.isPasswordValid}
+              />
 
-          <Button className="bg-primary dark:bg-secondary text-white dark:text-black  w-full  h-[47px] py-[13px] px-[21px] rounded-md mt-[20px]">
-            확인
-          </Button>
+              <AuthInput
+                label="새 비밀번호 확인"
+                type="password"
+                value={auth.passwordConfirm}
+                onChange={(e) => setAuth({ ...auth, passwordConfirm: e.target.value })}
+                placeholder="새 비밀번호 확인"
+                error="동일하지 않은 비밀번호입니다"
+                ref={passwordConfirmRef}
+                isValid={auth.isPasswordConfirmValid}
+              />
+
+              <Button className="bg-primary dark:bg-secondary text-white dark:text-black w-full h-[47px] py-[13px] px-[21px] rounded-[6px] mt-[20px]">
+                확인
+              </Button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
+
       <NotificationModal
         isOpen={successModal}
         title="비밀번호 변경 완료 🎉"
