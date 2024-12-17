@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { searchUsersByFullName, getUserProfile } from "../../apis/apis";
+import AllUsersList from "./AllUserList";
 
 interface UserProfile {
   _id: string;
@@ -121,6 +122,9 @@ const FollowingPage = () => {
           ))}
         </ul>
       )}
+
+      {/* 팔로잉 목록 하단에 AllUserList 컴포넌트 추가 */}
+      <AllUsersList />
     </div>
   );
 };
