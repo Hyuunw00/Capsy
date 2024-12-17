@@ -191,7 +191,7 @@ export default function MapPage() {
 
   return (
     <>
-      <div className="w-full h-screen  relative">
+      <div className="relative w-full h-screen">
         {/* 입력창 */}
         <form>
           <div className="px-[20px] py-[10px]">
