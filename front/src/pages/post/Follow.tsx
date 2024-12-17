@@ -68,8 +68,8 @@ export default function Follow({ userData, onFollowUpdate, targetUserId }: Props
   return (
     <button
       className={`${
-        followStatus[targetUserId] ? "bg-black" : "bg-primary"
-      } text-white rounded px-4 py-1 transition-colors text-sm`}
+        followStatus[targetUserId] ? "bg-black dark:bg-gray-50" : "bg-primary dark:bg-secondary"
+      } text-white dark:text-black rounded px-4 py-1 transition-colors text-sm`}
       onClick={() => handleFollowClick(targetUserId)}
     >
       {followStatus[targetUserId] ? "팔로잉" : "팔로우"}
