@@ -66,7 +66,8 @@ export default function MapPage() {
     setOpenMarkerIndex(index);
   };
   // 커스텀 오버레이를 닫는 함수
-  const handleCloseOverlay = () => {
+  const handleCloseOverlay = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
     setOpenMarkerIndex(null);
   };
 
@@ -81,7 +82,7 @@ export default function MapPage() {
       setOpenMarkerIndex(null);
       return;
     }
-    navigate(`detail/${marker._id}`);
+    navigate(`/detail/${marker._id}`);
   };
 
   const handleSelectPlace = (place: Place) => {
@@ -231,7 +232,7 @@ export default function MapPage() {
               onClick={() => handleMarkerClick(index)} // 마커 클릭 시 오버레이 표시
               image={{
                 src: marker.isBlur ? img_capsule : marker.image, // 커스텀 이미지 사용
-                size: { width: 50, height: 50 },
+                size: { width: 60, height: 60 },
               }}
             >
               {/* 기본 UI는 제거하고, 클릭된 마커에 대해서만 CustomOverlayMap 표시 */}
@@ -257,21 +258,20 @@ export default function MapPage() {
                     <div
                       style={{
                         position: "absolute",
-                        top: "8px", // 위치 조정
-                        right: "8px", // 위치 조정
+                        top: "0", // 위치 조정
+                        right: "0", // 위치 조정
+                        display: "flex",
+                        width: "30px",
+                        height: "30px",
+                        justifyContent: "center",
+                        alignItems: "center",
                         cursor: "pointer",
+                        zIndex: 10,
                       }}
-                      onClick={handleCloseOverlay}
+                      onClick={(e) => handleCloseOverlay(e)}
                       // 닫기 버튼 클릭 시 오버레이 닫기
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 18 18"
-                        fill="none"
-                        style={{ zIndex: 100 }}
-                      >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 18 18" fill="none">
                         <path
                           d="M14.121 3.879a1 1 0 0 0-1.415 0L9 7.586 5.293 3.879a1 1 0 1 0-1.415 1.415L7.586 9 3.879 12.707a1 1 0 0 0 1.415 1.415L9 10.414l3.707 3.707a1 1 0 1 0 1.415-1.415L10.414 9l3.707-3.707a1 1 0 0 0 0-1.415z"
                           fill="#000"
