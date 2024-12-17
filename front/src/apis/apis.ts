@@ -273,3 +273,14 @@ export const searchUsersByFullName = async (fullName: string) => {
     throw error;
   }
 };
+
+//모든 사용자 호출
+export const getAllUsers = async () => {
+  try {
+    const response = await axiosInstance.get("/users/get-users");
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch all users:", error);
+    throw error;
+  }
+};

@@ -177,7 +177,9 @@ function ProfileContainer() {
                       />
                     ) : (
                       <div className="w-full aspect-[1] bg-gray-100 rounded-[10px] flex items-start justify-start p-[10px] border border-gray-200">
-                        <p className="text-black  text-[14px] font-pretendard font-regular break-words">{textContent}</p>
+                        <p className="text-black  text-[14px] font-pretendard font-regular break-words">
+                          {textContent}
+                        </p>
                       </div>
                     )}
                     <div className="mt-2 font-pretendard font-regular text-left text-[14px]">
