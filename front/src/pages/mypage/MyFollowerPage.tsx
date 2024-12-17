@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"; // navigate 훅 사용
 import { getMyProfile, getUserProfile } from "../../apis/apis";
 import unknownUserImg from "../../assets/user.png";
 import loadingIconBlack from "../../assets/loading-icon-black.svg";
+import AllUsersList from "../userinfo/AllUserList";
 
 const MyFollowerPage = () => {
   const navigate = useNavigate();
@@ -94,6 +95,9 @@ const MyFollowerPage = () => {
           ))}
         </ul>
       )}
+
+      {/* 팔로잉 목록 하단에 AllUserList 컴포넌트 추가 */}
+      <AllUsersList />
     </div>
   );
 };
