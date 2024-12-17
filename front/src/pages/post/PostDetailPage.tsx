@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router";
 import { getPostDetail, deletePost, createComment, deleteComment } from "../../apis/apis";
 import { Link } from "react-router";
@@ -39,6 +39,17 @@ export default function PostDetailPage() {
     return storedUserData ? JSON.parse(storedUserData) : { likes: [], following: [] };
   });
 
+  // 댓글 작성시 스크롤 최하단으로 이동
+  const commentListRef = useRef<HTMLUListElement>(null);
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    }, 100);
+  };
+
   // 포스트 데이터 불러오기
   useEffect(() => {
     const loadPostDetail = async () => {
@@ -59,6 +70,12 @@ export default function PostDetailPage() {
 
     loadPostDetail();
   }, [postId]);
+
+  // 댓글 리스트가 업데이트될 때마다 스크롤을 최하단으로 내림
+  useEffect(() => {
+    scrollToBottom();
+  }, [post?.comments]);
+
   // 더보기 드롭다운 닫기
   useEffect(() => {
     const closeDropdown = () => setShowDropdown(false);
@@ -81,7 +98,7 @@ export default function PostDetailPage() {
     setShowDropdown(!showDropdown);
   };
 
-  // 임시 팔로우 로직
+  // 팔로우 로직
   const handleFollowUpdate = (updatedUserData: any) => {
     setUserData(updatedUserData);
     sessionStorage.setItem("user", JSON.stringify(updatedUserData));
@@ -193,6 +210,7 @@ export default function PostDetailPage() {
       // 댓글 작성 후 포스트 정보 새로고침
       setPost(updatedPost);
       setCommentText(""); // 입력창 초기화
+      scrollToBottom(); // 댓글이 추가될 때마다 스크롤을 최하단으로 이동
     } catch (error) {
       console.error("댓글 작성 실패:", error);
     }
@@ -309,6 +327,7 @@ export default function PostDetailPage() {
                   />
                 </svg>
               </button>
+              {/* 더보기 드롭다운 */}
               {showDropdown && (
                 <div className="absolute right-0 mt-2 w-32 px-[6px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                   <ul className="py-1">
@@ -333,6 +352,7 @@ export default function PostDetailPage() {
               )}
             </div>
           ) : (
+            // 팔로우 버튼
             <Follow userData={userData} onFollowUpdate={handleFollowUpdate} targetUserId={post.author._id} />
           )}
         </div>
@@ -409,6 +429,7 @@ export default function PostDetailPage() {
                 </span>
               ))}
           </p>
+          {/* 작성 날짜 */}
           <span className="text-xs font-normal text-[#888888]">
             {new Date(post.createdAt).getFullYear()}년 {new Date(post.createdAt).getMonth() + 1}월 {""}
             {new Date(post.createdAt).getDate()}일
@@ -424,7 +445,7 @@ export default function PostDetailPage() {
         <section aria-label="Comment List" className="px-[20px] mt-[20px] mb-[100px] text-sm">
           <div className="font-bold h-[45px]">댓글 {post.comments.length}</div>
           {post.comments.length === 0 && <div className="text-center text-gray-300">첫 댓글을 남겨보세요!</div>}
-          <ul className="flex flex-col [&>*+*]:border-t border-gray-150">
+          <ul ref={commentListRef} className="flex flex-col [&>*+*]:border-t border-gray-150">
             {post.comments.map((comment) => (
               <li key={comment._id}>
                 <CommentItem
