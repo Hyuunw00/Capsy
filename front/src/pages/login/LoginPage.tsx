@@ -6,11 +6,12 @@ import Button from "../../components/Button";
 import Logo from "../../components/Logo";
 import { testEmail, testPassword } from "../../utils/regex";
 import { loginAuth } from "../../apis/auth";
-import { AuthInput } from "../../components/AuthInput";
+import { AuthInput } from "../../components/AuthInput"
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useLoginStore();
+
 
   const [openModal, setOpenModal] = useState({
     isOpen: false,
