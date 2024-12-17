@@ -181,20 +181,11 @@ export default function PostDetailPage() {
         {/* 삭제 버튼 */}
         {isCurrentUser && (
           <button onClick={() => onDelete(_id)} className="text-gray-400 transition-colors hover:text-opacity-60">
-            <svg width="10" height="10" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <g clipPath="url(#clip0_957_4884)">
-                <path
-                  d="M16.5 3H12.75V1.5C12.75 1.10218 12.592 0.720644 12.3107 0.43934C12.0294 0.158035 11.6478 0 11.25 0L6.75 0C6.35217 0 5.97064 0.158035 5.68934 0.43934C5.40803 0.720644 5.25 1.10218 5.25 1.5V3H1.5V4.5H3V15.75C3 16.3467 3.23705 16.919 3.65901 17.341C4.08097 17.7629 4.65326 18 5.25 18H12.75C13.3467 18 13.919 17.7629 14.341 17.341C14.7629 16.919 15 16.3467 15 15.75V4.5H16.5V3ZM6.75 1.5H11.25V3H6.75V1.5ZM13.5 15.75C13.5 15.9489 13.421 16.1397 13.2803 16.2803C13.1397 16.421 12.9489 16.5 12.75 16.5H5.25C5.05109 16.5 4.86032 16.421 4.71967 16.2803C4.57902 16.1397 4.5 15.9489 4.5 15.75V4.5H13.5V15.75Z"
-                  fill="currentColor"
-                />
-                <path d="M8.25 7.49951H6.75V13.4995H8.25V7.49951Z" fill="currentColor" />
-                <path d="M11.25 7.49951H9.75V13.4995H11.25V7.49951Z" fill="currentColor" />
-              </g>
-              <defs>
-                <clipPath id="clip0_957_4884">
-                  <rect width="18" height="18" fill="white" />
-                </clipPath>
-              </defs>
+            <svg width="13" height="13" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M443.6,387.1L312.4,255.4l131.5-130c5.4-5.4,5.4-14.2,0-19.6l-37.4-37.6c-2.6-2.6-6.1-4-9.8-4c-3.7,0-7.2,1.5-9.8,4 L256,197.8L124.9,68.3c-2.6-2.6-6.1-4-9.8-4c-3.7,0-7.2,1.5-9.8,4L68,105.9c-5.4,5.4-5.4,14.2,0,19.6l131.5,130L68.4,387.1 c-2.6,2.6-4.1,6.1-4.1,9.8c0,3.7,1.4,7.2,4.1,9.8l37.4,37.6c2.7,2.7,6.2,4.1,9.8,4.1c3.5,0,7.1-1.3,9.8-4.1L256,313.1l130.7,131.1 c2.7,2.7,6.2,4.1,9.8,4.1c3.5,0,7.1-1.3,9.8-4.1l37.4-37.6c2.6-2.6,4.1-6.1,4.1-9.8C447.7,393.2,446.2,389.7,443.6,387.1z"
+                fill="currentColor"
+              />
             </svg>
           </button>
         )}
@@ -454,14 +445,17 @@ export default function PostDetailPage() {
 
         {/* 영역 구분선 */}
         <div className="px-[20px] mt-[20px]">
-          <hr className="border-t border-gray200 dark:border-gray-500" />
+          <hr className="border-t border-gray-300 dark:border-gray-400" />
         </div>
 
         {/* 댓글 리스트 렌더링 */}
         <section aria-label="Comment List" className="px-[20px] mt-[20px] mb-[100px] text-sm">
           <div className="font-bold h-[45px] text-black dark:text-white">댓글 {post.comments.length}</div>
           {post.comments.length === 0 && <div className="text-center text-gray-300">첫 댓글을 남겨보세요!</div>}
-          <ul ref={commentListRef} className="flex flex-col [&>*+*]:border-t border-gray-50">
+          <ul
+            ref={commentListRef}
+            className="flex flex-col [&>*+*]:border-t [&>*+*]:border-gray-200 dark:[&>*+*]:border-gray-500"
+          >
             {post.comments.map((comment) => (
               <li key={comment._id}>
                 <CommentItem
