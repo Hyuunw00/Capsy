@@ -61,7 +61,7 @@ export default function UserInfoPage() {
   }
 
   const handleShareProfile = async () => {
-    const profileUrl = `http://localhost:5173/userinfo/${specificUserInfo?.fullName}`;
+    const profileUrl = `/userinfo/${specificUserInfo?.fullName}`;
 
     try {
       await navigator.clipboard.writeText(profileUrl);
@@ -73,13 +73,13 @@ export default function UserInfoPage() {
   };
 
   const goToFollowersPage = () => {
-    navigate(`/userinfo/${specificUserInfo?.fullName}/myfollower`, {
+    navigate(`/userinfo/${specificUserInfo?.fullName}/follower`, {
       state: { followers: specificUserInfo?.followers },
     });
   };
 
   const goToFollowingPage = () => {
-    navigate(`/userinfo/${specificUserInfo?.fullName}/myfollowing`, {
+    navigate(`/userinfo/${specificUserInfo?.fullName}/following`, {
       state: { following: specificUserInfo?.following },
     });
   };

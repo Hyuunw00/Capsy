@@ -20,8 +20,10 @@ import AlarmListPage from "./pages/mypage/AlarmListPage";
 import Error404 from "./components/Error404";
 import UserInfoPage from "./pages/userinfo/UserInfoPage";
 import EventEditorPage from "./pages/editor/EventEditorPage";
-import MyFollowersPage from "./pages/mypage/MyFollowerPage";
+import MyFollowerPage from "./pages/mypage/MyFollowerPage";
 import MyFollowingPage from "./pages/mypage/MyFollowingPage";
+import FollowerPage from "./pages/userinfo/FollowerPage";
+import FollowingPage from "./pages/userinfo/FollowingPage";
 import { useThemeStore } from "./store/themeStore";
 import MapPage from "./pages/maps/MapPage";
 
@@ -113,8 +115,10 @@ export default function App() {
           <Route path="/" element={<MainPage />} />
           <Route path="/event" element={<Event />} />
           <Route path="/userinfo/:fullname" element={<UserInfoPage />} />
-          <Route path="/userinfo/:fullname/myfollower" element={<MyFollowersPage />} />
+          <Route path="/userinfo/:fullname/myfollower" element={<MyFollowerPage />} />
           <Route path="/userinfo/:fullname/myfollowing" element={<MyFollowingPage />} />
+          <Route path="/userinfo/:fullname/follower" element={<FollowerPage />} />
+          <Route path="/userinfo/:fullname/following" element={<FollowingPage />} />
           <Route path="/map" element={<MapPage />} />
           <Route element={<NonPrivate />}>
             <Route path="/login" element={<Login />} />
