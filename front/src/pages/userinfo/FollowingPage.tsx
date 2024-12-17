@@ -4,7 +4,7 @@ import { getMyProfile, getUserProfile } from "../../apis/apis";
 import unknownUserImg from "../../assets/user.png";
 import loadingIconBlack from "../../assets/loading-icon-black.svg";
 
-const MyFollowingPage = () => {
+const FollowingPage = () => {
   const navigate = useNavigate();
   const [following, setFollowing] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -98,4 +98,4 @@ const MyFollowingPage = () => {
   );
 };
 
-export default MyFollowingPage;
+export default FollowingPage;
