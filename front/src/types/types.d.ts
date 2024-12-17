@@ -288,4 +288,5 @@ interface Props {
   };
   onFollowUpdate?: (userData: any) => void;
   targetUserId: string;
+  className?: string;
 }

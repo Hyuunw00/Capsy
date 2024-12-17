@@ -1,8 +1,27 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import axiosInstance from "../../apis/axiosInstance";
 import { createNotifications } from "../../apis/apis";
 
-export default function Follow({ userData, onFollowUpdate, targetUserId }: Props) {
+// 필수 타입 정의
+interface FollowData {
+  _id: string;
+  user: string;
+  follower: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Props {
+  userData: {
+    _id: string;
+    following: FollowData[];
+  };
+  onFollowUpdate: (updatedUserData: any) => void;
+  targetUserId: string;
+  className?: string;
+}
+
+export default function Follow({ userData, onFollowUpdate, targetUserId, className = "" }: Props) {
   const [followStatus, setFollowStatus] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
@@ -15,7 +34,6 @@ export default function Follow({ userData, onFollowUpdate, targetUserId }: Props
       const isFollowing = userData.following.some((follow: FollowData) => follow.user === targetUserId);
 
       if (!isFollowing) {
-        // 팔로우 추가
         const response = await axiosInstance.post("/follow/create", {
           userId: targetUserId,
         });
@@ -28,11 +46,10 @@ export default function Follow({ userData, onFollowUpdate, targetUserId }: Props
           updatedAt: response.data.updatedAt,
         };
 
-        // 팔로우 알림 생성
         await createNotifications({
           notificationType: "FOLLOW",
-          notificationTypeId: response.data._id, // 팔로우 데이터 ID
-          userId: targetUserId, // 팔로우 받는 사용자 ID
+          notificationTypeId: response.data._id,
+          userId: targetUserId,
           postId: null,
         });
 
@@ -40,10 +57,9 @@ export default function Follow({ userData, onFollowUpdate, targetUserId }: Props
           ...userData,
           following: [...userData.following, newFollow],
         };
-        onFollowUpdate?.(updatedUserData);
+        onFollowUpdate(updatedUserData);
         setFollowStatus((prevState) => ({ ...prevState, [targetUserId]: true }));
       } else {
-        // 팔로우 취소 - 엔드포인트 수정
         const followData = userData.following.find((follow: FollowData) => follow.user === targetUserId);
 
         if (!followData) {
@@ -58,18 +74,21 @@ export default function Follow({ userData, onFollowUpdate, targetUserId }: Props
           ...userData,
           following: userData.following.filter((follow: FollowData) => follow._id !== followData._id),
         };
-        onFollowUpdate?.(updatedUserData);
+        onFollowUpdate(updatedUserData);
         setFollowStatus((prevState) => ({ ...prevState, [targetUserId]: false }));
       }
     } catch (error) {
       console.error("팔로우 처리 중 오류 발생:", error);
     }
   };
+
   return (
     <button
-      className={`${
-        followStatus[targetUserId] ? "bg-black" : "bg-primary"
-      } text-white rounded px-4 py-1 transition-colors text-sm`}
+      className={`
+        ${followStatus[targetUserId] ? "bg-black dark:bg-gray-50" : "bg-primary dark:bg-secondary"}
+        text-white dark:text-black rounded transition-colors
+        ${className}
+      `.trim()}
       onClick={() => handleFollowClick(targetUserId)}
     >
       {followStatus[targetUserId] ? "팔로잉" : "팔로우"}

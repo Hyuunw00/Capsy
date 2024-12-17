@@ -33,26 +33,6 @@ export default function App() {
   // 처음에 렌더링될때 isLoggedIn이 false가 되는것을 방지
   const [isLoading, setIsLoading] = useState(true);
   const { isDark } = useThemeStore();
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_APP_KEY}&libraries=services,clusterer&autoload=false`;
-    script.async = true;
-
-    const loadKakaoMap = () => {
-      // @ts-ignore
-      window.kakao.maps.load(() => {
-        console.log("Kakao maps loaded successfully");
-      });
-    };
-
-    script.onload = loadKakaoMap;
-
-    document.head.appendChild(script);
-
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -62,7 +42,7 @@ export default function App() {
     const loadKakaoMap = () => {
       // @ts-ignore
       window.kakao.maps.load(() => {
-        console.log("Kakao maps loaded successfully");
+        // console.log("Kakao maps loaded successfully");
       });
     };
 

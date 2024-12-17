@@ -41,14 +41,27 @@ export default function PostDetailPage() {
 
   // 댓글 작성시 스크롤 최하단으로 이동
   const commentListRef = useRef<HTMLUListElement>(null);
+  const isCommentSubmitted = useRef(false);
+
   const scrollToBottom = () => {
+    if (!isCommentSubmitted.current) return;
+
     setTimeout(() => {
       window.scrollTo({
         top: document.documentElement.scrollHeight,
         behavior: "smooth",
       });
     }, 100);
+
+    isCommentSubmitted.current = false; // 스크롤 후 플래그 초기화
   };
+
+  // useEffect 수정 - 댓글 작성 시에만 스크롤 실행
+  useEffect(() => {
+    if (post?.comments && isCommentSubmitted.current) {
+      scrollToBottom();
+    }
+  }, [post?.comments]);
 
   // 포스트 데이터 불러오기
   useEffect(() => {
@@ -70,11 +83,6 @@ export default function PostDetailPage() {
 
     loadPostDetail();
   }, [postId]);
-
-  // 댓글 리스트가 업데이트될 때마다 스크롤을 최하단으로 내림
-  useEffect(() => {
-    scrollToBottom();
-  }, [post?.comments]);
 
   // 더보기 드롭다운 닫기
   useEffect(() => {
@@ -162,11 +170,11 @@ export default function PostDetailPage() {
 
           {/* 댓글 내용 */}
           <div>
-            <Link to={`/userinfo/${author.fullName}`} className="font-bold">
+            <Link to={`/userinfo/${author.fullName}`} className="font-bold text-black dark:text-white">
               {author.fullName}
             </Link>
-            <span className="ml-2 text-xs text-gray-500">{elapsedText(new Date(createdAt))}</span>
-            <p className="mt-1">{comment}</p>
+            <span className="ml-2 text-xs text-gray-500 dark:text-gray-300">{elapsedText(new Date(createdAt))}</span>
+            <p className="mt-1 text-black dark:text-white">{comment}</p>
           </div>
         </div>
 
@@ -201,6 +209,7 @@ export default function PostDetailPage() {
 
     try {
       // createComment의 반환값을 바로 사용하도록 수정 (윤슬)
+      isCommentSubmitted.current = true; // 댓글 작성 시 플래그 설정
       const updatedPost = await createComment({
         comment: commentText,
         postId: post._id,
@@ -213,6 +222,7 @@ export default function PostDetailPage() {
       scrollToBottom(); // 댓글이 추가될 때마다 스크롤을 최하단으로 이동
     } catch (error) {
       console.error("댓글 작성 실패:", error);
+      isCommentSubmitted.current = false; // 에러 시 플래그 초기화
     }
   };
 
@@ -292,7 +302,7 @@ export default function PostDetailPage() {
     <>
       <div className="flex flex-col w-full">
         {/* 포스트 작성자명 & 게시 날짜 & 팔로우 버튼 */}
-        <div className="flex items-center justify-between px-5 py-2.5 font-semibold">
+        <div className="flex items-center justify-between px-5 py-2.5 font-semibold text-black dark:text-white">
           <div className="flex items-center gap-3">
             {/* 작성자 프로필 이미지 */}
             <Link to={`/userinfo/${post.author.fullName}`}>
@@ -306,7 +316,7 @@ export default function PostDetailPage() {
             </Link>
             {/* 작성자 정보와 게시 날짜 */}
             <div className="flex items-center gap-2">
-              <Link to={`/userinfo/${post.author.fullName}`} className="font-bold">
+              <Link to={`/userinfo/${post.author.fullName}`} className="font-bold text-black dark:text-white">
                 @{post.author.fullName}
               </Link>
               <span className="text-xs font-normal text-[#888888]">{elapsedText(new Date(post.createdAt))}</span>
@@ -318,12 +328,13 @@ export default function PostDetailPage() {
             <div className="relative">
               <button
                 onClick={toggleDropdown}
-                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
+                className="flex items-center justify-center w-8 h-8 transition-colors rounded-full hover:bg-gray-100"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M4.5 10.5C3.675 10.5 3 11.175 3 12C3 12.825 3.675 13.5 4.5 13.5C5.325 13.5 6 12.825 6 12C6 11.175 5.325 10.5 4.5 10.5ZM19.5 10.5C18.675 10.5 18 11.175 18 12C18 12.825 18.675 13.5 19.5 13.5C20.325 13.5 21 12.825 21 12C21 11.175 20.325 10.5 19.5 10.5ZM12 10.5C11.175 10.5 10.5 11.175 10.5 12C10.5 12.825 11.175 13.5 12 13.5C12.825 13.5 13.5 12.825 13.5 12C13.5 11.175 12.825 10.5 12 10.5Z"
-                    fill="#11152A"
+                    fill="currentColor"
+                    className="text-black dark:text-white"
                   />
                 </svg>
               </button>
@@ -332,7 +343,7 @@ export default function PostDetailPage() {
                 <div className="absolute right-0 mt-2 w-32 px-[6px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                   <ul className="py-1">
                     <li>
-                      <button className="w-full text-center px-4 py-2 text-sm font-normal text-gray-600 hover:font-semibold hover:bg-gray-100 transition-all">
+                      <button className="w-full px-4 py-2 text-sm font-normal text-center text-gray-600 transition-all hover:font-semibold hover:bg-gray-100">
                         수정
                       </button>
                     </li>
@@ -342,7 +353,7 @@ export default function PostDetailPage() {
                           setShowPostDeleteModal(true);
                           setShowDropdown(false);
                         }}
-                        className="w-full text-center px-4 py-2 text-sm font-normal text-primary hover:font-semibold hover:bg-gray-100 transition-all"
+                        className="w-full px-4 py-2 text-sm font-normal text-center transition-all text-primary hover:font-semibold hover:bg-gray-100"
                       >
                         삭제
                       </button>
@@ -353,10 +364,15 @@ export default function PostDetailPage() {
             </div>
           ) : (
             // 팔로우 버튼
-            <Follow userData={userData} onFollowUpdate={handleFollowUpdate} targetUserId={post.author._id} />
+            <Follow
+              userData={userData}
+              onFollowUpdate={handleFollowUpdate}
+              targetUserId={post.author._id}
+              className="w-[80px] h-[30px] py-[3px] text-[16px] font-normal rounded-[5px]"
+            />
           )}
         </div>
-        <hr className="border-t border-gray200" />
+        <hr className="border-t border-gray200 " />
 
         {/* 포스트 이미지 렌더링 */}
         <div className="relative w-[600px] h-[600px] bg-black mx-auto overflow-hidden">
@@ -368,14 +384,14 @@ export default function PostDetailPage() {
           >
             {postImages.length > 0 ? (
               postImages.map((image, index) => (
-                <div key={index} className="w-full h-full flex-shrink-0">
-                  <img src={image} className="w-full h-full object-contain" alt={`post-image-${index}`} />
+                <div key={index} className="flex-shrink-0 w-full h-full">
+                  <img src={image} className="object-contain w-full h-full" alt={`post-image-${index}`} />
                 </div>
               ))
             ) : (
               <img
                 src={pastImage ? pastImage : randomThumbnail}
-                className="w-full h-full object-contain"
+                className="object-contain w-full h-full"
                 alt="post-image"
               />
             )}
@@ -418,8 +434,8 @@ export default function PostDetailPage() {
 
         {/* 포스트 타이틀, 내용 렌더링 */}
         <div className="relative px-5 mt-5">
-          <h2 className="text-lg font-semibold">{parsePostContent(post.title).title}</h2>
-          <p className="mt-2.5 text-base">
+          <h2 className="text-lg font-semibold text-black dark:text-white">{parsePostContent(post.title).title}</h2>
+          <p className="mt-2.5 text-base  text-black dark:text-white">
             {parsePostContent(post.title)
               .content?.split("\\n")
               .map((line, index) => (
@@ -438,14 +454,14 @@ export default function PostDetailPage() {
 
         {/* 영역 구분선 */}
         <div className="px-[20px] mt-[20px]">
-          <hr className="border-t border-gray200" />
+          <hr className="border-t border-gray200 dark:border-gray-500" />
         </div>
 
         {/* 댓글 리스트 렌더링 */}
         <section aria-label="Comment List" className="px-[20px] mt-[20px] mb-[100px] text-sm">
-          <div className="font-bold h-[45px]">댓글 {post.comments.length}</div>
+          <div className="font-bold h-[45px] text-black dark:text-white">댓글 {post.comments.length}</div>
           {post.comments.length === 0 && <div className="text-center text-gray-300">첫 댓글을 남겨보세요!</div>}
-          <ul ref={commentListRef} className="flex flex-col [&>*+*]:border-t border-gray-150">
+          <ul ref={commentListRef} className="flex flex-col [&>*+*]:border-t border-gray-50">
             {post.comments.map((comment) => (
               <li key={comment._id}>
                 <CommentItem
@@ -463,7 +479,7 @@ export default function PostDetailPage() {
 
         {/* 댓글 입력폼 */}
         <form
-          className="fixed bottom-[60px] left-1/2 -translate-x-1/2 w-[600px] border-t border-white bg-white py-1.5"
+          className="fixed bottom-[60px] left-1/2 -translate-x-1/2 w-[600px] border-t border-white bg-white dark:bg-black dark:border-black py-1.5"
           onSubmit={handleSubmitComment}
         >
           <div className="flex items-center gap-2 px-[10px]">
@@ -477,7 +493,7 @@ export default function PostDetailPage() {
                 e.target.style.height = `${newHeight}px`;
               }}
               placeholder="댓글을 입력해주세요"
-              className="flex-1 outline-none border border-[#8E8E93] rounded-[4px] px-3 py-2.5 placeholder:text-gray300 resize-none h-[45px] min-h-[45px] max-h-[120px] overflow-y-auto scrollbar-hide"
+              className="flex-1 outline-none border border-gray-200 dark:border-gray-500 rounded-[4px] px-3 py-2.5 placeholder:text-gray300 resize-none h-[45px] min-h-[45px] max-h-[120px] overflow-y-auto scrollbar-hide bg-white dark:bg-black text-black dark:text-gray-50"
               style={{
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
@@ -489,14 +505,15 @@ export default function PostDetailPage() {
             <button
               type="submit"
               disabled={!commentText.trim()}
-              className={`w-[45px] h-[45px] rounded-[4px] flex items-center justify-center bg-primary transition-opacity ${
+              className={`w-[45px] h-[45px] rounded-[4px] flex items-center justify-center bg-primary dark:bg-secondary transition-opacity text-black dark:text-gray-50 ${
                 commentText.trim() ? "opacity-100" : "opacity-40"
               }`}
             >
               <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M1.36698 5.82747C1.08794 5.9072 0.834562 6.0584 0.631906 6.26612C0.429249 6.47384 0.284342 6.73088 0.211524 7.0118C0.138706 7.29272 0.1405 7.58778 0.216729 7.86779C0.292958 8.1478 0.440979 8.40306 0.646147 8.6083L3.48948 11.4483V16.9366H8.98365L11.8461 19.795C11.9998 19.9499 12.1825 20.073 12.3839 20.1571C12.5853 20.2412 12.8013 20.2846 13.0195 20.285C13.1629 20.2847 13.3057 20.2662 13.4445 20.23C13.7253 20.1592 13.9825 20.0158 14.1902 19.814C14.398 19.6123 14.5489 19.3594 14.6278 19.0808L20.1561 0.287476L1.36698 5.82747ZM1.83031 7.42997L16.0203 3.24664L5.15781 14.0916V10.7583L1.83031 7.42997ZM13.0303 18.6166L9.67448 15.27H6.34115L17.202 4.4183L13.0303 18.6166Z"
-                  fill="white"
+                  fill="currentColor"
+                  className="text-white dark:text-black"
                 />
               </svg>
             </button>
@@ -514,7 +531,7 @@ export default function PostDetailPage() {
             취소
           </button>
           <button
-            className="w-full py-2 text-white transition-opacity rounded bg-primary hover:opacity-40"
+            className="w-full py-2 text-white transition-opacity bg-black rounded hover:opacity-40"
             onClick={confirmDelete}
           >
             삭제
@@ -532,7 +549,7 @@ export default function PostDetailPage() {
             취소
           </button>
           <button
-            className="w-full py-2 text-white transition-opacity rounded bg-primary hover:opacity-40"
+            className="w-full py-2 text-white transition-opacity bg-black rounded hover:opacity-40"
             onClick={handlePostDelete}
           >
             삭제
