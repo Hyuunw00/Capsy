@@ -127,7 +127,7 @@ export default function PageHeader() {
 
   return (
     <>
-      <nav className="flex items-center justify-between px-8 py-4 bg-white dark:bg-black">
+      <nav className="absolute top-0 z-20 justify-between w-full px-8 py-4 bg-white dark:bg-black item-between">
         <button
           onClick={() => {
             if (location.pathname === "/login") {
