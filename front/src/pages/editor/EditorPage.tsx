@@ -9,6 +9,7 @@ import { createPost } from "../../apis/apis";
 import { CHANNEL_ID_TIMECAPSULE, CHANNEL_ID_POST } from "../../apis/apis";
 import EditLocationModal from "./EditLocationModal";
 import NotificationModal from "../../components/NotificationModal";
+import { validateBase64Size, compressImage, convertFileToBase64 } from './imageUtils';
 
 export default function EditorPage() {
   const [activeTab, setActiveTab] = useState("general");
@@ -26,20 +27,13 @@ export default function EditorPage() {
     lng: number;
   } | null>(null);
 
-  // 업로드 받은 이미지 상태
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
 
-  // 타임캡슐 날짜 상태
   const [selectedDate, setSelectedDate] = useState({
     year: "",
     month: "",
     day: "",
   });
-
-  // 프리뷰에서 선택한 사진을 배열에서 제거하는 함수
-  const handleDeleteFile = (indexToDelete: number) => {
-    setUploadedImages((prev) => prev.filter((_, index) => index !== indexToDelete));
-  };
 
   const [notificationModal, setNotificationModal] = useState<{
     isOpen: boolean;
@@ -59,50 +53,29 @@ export default function EditorPage() {
     });
   };
 
-  // Base64 문자열 크기 검증 함수
-  const Base64Limit = (base64String: string): { isValid: boolean; error?: string } => {
-    // Base64 문자열의 실제 바이트 크기 계산
-    const sizeInBytes = base64String.length * 0.75; // Base64는 4바이트마다 3바이트의 실제 데이터를 표현
-    const sizeInMB = sizeInBytes / (1024 * 1024);
-
-    // 비디오인 경우 (base64 문자열에 video가 포함되어 있는지 확인)
-    if (base64String.includes('video')) {
-      if (sizeInMB > 4000) { // 4GB
-        return { isValid: false, error: "비디오 크기가 4GB를 초과합니다." };
-      }
-    } else { // 이미지인 경우
-      if (sizeInMB > 10) { // 10MB
-        return { isValid: false, error: "이미지 크기가 30MB를 초과합니다." };
-      }
-    }
-
-    return { isValid: true };
+  const handleDeleteFile = (indexToDelete: number) => {
+    setUploadedImages((prev) => prev.filter((_, index) => index !== indexToDelete));
   };
 
   const handlePictureClick = () => {
     fileInputRef.current?.click();
   };
 
-  // 파일이 선택되었을 때 실행되는 함수
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
   
     try {
       for (const file of files) {
-        const base64 = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-  
-        const base64Validation = Base64Limit(base64);
-        if (!base64Validation.isValid) {
-          // alert 대신 모달로 변경
+        const base64 = file.type.startsWith('image/') 
+          ? await compressImage(file)
+          : await convertFileToBase64(file);
+
+        const validation = validateBase64Size(base64);
+        if (!validation.isValid) {
           setNotificationModal({
             isOpen: true,
             title: "파일 크기 초과",
-            description: "파일의 용량이 너무 큽니다.\n비디오는 4GB 이하, 이미지는 30MB 이하만 업로드 가능합니다."
+            description: "파일의 용량이 너무 큽니다.\n비디오는 4GB 이하, 이미지는 10MB 이하만 업로드 가능합니다."
           });
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
@@ -113,7 +86,6 @@ export default function EditorPage() {
   
       setUploadedImages((prev) => [...prev, ...files]);
     } catch (error) {
-      // alert 대신 모달로 변경 
       setNotificationModal({
         isOpen: true,
         title: "파일 처리 오류",
@@ -126,13 +98,12 @@ export default function EditorPage() {
       fileInputRef.current.value = "";
     }
   };
-    
+
   const handleDateSubmit = (date: { year: string; month: string; day: string }) => {
     setSelectedDate(date);
     setShowModal(false);
   };
 
-  // 저장 버튼 클릭 시 유효성 검사
   const handleSaveClick = async () => {
     if (!title.trim()) {
       setNotificationModal({
@@ -175,18 +146,15 @@ export default function EditorPage() {
       const channelId = activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST;
    
       const incodingImages = await Promise.all(uploadedImages.map(async (file) => {
-        const base64 = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = () => reject("Base64 인코딩 실패");
-          reader.readAsDataURL(file);
-        });
-   
-        const validation = Base64Limit(base64);
+        const base64 = file.type.startsWith('image/')
+          ? await compressImage(file)
+          : await convertFileToBase64(file);
+
+        const validation = validateBase64Size(base64);
         if (!validation.isValid) {
           throw new Error(validation.error);
         }
-   
+
         return base64;
       }));
    
@@ -231,7 +199,7 @@ export default function EditorPage() {
       console.error("게시물 생성 실패:", error);
       return;
     }
-   };
+  };
    
   const handleLocationSelect = (location: { name: string; address: string; lat: number; lng: number }) => {
     setSelectedLocation(location);
