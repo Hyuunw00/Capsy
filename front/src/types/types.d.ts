@@ -281,3 +281,11 @@ interface Post {
   createdAt: string;
   updatedAt: string;
 }
+
+interface Props {
+  userData: {
+    following: FollowData[];
+  };
+  onFollowUpdate?: (userData: any) => void;
+  targetUserId: string;
+}

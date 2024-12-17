@@ -16,9 +16,9 @@ import img_comment from "../../assets/fi-rs-comment.svg";
 import Loading from "../../components/Loading";
 import axiosInstance from "../../apis/axiosInstance";
 import NotificationModal from "../../components/NotificationModal";
+import Follow from "./Follow";
 
 export default function PostDetailPage() {
-  const [isFollowing, setIsFollowing] = useState(false); // 팔로우 상태 관리
   const [commentText, setCommentText] = useState(""); // 댓글 상태 관리
   const [post, setPost] = useState<PostDetail | null>(null); // 포스트 데이터 상태 관리
   const [showPostDeleteModal, setShowPostDeleteModal] = useState(false); // 포스트 삭제 모달 상태 관리
@@ -34,9 +34,9 @@ export default function PostDetailPage() {
   }, []); // 이미지 없을 시 랜덤 썸네일 설정
   const [likeStatus, setLikeStatus] = useState<{ [key: string]: boolean }>({}); // 좋아요 상태 관리
   // 유저 데이터 관리
-  const [userData, _] = useState(() => {
+  const [userData, setUserData] = useState(() => {
     const storedUserData = sessionStorage.getItem("user");
-    return storedUserData ? JSON.parse(storedUserData) : { likes: [] };
+    return storedUserData ? JSON.parse(storedUserData) : { likes: [], following: [] };
   });
 
   // 포스트 데이터 불러오기
@@ -82,8 +82,9 @@ export default function PostDetailPage() {
   };
 
   // 임시 팔로우 로직
-  const handleFollowClick = () => {
-    setIsFollowing(!isFollowing);
+  const handleFollowUpdate = (updatedUserData: any) => {
+    setUserData(updatedUserData);
+    sessionStorage.setItem("user", JSON.stringify(updatedUserData));
   };
   // 글 삭제 로직
   const handlePostDelete = async () => {
@@ -332,14 +333,7 @@ export default function PostDetailPage() {
               )}
             </div>
           ) : (
-            <button
-              className={`${
-                isFollowing ? "bg-black" : "bg-primary"
-              } text-white rounded px-4 py-1 transition-colors text-sm`}
-              onClick={handleFollowClick}
-            >
-              {isFollowing ? "팔로잉" : "팔로우"}
-            </button>
+            <Follow userData={userData} onFollowUpdate={handleFollowUpdate} targetUserId={post.author._id} />
           )}
         </div>
         <hr className="border-t border-gray200" />
