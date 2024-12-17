@@ -24,35 +24,53 @@ import MyFollowersPage from "./pages/mypage/MyFollowerPage";
 import MyFollowingPage from "./pages/mypage/MyFollowingPage";
 import { useThemeStore } from "./store/themeStore";
 import MapPage from "./pages/MapPage";
-
 export default function App() {
   // 새로고침할때마다 session storage에서 token 받아와서 로그인
   const login = useLoginStore((state) => state.login);
   // 처음에 렌더링될때 isLoggedIn이 false가 되는것을 방지
   const [isLoading, setIsLoading] = useState(true);
   const { isDark } = useThemeStore();
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_APP_KEY}&libraries=services,clusterer&autoload=false`;
+    script.async = true;
+
+    const loadKakaoMap = () => {
+      // @ts-ignore
+      window.kakao.maps.load(() => {
+        console.log("Kakao maps loaded successfully");
+      });
+    };
+
+    script.onload = loadKakaoMap;
+
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
 
   useEffect(() => {
     const script = document.createElement("script");
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_APP_KEY}&libraries=services,clusterer&autoload=false`;
     script.async = true;
-  
+
     const loadKakaoMap = () => {
       // @ts-ignore
       window.kakao.maps.load(() => {
-        console.log('Kakao maps loaded successfully');
+        console.log("Kakao maps loaded successfully");
       });
     };
-    
+
     script.onload = loadKakaoMap;
-  
+
     document.head.appendChild(script);
-  
+
     return () => {
       document.head.removeChild(script);
     };
   }, []);
-  
 
   const getUser = async () => {
     try {
@@ -65,11 +83,9 @@ export default function App() {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
     getUser();
   }, []);
-
   // 다크모드 초기화를 위한 별도의 useEffect
   useEffect(() => {
     // isDark 상태에 따라 HTML 클래스 설정
@@ -79,9 +95,7 @@ export default function App() {
       document.documentElement.classList.remove("dark");
     }
   }, [isDark]); // isDark가 변경될 때마다 실행
-
   if (isLoading) return <Loading />;
-
   return (
     <>
       <Routes>
@@ -101,7 +115,6 @@ export default function App() {
           <Route path="/userinfo/:fullname/myfollower" element={<MyFollowersPage />} />
           <Route path="/userinfo/:fullname/myfollowing" element={<MyFollowingPage />} />
           <Route path="/map" element={<MapPage />} />
-
           <Route element={<NonPrivate />}>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUpPage />} />
