@@ -60,10 +60,12 @@ export default function MapPage() {
   // 각각의 타임캡슐 마커의 인덱스
   const [openMarkerIndex, setOpenMarkerIndex] = useState<number | null>(null);
 
+  // 커스텀 오버레이를 여는 함수
   const handleMarkerClick = (index: number) => {
     // 클릭한 마커의 인덱스를 setState로 저장하여 해당 마커에 오버레이를 표시하도록 설정
     setOpenMarkerIndex(index);
   };
+  // 커스텀 오버레이를 닫는 함수
   const handleCloseOverlay = () => {
     setOpenMarkerIndex(null);
   };
@@ -228,13 +230,18 @@ export default function MapPage() {
               position={{ lat: marker.lat, lng: marker.lng }}
               onClick={() => handleMarkerClick(index)} // 마커 클릭 시 오버레이 표시
               image={{
-                src: img_capsule, // 커스텀 이미지 사용
+                src: marker.isBlur ? img_capsule : marker.image, // 커스텀 이미지 사용
                 size: { width: 50, height: 50 },
               }}
             >
               {/* 기본 UI는 제거하고, 클릭된 마커에 대해서만 CustomOverlayMap 표시 */}
               {openMarkerIndex === index && (
-                <CustomOverlayMap position={{ lat: marker.lat, lng: marker.lng }}>
+                <CustomOverlayMap
+                  position={{ lat: marker.lat, lng: marker.lng }}
+                  xAnchor={0.5}
+                  yAnchor={1.1}
+                  zIndex={3}
+                >
                   <div
                     style={{
                       position: "relative",
@@ -253,11 +260,18 @@ export default function MapPage() {
                         top: "8px", // 위치 조정
                         right: "8px", // 위치 조정
                         cursor: "pointer",
-                        zIndex: 30,
                       }}
-                      onClick={handleCloseOverlay} // 닫기 버튼 클릭 시 오버레이 닫기
+                      onClick={handleCloseOverlay}
+                      // 닫기 버튼 클릭 시 오버레이 닫기
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 18 18" fill="none">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 18 18"
+                        fill="none"
+                        style={{ zIndex: 100 }}
+                      >
                         <path
                           d="M14.121 3.879a1 1 0 0 0-1.415 0L9 7.586 5.293 3.879a1 1 0 1 0-1.415 1.415L7.586 9 3.879 12.707a1 1 0 0 0 1.415 1.415L9 10.414l3.707 3.707a1 1 0 1 0 1.415-1.415L10.414 9l3.707-3.707a1 1 0 0 0 0-1.415z"
                           fill="#000"
