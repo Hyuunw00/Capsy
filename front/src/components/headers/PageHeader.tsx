@@ -145,7 +145,7 @@ export default function PageHeader() {
           <img src={logo_black} alt="Logo" className="w-[75px] h-[30px] dark:invert" />
         </button>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600">
             <img
               src={isDark ? LightMode : DarkMode}
@@ -156,7 +156,7 @@ export default function PageHeader() {
           <button
             onClick={() => isLoggedIn && setShowNoticeModal((prev) => !prev)}
             className={`flex items-center justify-center w-5 h-5 relative ${
-              !isLoggedIn ? "invisible pointer-events-none" : ""
+              !isLoggedIn ? "hidden" : ""
             }`}
           >
             <img src={NotificationIcon} alt="Notification" className="object-contain w-full h-full dark:invert" />
