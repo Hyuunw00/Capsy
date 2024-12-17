@@ -20,7 +20,8 @@ const NotifyModal = ({
   };
 
   const renderNotification = (notification: Notification) => {
-    const notificationKey = `${notification.type.toLowerCase()}-${notification.notificationTypeId}`;
+    // 각 알림 타입에 따른 고유한 키 생성
+    const notificationKey = `${notification.type}-${notification.userId}-${notification.notificationTypeId}`;
 
     switch (notification.type) {
       case "FOLLOW":
@@ -43,7 +44,6 @@ const NotifyModal = ({
             </div>
           </div>
         );
-
       case "LIKE":
       case "COMMENT":
         return (
