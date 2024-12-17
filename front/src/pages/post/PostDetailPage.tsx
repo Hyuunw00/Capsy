@@ -364,7 +364,12 @@ export default function PostDetailPage() {
             </div>
           ) : (
             // 팔로우 버튼
-            <Follow userData={userData} onFollowUpdate={handleFollowUpdate} targetUserId={post.author._id} />
+            <Follow
+              userData={userData}
+              onFollowUpdate={handleFollowUpdate}
+              targetUserId={post.author._id}
+              className="w-[80px] h-[30px] py-[3px] text-[16px] font-normal rounded-[5px]"
+            />
           )}
         </div>
         <hr className="border-t border-gray200 " />
