@@ -10,6 +10,7 @@ import { CHANNEL_ID_TIMECAPSULE, CHANNEL_ID_POST } from "../../apis/apis";
 import EditLocationModal from "./EditLocationModal";
 import NotificationModal from "../../components/NotificationModal";
 import { validateBase64Size, compressImage, convertFileToBase64 } from './imageUtils';
+import { useNavigate } from "react-router";
 
 export default function EditorPage() {
   const [activeTab, setActiveTab] = useState("general");
@@ -113,16 +114,16 @@ export default function EditorPage() {
       });
       return;
     }
-   
+  
     if (!text.trim()) {
       setNotificationModal({
         isOpen: true,
-        title: "입력 오류", 
+        title: "입력 오류",
         description: "내용을 입력해주세요."
       });
       return;
     }
-   
+  
     if (activeTab === "timeCapsule") {
       if (uploadedImages.length === 0) {
         setNotificationModal({
@@ -141,23 +142,23 @@ export default function EditorPage() {
         return;
       }
     }
-   
+  
     try {
       const channelId = activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST;
-   
+  
       const incodingImages = await Promise.all(uploadedImages.map(async (file) => {
         const base64 = file.type.startsWith('image/')
           ? await compressImage(file)
           : await convertFileToBase64(file);
-
+  
         const validation = validateBase64Size(base64);
         if (!validation.isValid) {
           throw new Error(validation.error);
         }
-
+  
         return base64;
       }));
-   
+  
       const customData = {
         title: title,
         content: text.split("\n").join("\\n"),
@@ -177,16 +178,17 @@ export default function EditorPage() {
           longitude: selectedLocation.lng
         })
       };
-   
+  
       const formData = new FormData();
       formData.append("title", JSON.stringify(customData));
       formData.append("channelId", channelId);
-   
+  
       const response = await createPost(formData);
-   
+  
       if (response?._id) {
         setCreatedPostId(response._id);
         setSaveModal(true);
+
       }
     } catch (error) {
       setNotificationModal({
@@ -200,7 +202,7 @@ export default function EditorPage() {
       return;
     }
   };
-   
+     
   const handleLocationSelect = (location: { name: string; address: string; lat: number; lng: number }) => {
     setSelectedLocation(location);
     setShowLocationModal(false);

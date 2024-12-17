@@ -12,7 +12,9 @@ const EditComplete = ({ isOpen, onClose, isTimeCapsule, postId }: EditCompletePr
   const navigate = useNavigate();
 
   const handleConfirm = () => {
-    navigate(`/detail/${postId}`);
+    navigate(`/detail/${postId}`, {
+      state: { fromEditor: true }
+    });
   };
 
   if (isTimeCapsule) {
