@@ -2,6 +2,8 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { searchUsersByFullName, getUserProfile } from "../../apis/apis";
 import { useNavigate } from "react-router-dom";
+import { tokenService } from "../../utils/token";
+import Follow from "../post/Follow";
 
 interface UserProfile {
   _id: string;
@@ -18,7 +20,12 @@ export default function UserInfoPage() {
   const [specificUserInfo, setSpecificUserInfo] = useState<UserProfile | null>(null); // 사용자 정보 상태
   const [error, setError] = useState<string | null>(null); // 에러 상태
   const navigate = useNavigate();
+  const currentUser = tokenService.getUser();
   const [isCopied, setIsCopied] = useState(false);
+  const [userData, setUserData] = useState(() => {
+    const storedUserData = sessionStorage.getItem("user");
+    return storedUserData ? JSON.parse(storedUserData) : { likes: [], following: [] };
+  });
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -49,7 +56,7 @@ export default function UserInfoPage() {
     if (fullname) {
       fetchUserData();
     }
-  }, [fullname]);
+  }, [fullname, userData]);
 
   if (error) {
     return <div>{error}</div>;
@@ -59,6 +66,12 @@ export default function UserInfoPage() {
   if (!specificUserInfo) {
     return <div>사용자 정보를 찾을 수 없습니다.</div>;
   }
+
+  // 팔로우 상태 업데이트 핸들러 추가
+  const handleFollowUpdate = (updatedUserData: any) => {
+    setUserData(updatedUserData);
+    sessionStorage.setItem("user", JSON.stringify(updatedUserData));
+  };
 
   const handleShareProfile = async () => {
     const profileUrl = `/userinfo/${specificUserInfo?.fullName}`;
@@ -127,9 +140,20 @@ export default function UserInfoPage() {
         </div>
 
         <div className="flex space-x-[5px] mt-6">
-          <button className="flex-1 py-3 text-white dark:text-black text-[16px] font-normal bg-primary dark:bg-secondary rounded-[5px]">
-            팔로우
-          </button>
+          {currentUser?._id === specificUserInfo._id ? (
+            <button className="flex-1 py-3 text-white dark:text-black text-[16px] font-normal bg-primary dark:bg-secondary rounded-[5px]">
+              프로필 수정
+            </button>
+          ) : (
+            <div className="flex-1">
+              <Follow
+                userData={userData}
+                onFollowUpdate={handleFollowUpdate}
+                targetUserId={specificUserInfo._id}
+                className="w-full py-3 text-[16px] font-normal rounded-[5px]"
+              />
+            </div>
+          )}
           <button
             className="flex-1 py-3 text-white dark:text-black text-[16px] font-normal bg-primary dark:bg-secondary rounded-[5px]"
             onClick={handleShareProfile}
