@@ -218,13 +218,32 @@ function SlideContainer({ items, uniqueKey }: SlideContainerProps) {
           className={`absolute left-0 top-1/2 transform -translate-y-[100%] bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-prev-${uniqueKey}`}
           aria-label="Previous slide"
         >
-          <img src={leftArrowCircle} className="w-[24px] h-[24px]" alt="Previous" />
+          <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              className="fill-primary dark:fill-primary-dark"
+              d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5Z"
+            />
+            <path
+              className="fill-white dark:fill-black"
+              d="M6.7675 7.5L9.86125 10.5938L8.9775 11.4775L5 7.5L8.9775 3.5225L9.86125 4.40625L6.7675 7.5Z"
+            />
+          </svg>
         </button>
+
         <button
           className={`absolute right-0 top-1/2 transform -translate-y-[100%] bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-next-${uniqueKey}`}
           aria-label="Next slide"
         >
-          <img src={rightArrowCircle} className="w-[24px] h-[24px]" alt="Next" />
+          <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              className="fill-primary dark:fill-primary-dark"
+              d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5Z"
+            />
+            <path
+              className="fill-white dark:fill-black"
+              d="M9.2325 7.5L6.13875 4.40625L7.0225 3.5225L11 7.5L7.0225 11.4775L6.13875 10.5938L9.2325 7.5Z"
+            />
+          </svg>
         </button>
       </div>
     </>
