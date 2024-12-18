@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { searchUsersByFullName, getUserProfile } from "../../apis/apis";
 import AllUsersList from "./AllUserList";
 import Loading from "../../components/Loading";
+import Follow from "../post/Follow";
 
 interface UserProfile {
   _id: string;
@@ -18,6 +19,10 @@ const FollowingPage = () => {
   const [following, setFollowing] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [userData, setUserData] = useState(() => {
+    const storedUserData = sessionStorage.getItem("user");
+    return storedUserData ? JSON.parse(storedUserData) : { likes: [], following: [] };
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -82,6 +87,11 @@ const FollowingPage = () => {
     navigate(`/userinfo/${following.fullName}`); // 새 URL로 이동
   };
 
+  const handleFollowUpdate = (updatedUserData: any) => {
+    setUserData(updatedUserData);
+    sessionStorage.setItem("user", JSON.stringify(updatedUserData));
+  };
+
   if (isLoading) {
     return <Loading />;
   }
@@ -105,18 +115,28 @@ const FollowingPage = () => {
         <ul>
           {following.map((followed) => (
             <li key={followed._id} className="mb-4 font-pretendard">
-              <div
-                className="flex items-center pb-4 mb-4 cursor-pointer"
-                onClick={() => handleFollowingClick(followed)}
-              >
-                <img
-                  src={followed.image || ""}
-                  alt={followed.fullName}
-                  className="w-[40px] h-[40px] rounded-full object-cover"
-                />
-                <div className="flex flex-col justify-between ml-4">
-                  <span className="text-[16px] font-semibold text-black dark:text-white">{followed.fullName}</span>
-                  <span className="text-[14px] text-gray-300">{followed.username}</span>
+              <div className="flex items-center justify-between pb-4 mb-4">
+                <div className="flex items-center cursor-pointer" onClick={() => handleFollowingClick(followed)}>
+                  <img
+                    src={followed.image || ""}
+                    alt={followed.fullName}
+                    className="w-[40px] h-[40px] rounded-full object-cover"
+                  />
+                  <div className="flex flex-col justify-between ml-4">
+                    <span className="text-[16px] font-semibold text-black dark:text-white">{followed.fullName}</span>
+                    <span className="text-[14px] text-gray-300">{followed.username}</span>
+                  </div>
+                </div>
+
+                <div className="ml-auto">
+                  {userData._id !== followed._id && (
+                    <Follow
+                      userData={userData}
+                      onFollowUpdate={handleFollowUpdate}
+                      targetUserId={followed._id}
+                      className="w-[80px] h-[30px] text-[14px] ml-4"
+                    />
+                  )}
                 </div>
               </div>
             </li>
