@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import pictureIcon from "../../assets/pick-picture-icon.svg";
 import dateIcon from "../../assets/pick-date-icon.svg";
 import EditPreview from "./EditPreview";
@@ -9,7 +8,6 @@ import { CHANNEL_ID_EVENT } from "../../apis/apis";
 import EventEditModal from "./EventEditModal";
 
 export default function EventEditorPage() {
-  const navigate = useNavigate();
   const activeTab = "event";
   const [showModal, setShowModal] = useState(false);
   const [saveModal, setSaveModal] = useState(false);
