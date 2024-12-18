@@ -10,6 +10,7 @@ import Loading from "../../components/Loading";
 import TimeCapsuleModal from "../../components/TimeCapsuleModal";
 
 import img_bottom from "../../assets/bottom-arrow.svg";
+import img_bottom_white from "../../assets/bottom-arrow-white.svg";
 import img_capsule from "../../assets/icon_capsule.svg";
 import img_heart from "../../assets/Heart_Curved.svg";
 import img_fillHeart from "../../assets/heart-fill.svg";
@@ -20,8 +21,11 @@ import img_scroll from "../../assets/scroll-icon.svg";
 import img_timeCapsule from "../../assets/time-capsule.png";
 import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
 import img_alarm from "../../assets/alarm.png";
+import { useThemeStore } from "../../store/themeStore";
 
 export default function MainPage() {
+  // 다크모드
+  const { isDark } = useThemeStore();
   const navigate = useNavigate();
   // 전체 게시글 데이터 (현재는 dummyData)
   const [data, setData] = useState<Post[]>([]);
@@ -529,21 +533,21 @@ export default function MainPage() {
               <div className="flex justify-end">
                 <button
                   onClick={toggleDropdown}
-                  className="inline-flex items-center justify-around bg-white focus:outline-none"
+                  className="inline-flex items-center justify-around bg-white dark:bg-black dark:text-white focus:outline-none"
                 >
                   {selectedOption}
-                  <img src={img_bottom} alt="선택" />
+                  <img src={isDark ? img_bottom_white : img_bottom} alt="선택" />
                 </button>
               </div>
 
               {isOpen && (
-                <div className="absolute items-center rounded-[6px] mt-2 shadow-300 z-10 right-8 bg-white w-[120px] h-[104px]">
+                <div className="absolute items-center rounded-[6px] mt-2 shadow-300 z-10 right-8 bg-white dark:bg-black dark:text-white w-[120px] h-[104px]">
                   <div className="flex flex-col p-2 space-y-2 flex-nowrap">
                     {["All", "포스트", "타임캡슐"].map((option) => (
                       <button
                         key={option}
                         onClick={() => selectOption(option)}
-                        className={`block w-fulltext-sm text-center hover:bg-[rgba(0,0,0,0.04)] ${
+                        className={`block w-fulltext-sm text-center hover:bg-bg-100 dark:hover:bg-gray-500 ${
                           selectedOption === option ? "font-semibold" : ""
                         }`}
                       >
