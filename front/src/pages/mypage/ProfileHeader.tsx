@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import profileImgEditIcon from "../../assets/profile-img-edit-icon.svg";
 import ProfileForm from "./modal/ProfileForm";
 import ProfileImageForm from "./modal/ProfileImageForm";
 import { tokenService } from "../../utils/token";
@@ -97,13 +96,19 @@ export default function ProfileHeader() {
                 alt="Profile"
                 className="object-cover w-full h-full rounded-full"
               />
-              <label
-                className="absolute bottom-0 right-0 cursor-pointer z-2"
-                style={{ width: "30px", height: "30px" }}
+              <svg
                 onClick={openImageModal}
+                className="absolute bottom-0 right-0 cursor-pointer z-2 w-[31px] h-[31px]"
+                viewBox="0 0 31 31"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <img src={profileImgEditIcon} alt="Edit Icon" className="w-full h-full" />
-              </label>
+                <circle cx="15.1641" cy="15.2701" r="15" className="fill-primary dark:fill-primary-dark" />
+                <path
+                  d="M20.1641 14.2701H16.1641V10.2701C16.1641 10.0049 16.0587 9.75057 15.8712 9.56304C15.6836 9.3755 15.4293 9.27014 15.1641 9.27014C14.8988 9.27014 14.6445 9.3755 14.457 9.56304C14.2694 9.75057 14.1641 10.0049 14.1641 10.2701V14.2701H10.1641C9.89885 14.2701 9.64449 14.3755 9.45696 14.563C9.26942 14.7506 9.16406 15.0049 9.16406 15.2701C9.16406 15.5354 9.26942 15.7897 9.45696 15.9772C9.64449 16.1648 9.89885 16.2701 10.1641 16.2701H14.1641V20.2701C14.1641 20.5354 14.2694 20.7897 14.457 20.9772C14.6445 21.1648 14.8988 21.2701 15.1641 21.2701C15.4293 21.2701 15.6836 21.1648 15.8712 20.9772C16.0587 20.7897 16.1641 20.5354 16.1641 20.2701V16.2701H20.1641C20.4293 16.2701 20.6836 16.1648 20.8712 15.9772C21.0587 15.7897 21.1641 15.5354 21.1641 15.2701C21.1641 15.0049 21.0587 14.7506 20.8712 14.563C20.6836 14.3755 20.4293 14.2701 20.1641 14.2701Z"
+                  className="fill-white dark:fill-black"
+                />
+              </svg>
             </div>
 
             <div className="flex flex-1 mt-4 text-center justify-evenly">
@@ -141,7 +146,9 @@ export default function ProfileHeader() {
             </button>
           </div>
 
-          {isCopied && <div className="mt-4 text-center text-primary font-pretendard font-regular">copied</div>}
+          {isCopied && (
+            <div className="mt-4 text-center text-primary dark:text-secondary font-pretendard font-regular">copied</div>
+          )}
         </div>
       )}
       {isImageModalOpen && <ProfileImageForm onClose={closeImageModal} onSave={handleSaveImage} />}
