@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { getPostDetail, deletePost, createComment, deleteComment } from "../../apis/apis";
 import { Link } from "react-router";
 import { tokenService } from "../../utils/token";
@@ -28,6 +28,7 @@ export default function PostDetailPage() {
   const { postId } = useParams<{ postId: string }>(); // URL 파라미터에서 postId 추출
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const currentUser = tokenService.getUser(); // 현재 로그인한 사용자 정보
+  const navigate = useNavigate();
   const randomThumbnail = useMemo(() => {
     const thumbnails = [thumbnail1, thumbnail2, thumbnail3, thumbnail4, thumbnail5, thumbnail6];
     return thumbnails[Math.floor(Math.random() * thumbnails.length)];
@@ -334,7 +335,14 @@ export default function PostDetailPage() {
                 <div className="absolute right-0 mt-2 w-32 px-[6px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                   <ul className="py-1">
                     <li>
-                      <button className="w-full px-4 py-2 text-sm font-normal text-center text-gray-600 transition-all hover:font-semibold hover:bg-gray-100">
+                      <button
+                        onClick={() => {
+                          navigate(`/editor/${post._id}`, {
+                            state: { isEdit: true },
+                          });
+                        }}
+                        className="w-full px-4 py-2 text-sm font-normal text-center text-gray-600 transition-all hover:font-semibold hover:bg-gray-100"
+                      >
                         수정
                       </button>
                     </li>
@@ -557,7 +565,7 @@ export default function PostDetailPage() {
             취소
           </button>
           <button
-            className="w-full py-2 text-white transition-opacity bg-primary dark:bg-primary-dark rounded hover:opacity-40"
+            className="w-full py-2 text-white transition-opacity rounded bg-primary dark:bg-primary-dark hover:opacity-40"
             onClick={handlePostDelete}
           >
             삭제

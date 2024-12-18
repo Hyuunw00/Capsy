@@ -266,9 +266,12 @@ export default function MapPage() {
                         justifyContent: "center",
                         alignItems: "center",
                         cursor: "pointer",
-                        zIndex: 10,
+                        zIndex: 101
                       }}
-                      onClick={(e) => handleCloseOverlay(e)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCloseOverlay(e);
+                      }}
                       // 닫기 버튼 클릭 시 오버레이 닫기
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 18 18" fill="none">
