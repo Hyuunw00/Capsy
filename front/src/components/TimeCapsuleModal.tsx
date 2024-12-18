@@ -5,11 +5,21 @@ interface TimeCapsuleModalProps {
   imgSrc: string;
   neonText: string;
   whiteText: string;
-  onClose: () => void;
+  onClose?: () => void;
+  onConfirm?: () => void;
+  onCancel?: () => void;
   whiteTextClick?: () => void;
 }
 
-const TimeCapsuleModal = ({ imgSrc, neonText, whiteText, onClose, whiteTextClick }: TimeCapsuleModalProps) => {
+const TimeCapsuleModal = ({
+  imgSrc,
+  neonText,
+  whiteText,
+  onClose,
+  onConfirm,
+  onCancel,
+  whiteTextClick,
+}: TimeCapsuleModalProps) => {
   return (
     <div
       className="fixed top-0 left-0 z-30 w-full h-dvh item-middle bg-[rgba(55,56,60,0.6)]"
@@ -30,7 +40,18 @@ const TimeCapsuleModal = ({ imgSrc, neonText, whiteText, onClose, whiteTextClick
         <button onClick={onClose} className="absolute top-4 right-4 text-white  p-1">
           <img src={img_close_white} alt="close" className="w-[24px]" />
         </button>
-        <img src={img_logo_white} alt="logo" className="absolute bottom-5" />
+        {!(onConfirm && onCancel) && <img src={img_logo_white} alt="logo" className="absolute bottom-5" />}
+        {/* 취소 및 확인 버튼 추가 */}
+        {onConfirm && onCancel && (
+          <div className="mt-4 flex justify-between px-8">
+            <button onClick={onCancel} className="bg-gray-500 text-white py-2 px-4 rounded-lg w-full mr-2">
+              취소
+            </button>
+            <button onClick={onConfirm} className="bg-primary text-white py-2 px-4 rounded-lg w-full ml-2">
+              확인
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
