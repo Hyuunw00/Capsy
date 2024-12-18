@@ -73,14 +73,14 @@ const Tab2 = ({ setIsFocused, onBackClick }: Tab2Props) => {
 
   return (
     <div className="flex h-[36px] rounded-[10px]">
-      <img src={img_left} alt="뒤로 가기" onClick={onBackClick} className="cursor-pointer" />
+      <img src={img_left} alt="뒤로 가기" onClick={onBackClick} className="cursor-pointer dark:invert" />
       <div className="w-full rounded-[10px] bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-primary)] p-[1px]">
-        <div className="flex items-center w-full h-full bg-white dark:bg-black rounded-[10px] px-4 overflow-hidden">
+        <div className="flex items-center w-full h-full bg-white rounded-[10px] px-4 overflow-hidden">
           <input
             type="text"
             id="search-input"
             name="search"
-            className="w-full h-[14px] my-[4px] outline-none bg-white dark:bg-black text-black dark:text-gray-100"
+            className="w-full h-[14px] my-[4px] outline-none bg-white text-black dark:text-gray-100"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onBlur={handleBlur}
