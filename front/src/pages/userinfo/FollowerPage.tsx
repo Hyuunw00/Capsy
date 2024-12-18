@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { searchUsersByFullName, getUserProfile } from "../../apis/apis";
 import AllUsersList from "./AllUserList";
+import Loading from "../../components/Loading";
 
 interface UserProfile {
   _id: string;
@@ -110,7 +111,7 @@ const FollowerPage = () => {
   };
 
   if (isLoading) {
-    return <div>로딩 중...</div>;
+    return <Loading />;
   }
 
   if (error) {

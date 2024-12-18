@@ -4,6 +4,7 @@ import { getMyProfile, getUserProfile } from "../../apis/apis";
 import unknownUserImg from "../../assets/user.png";
 import loadingIconBlack from "../../assets/loading-icon-black.svg";
 import AllUsersList from "../userinfo/AllUserList";
+import Loading from "../../components/Loading";
 
 const MyFollowingPage = () => {
   const navigate = useNavigate();
@@ -66,9 +67,7 @@ const MyFollowingPage = () => {
     <div className="px-[30px] py-6">
       <h2 className="text-[16px] font-semibold font-pretendard mb-8  text-black dark:text-white">팔로잉</h2>
       {isLoading ? (
-        <div className="flex items-center justify-center h-screen">
-          <img src={loadingIconBlack} alt="로딩 중" className="w-16 h-16" />
-        </div>
+        <Loading />
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : following.length === 0 ? (
