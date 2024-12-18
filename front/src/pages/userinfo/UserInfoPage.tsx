@@ -45,7 +45,7 @@ export default function UserInfoPage() {
   return (
     <>
       <ProfileHeader />
-      <ProfileContainer userId={userData._id} />
+      <ProfileContainer userId={userData._id} fullName={fullname} />
     </>
   );
 }

@@ -28,6 +28,7 @@ interface ParsedCapsule {
   title: string;
   content: string;
   closeAt: string;
+  image: string[];
 }
 
 interface CapsuleItem {
@@ -52,7 +53,7 @@ const getContent = (jsonString: string) => {
   }
 };
 
-function ProfileContainer({ userId }: ProfileContainerProps) {
+function ProfileContainer({ userId, fullName }: { userId: string; fullName?: string }) {
   const [selectedTab, setSelectedTab] = useState("capsules");
   const [postItems, setPostItems] = useState<PostType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -96,7 +97,7 @@ function ProfileContainer({ userId }: ProfileContainerProps) {
             id: item._id,
             title: parsed.title,
             content: parsed.content?.replace(/\\n/g, "\n"),
-            image: item.image,
+            image: item.image ?? parsed.image[0],
             closeAt,
           };
           if (closeAt > now) {
@@ -121,6 +122,7 @@ function ProfileContainer({ userId }: ProfileContainerProps) {
       state: {
         title: type === "open" ? "공개 완료" : "공개 대기",
         items,
+        fullName: fullName,
       },
     });
   };
@@ -181,8 +183,10 @@ function ProfileContainer({ userId }: ProfileContainerProps) {
             </h2>
             <div className="grid grid-cols-3 gap-[10px] mb-[30px]">
               {articleItems.map((item, index) => {
-                const content = JSON.parse(item.title);
+                const parsed = JSON.parse(item.title);
+                const images = parsed.image;
                 const textContent = getContent(item.title);
+
                 return (
                   <div
                     key={item._id}
@@ -195,13 +199,19 @@ function ProfileContainer({ userId }: ProfileContainerProps) {
                         src={item.image}
                         alt={`일반 포스트 이미지 ${index}`}
                       />
+                    ) : images && images.length > 0 ? (
+                      <img
+                        className="object-cover w-full aspect-[1] bg-black rounded-[10px] item-middle"
+                        src={images[0]}
+                        alt={`일반 포스트 이미지 ${index}`}
+                      />
                     ) : (
                       <div className="w-full aspect-[1] bg-gray-100 rounded-[10px] flex items-start justify-start p-[10px] border border-gray-200">
                         <p className="text-black text-[14px] font-pretendard font-regular break-words">{textContent}</p>
                       </div>
                     )}
                     <div className="mt-2 font-pretendard font-regular text-left text-[14px]">
-                      <p className="text-black dark:text-white">{content.title}</p>
+                      <p className="text-black dark:text-white">{parsed.title}</p>
                     </div>
                   </div>
                 );

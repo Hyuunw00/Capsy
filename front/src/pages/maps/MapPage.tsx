@@ -220,7 +220,7 @@ export default function MapPage() {
         </form>
 
         {/* 지도 */}
-        <Map center={mapCenter} level={5} style={{ width: "100%", height: "100vh" }} className="w-full h-screen">
+        <Map center={mapCenter} level={3} style={{ width: "100%", height: "100vh" }} className="w-full h-screen">
           {/* 검색된 장소 마커 */}
           <MapMarker position={mapCenter} />
 
