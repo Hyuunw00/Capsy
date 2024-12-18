@@ -173,7 +173,7 @@ export default function EditorPage() {
         }),
         image: incodingImages,
         ...(selectedLocation && {
-          capsuleLocation: selectedLocation.address,
+          capsuleLocation: selectedLocation.name,
           latitude: selectedLocation.lat,
           longitude: selectedLocation.lng
         })
