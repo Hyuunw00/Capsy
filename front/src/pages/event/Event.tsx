@@ -19,7 +19,7 @@ import eventWriteIcon from "../../assets/event-capsule-icon.svg";
 import TimeCapsuleModal from "../../components/TimeCapsuleModal";
 import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
 
-interface Like {
+export interface Like {
   _id: string;
   user: string;
   post: string;
@@ -27,7 +27,7 @@ interface Like {
   updatedAt: string;
 }
 
-interface Channel {
+export interface Channel {
   authRequired: boolean;
   posts: string[];
   _id: string;
@@ -37,7 +37,7 @@ interface Channel {
   updatedAt: string;
 }
 
-interface Author {
+export interface Author {
   role: string;
   emailVerified: boolean;
   banned: boolean;
