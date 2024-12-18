@@ -1,17 +1,29 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import ProfileHeader from "./ProfileHeader";
 import ProfileContainer from "./ProfileContainer";
+import Loading from "../../components/Loading";
 
 export default function MyPage() {
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    // 페이지 진입 시 스크롤을 맨 위로 이동
     window.scrollTo(0, 0);
-  }, []); // 빈 배열을 의존성으로 전달
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, []);
 
   return (
     <>
-      <ProfileHeader />
-      <ProfileContainer />
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          <ProfileHeader />
+          <ProfileContainer />
+        </>
+      )}
     </>
   );
 }
