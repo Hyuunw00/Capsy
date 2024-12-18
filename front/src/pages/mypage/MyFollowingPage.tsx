@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // navigate 훅 사용
 import { getMyProfile, getUserProfile } from "../../apis/apis";
 import unknownUserImg from "../../assets/user.png";
 import loadingIconBlack from "../../assets/loading-icon-black.svg";
+import AllUsersList from "../userinfo/AllUserList";
+import Loading from "../../components/Loading";
 
 const MyFollowingPage = () => {
+  const navigate = useNavigate();
   const [following, setFollowing] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,32 +58,45 @@ const MyFollowingPage = () => {
     fetchFollowing();
   }, []);
 
+  const goToFollowingProfile = (following: any) => {
+    const encodedFullName = encodeURIComponent(following.fullName);
+    navigate(`/userinfo/${encodedFullName}`);
+  };
+
   return (
     <div className="px-[30px] py-6">
       <h2 className="text-[16px] font-semibold font-pretendard mb-8  text-black dark:text-white">팔로잉</h2>
       {isLoading ? (
-        <div className="flex items-center justify-center h-screen">
-          <img src={loadingIconBlack} alt="로딩 중" className="w-16 h-16" />
-        </div>
+        <Loading />
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : following.length === 0 ? (
         <p className="text-black dark:text-white">팔로잉이 없습니다.</p>
       ) : (
         <ul>
-          {following.map((user) => (
-            <li key={user._id} className="mb-4 font-pretendard">
-              <div className="flex items-center pb-4 mb-4">
-                <img src={user.image} alt={user.fullName} className="w-[40px] h-[40px] rounded-full object-cover" />
+          {following.map((following) => (
+            <li key={following._id} className="mb-4 font-pretendard">
+              <div
+                className="flex items-center pb-4 mb-4 cursor-pointer"
+                onClick={() => goToFollowingProfile(following)} // follower 객체를 전달
+              >
+                <img
+                  src={following.image}
+                  alt={following.fullName}
+                  className="w-[40px] h-[40px] rounded-full object-cover"
+                />
                 <div className="flex flex-col justify-between ml-4">
-                  <span className="text-[16px] font-semibold  text-black dark:text-white">{user.fullName}</span>
-                  <span className="text-[14px] text-gray-300">{user.username}</span>
+                  <span className="text-[16px] font-semibold  text-black dark:text-white">{following.fullName}</span>
+                  <span className="text-[14px] text-gray-300">{following.username}</span>
                 </div>
               </div>
             </li>
           ))}
         </ul>
       )}
+
+      {/* 팔로잉 목록 하단에 AllUserList 컴포넌트 추가 */}
+      <AllUsersList />
     </div>
   );
 };

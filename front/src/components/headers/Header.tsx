@@ -154,16 +154,13 @@ export default function Header() {
 
   return (
     <>
-      <nav className="flex items-center justify-between px-8 py-4 bg-white dark:bg-gray-700">
+      <nav className="absolute top-0 z-20 justify-between w-full px-8 py-4 bg-white dark:bg-black item-between">
         <img src={logo_black} alt="Logo" className="w-[75px] h-[30px] dark:invert" />
 
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600"
-          >
-            <img 
-              src={isDark ? LightMode : DarkMode} 
+        <div className="flex items-center gap-2">
+          <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600">
+            <img
+              src={isDark ? LightMode : DarkMode}
               alt={isDark ? "라이트모드 아이콘" : "다크모드 아이콘"}
               className="w-5 h-5"
             />
@@ -171,17 +168,11 @@ export default function Header() {
           <button
             onClick={() => isLoggedIn && setShowNoticeModal((prev) => !prev)}
             className={`flex items-center justify-center w-5 h-5 relative ${
-              !isLoggedIn ? "invisible pointer-events-none" : ""
+              !isLoggedIn ? "hidden" : ""
             }`}
           >
-            <img 
-              src={NotificationIcon} 
-              alt="Notification" 
-              className="object-contain w-full h-full dark:invert" 
-            />
-            {notifications.length > 0 && (
-              <div className="absolute w-2 h-2 rounded-full -top-1 -right-1 bg-secondary" />
-            )}
+            <img src={NotificationIcon} alt="Notification" className="object-contain w-full h-full dark:invert" />
+            {notifications.length > 0 && <div className="absolute w-2 h-2 rounded-full -top-1 -right-1 bg-secondary" />}
           </button>
         </div>
 

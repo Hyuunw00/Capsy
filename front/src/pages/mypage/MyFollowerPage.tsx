@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom"; // navigate 훅 사용
 import { getMyProfile, getUserProfile } from "../../apis/apis";
 import unknownUserImg from "../../assets/user.png";
 import loadingIconBlack from "../../assets/loading-icon-black.svg";
+import AllUsersList from "../userinfo/AllUserList";
+import Loading from "../../components/Loading";
 
 const MyFollowerPage = () => {
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ const MyFollowerPage = () => {
       setError(null);
 
       const userData = await getMyProfile();
-      console.log("User Data:", userData);
+      // console.log("User Data:", userData);
 
       const followersData = userData.followers || [];
 
@@ -65,9 +67,7 @@ const MyFollowerPage = () => {
     <div className="px-[30px] py-6">
       <h2 className="text-[16px] font-semibold font-pretendard mb-8  text-black dark:text-white">팔로워</h2>
       {isLoading ? (
-        <div className="flex items-center justify-center h-screen">
-          <img src={loadingIconBlack} alt="로딩 중" className="w-16 h-16" />
-        </div>
+        <Loading />
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : followers.length === 0 ? (
@@ -94,6 +94,9 @@ const MyFollowerPage = () => {
           ))}
         </ul>
       )}
+
+      {/* 팔로잉 목록 하단에 AllUserList 컴포넌트 추가 */}
+      <AllUsersList />
     </div>
   );
 };

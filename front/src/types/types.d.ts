@@ -206,6 +206,7 @@ interface PostItemProps {
   title: string;
   content?: string;
   image?: string[];
+  capsuleLocation?: string;
 }
 
 interface CommentItemProps {
@@ -280,4 +281,13 @@ interface Post {
   author: Author;
   createdAt: string;
   updatedAt: string;
+}
+
+interface Props {
+  userData: {
+    following: FollowData[];
+  };
+  onFollowUpdate?: (userData: any) => void;
+  targetUserId: string;
+  className?: string;
 }

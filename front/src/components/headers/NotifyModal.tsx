@@ -20,7 +20,8 @@ const NotifyModal = ({
   };
 
   const renderNotification = (notification: Notification) => {
-    const notificationKey = `${notification.type.toLowerCase()}-${notification.notificationTypeId}`;
+    // 각 알림 타입에 따른 고유한 키 생성
+    const notificationKey = `${notification.type}-${notification.userId}-${notification.notificationTypeId}`;
 
     switch (notification.type) {
       case "FOLLOW":
@@ -43,16 +44,20 @@ const NotifyModal = ({
             </div>
           </div>
         );
-
       case "LIKE":
       case "COMMENT":
         return (
           <div key={notificationKey} className="flex items-center justify-between py-2 hover:bg-gray-50">
-            <p>
-              <strong>{notification.postTitle || "게시물"}</strong>에 새로운
+            {/* 텍스트 영역을 flex-1로 설정하고 오버플로우 처리 */}
+            <p className="flex-1 mr-4 truncate">
+              <strong className="max-w-[150px] truncate inline-block align-bottom">
+                {notification.postTitle || "게시물"}
+              </strong>
+              에 새로운
               {notification.type === "LIKE" ? " 좋아요가" : " 댓글이"} 있습니다
             </p>
-            <div className="flex gap-2">
+            {/* 버튼 영역을 고정 너비로 설정 */}
+            <div className="flex gap-2 shrink-0">
               <Button
                 onClick={() => onReadNotification(notification)}
                 className="px-2 py-0.5 h-7 items-center text-black rounded w-fit border border-black box-border text-sm"

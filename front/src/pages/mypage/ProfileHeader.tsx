@@ -42,7 +42,7 @@ export default function ProfileHeader() {
   const handleSaveImage = async (image: File) => {
     try {
       const response = await uploadUserPhoto(image);
-      console.log("Uploaded photo response:", response);
+      // console.log("Uploaded photo response:", response);
       const updatedUser = await getMyProfile();
       setUser(updatedUser);
       setProfileImage(updatedUser.image || null);
@@ -55,7 +55,7 @@ export default function ProfileHeader() {
   };
 
   const handleShareProfile = async () => {
-    const profileUrl = `http://localhost:5173/userinfo/${user?.fullName}`;
+    const profileUrl = `/userinfo/${user?.fullName}`;
 
     try {
       await navigator.clipboard.writeText(profileUrl);

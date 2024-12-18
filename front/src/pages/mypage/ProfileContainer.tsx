@@ -75,7 +75,6 @@ function ProfileContainer() {
         try {
           const parsed: ParsedCapsule = JSON.parse(item.title);
           const closeAt = new Date(parsed.closeAt);
-
           const capsuleItem: CapsuleItem = {
             id: item._id,
             title: parsed.title,
@@ -99,7 +98,6 @@ function ProfileContainer() {
   const handleShowAllClick = (type: "open" | "close", tabType: "capsules" | "alarms") => {
     const { opened, waiting } = categorizeCapsules();
     const items = type === "open" ? opened : waiting;
-
     navigate(tabType === "capsules" ? "/capsule-list" : "/alarm-list", {
       state: {
         title: type === "open" ? "공개 완료" : "공개 대기",
@@ -131,7 +129,6 @@ function ProfileContainer() {
         {selectedTab === "capsules" &&
           (() => {
             const { opened, waiting } = categorizeCapsules();
-
             return (
               <>
                 <MySlideHeader
@@ -140,7 +137,7 @@ function ProfileContainer() {
                   showAllText="전체보기"
                   onShowAllClick={() => handleShowAllClick("open", "capsules")}
                 />
-                <MySlideContainer uniqueKey="open" items={opened} />
+                <MySlideContainer uniqueKey="open" items={opened} onItemClick={(item) => handlePostClick(item.id)} />
                 <div className="mt-8 mb-8">
                   <MySlideHeader
                     title="공개대기"
@@ -177,7 +174,9 @@ function ProfileContainer() {
                       />
                     ) : (
                       <div className="w-full aspect-[1] bg-gray-100 rounded-[10px] flex items-start justify-start p-[10px] border border-gray-200">
-                        <p className="text-black  text-[14px] font-pretendard font-regular break-words">{textContent}</p>
+                        <p className="text-black  text-[14px] font-pretendard font-regular break-words">
+                          {textContent}
+                        </p>
                       </div>
                     )}
                     <div className="mt-2 font-pretendard font-regular text-left text-[14px]">

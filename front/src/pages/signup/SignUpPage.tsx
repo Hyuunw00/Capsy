@@ -93,13 +93,11 @@ export default function SignUpPage() {
           {openModal.value}
         </NoticeModal>
       )}
-      <div>
-        <div className="w-[600px] h-[441px] px-[19px]">
-          <div className="mt-[160px] mb-[26px]">
-            <Logo />
-          </div>
 
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-115px)]">
+        <div className="w-full max-w-md px-8 py-8 overflow-y-auto">
           <div className="flex flex-col gap-[10px]">
+            <Logo />
             <AuthInput
               label="이메일"
               type="email"
@@ -111,7 +109,7 @@ export default function SignUpPage() {
             >
               <button
                 onClick={handleCheckEmail}
-                className="bg-primary dark:bg-secondary text-white dark:text-black text-center w-[68px] h-[48px] py-[13px] px-[21px] text-[14px] rounded-[6px] flex items-center justify-center"
+                className="bg-primary dark:bg-secondary text-white dark:text-black text-center w-fit h-12 py-[13px] px-[21px] text-[14px] rounded-[6px] flex items-center justify-center"
               >
                 확인
               </button>
@@ -128,7 +126,7 @@ export default function SignUpPage() {
             >
               <button
                 onClick={handleCheckId}
-                className="bg-primary dark:bg-secondary text-white dark:text-black text-center w-[68px] h-[48px] py-[13px] px-[21px] text-[14px] rounded-[6px] flex items-center justify-center"
+                className="bg-primary dark:bg-secondary text-white dark:text-black text-center w-fit h-12 py-[13px] px-[21px] text-[14px] rounded-[6px] flex items-center justify-center"
               >
                 확인
               </button>
@@ -142,7 +140,7 @@ export default function SignUpPage() {
               onChange={handleChangePassword}
               error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
               isValid={auth.isPasswordValid}
-            ></AuthInput>
+            />
 
             <AuthInput
               label="비밀번호 확인"
@@ -152,11 +150,11 @@ export default function SignUpPage() {
               onChange={handleChangePasswordConfirm}
               error="동일하지 않은 비밀번호"
               isValid={auth.isPasswordConfirmValid}
-            ></AuthInput>
+            />
 
             <button
               onClick={handleSubmit}
-              className=" bg-primary dark:bg-secondary text-white dark:text-black  w-full  h-[47px] py-[13px] px-[21px] rounded-[6px]"
+              className="bg-primary dark:bg-secondary text-white dark:text-black w-full h-[47px] py-[13px] px-[21px] rounded-[6px] mt-[10px]"
             >
               회원가입
             </button>

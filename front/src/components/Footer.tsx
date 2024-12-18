@@ -32,8 +32,7 @@ export default function Footer() {
   );
 
   return (
-    <footer className="absolute bottom-0 flex items-center w-full px-8 py-2 bg-black">
-      <nav className="w-full">
+      <nav className="absolute bottom-0 z-20 w-full px-8 py-2 bg-black">
         <ul className="text-white item-around">
           <NavItem
             to="/"
@@ -60,6 +59,5 @@ export default function Footer() {
           />
         </ul>
       </nav>
-    </footer>
   );
 }
