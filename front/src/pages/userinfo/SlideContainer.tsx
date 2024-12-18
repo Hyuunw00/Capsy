@@ -180,15 +180,6 @@ function SlideContainer({ items, uniqueKey }: SlideContainerProps) {
                           </div>
                         </div>
                         <div className="absolute bottom-0 right-0 px-2.5 py-2 flex flex-col justify-center items-center space-y-1">
-                          {/* 좋아요 이미지 */}
-                          <img
-                            src={likeStatus[item.id] ? img_fillHeart : img_heart}
-                            className="object-contain cursor-pointer flex-shrink-0 w-[24px] h-[24px]"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleLikeClick(item.id);
-                            }}
-                          />
                           {item.channel.name === "CAPSULETEST" && (
                             //  알림 이미지
                             <img
@@ -204,28 +195,15 @@ function SlideContainer({ items, uniqueKey }: SlideContainerProps) {
                         </div>
                       </div>
                     ) : (
-                      <div>
-                        <Link to={`/detail/${item.id}`}>
-                          <div>
-                            <img
-                              src={item.image}
-                              alt={item.title}
-                              className="absolute inset-0 w-full h-full object-cover rounded-[10px] "
-                            />
-                          </div>
-                        </Link>
-                        <div className="absolute bottom-0 right-0 px-2.5 py-2 flex flex-col justify-center items-center space-y-1">
-                          {/* 좋아요 이미지 */}
+                      <Link to={`/detail/${item.id}`}>
+                        <div>
                           <img
-                            src={likeStatus[item.id] ? img_fillHeart : img_heart}
-                            className="object-contain cursor-pointer flex-shrink-0 w-[24px] h-[24px]"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleLikeClick(item.id);
-                            }}
+                            src={item.image}
+                            alt={item.title}
+                            className="absolute inset-0 w-full h-full object-cover rounded-[10px] "
                           />
                         </div>
-                      </div>
+                      </Link>
                     )}
                   </div>
                   {/* 타이틀 */}
