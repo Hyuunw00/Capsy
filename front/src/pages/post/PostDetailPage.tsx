@@ -436,11 +436,25 @@ export default function PostDetailPage() {
                 </span>
               ))}
           </p>
-          {/* 작성 날짜 */}
-          <span className="text-xs font-normal text-[#888888]">
-            {new Date(post.createdAt).getFullYear()}년 {new Date(post.createdAt).getMonth() + 1}월 {""}
-            {new Date(post.createdAt).getDate()}일
-          </span>
+
+          {/* 날짜와 위치 정보 */}
+          <div className="flex items-center justify-between mt-4">
+            <span className="text-xs font-normal text-[#888888]">
+              {new Date(post.createdAt).getFullYear()}년 {new Date(post.createdAt).getMonth() + 1}월{" "}
+              {new Date(post.createdAt).getDate()}일
+            </span>
+            {parsePostContent(post.title).capsuleLocation && (
+              <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-200">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span>{parsePostContent(post.title).capsuleLocation}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* 영역 구분선 */}
@@ -543,7 +557,7 @@ export default function PostDetailPage() {
             취소
           </button>
           <button
-            className="w-full py-2 text-white transition-opacity bg-black rounded hover:opacity-40"
+            className="w-full py-2 text-white transition-opacity bg-primary dark:bg-primary-dark rounded hover:opacity-40"
             onClick={handlePostDelete}
           >
             삭제

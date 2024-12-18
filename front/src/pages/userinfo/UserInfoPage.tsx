@@ -5,30 +5,26 @@ import ProfileHeader from "./ProfileHeader";
 import ProfileContainer from "./ProfileContainer";
 import { searchUsersByFullName, getUserProfile } from "../../apis/apis";
 import Loading from "../../components/Loading";
-
 interface UserProfile {
   _id: string;
   fullName: string;
   username: string;
   image: string;
 }
-
 export default function UserInfoPage() {
   const { fullname } = useParams<{ fullname: string }>();
   const navigate = useNavigate();
   const [userData, setUserData] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
   useEffect(() => {
     const user = tokenService.getUser();
     if (user && fullname === user.fullName) {
       navigate("/mypage");
       return;
     }
-
     const fetchUserData = async () => {
       if (!fullname) return;
-      
+
       setIsLoading(true);
       try {
         const users = await searchUsersByFullName(fullname);
@@ -42,17 +38,14 @@ export default function UserInfoPage() {
         setIsLoading(false);
       }
     };
-
     fetchUserData();
   }, [fullname, navigate]);
-
   if (isLoading) return <Loading />;
   if (!userData) return null;
-
   return (
     <>
       <ProfileHeader />
-      <ProfileContainer userId={userData._id} />
+      <ProfileContainer userId={userData._id} fullName={fullname} />
     </>
   );
 }

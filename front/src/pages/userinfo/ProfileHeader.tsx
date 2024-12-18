@@ -4,7 +4,7 @@ import { searchUsersByFullName, getUserProfile } from "../../apis/apis";
 import { useNavigate } from "react-router-dom";
 import { tokenService } from "../../utils/token";
 import Follow from "../post/Follow";
-import { getProfileImage } from '../../utils/profileImage'
+import { getProfileImage } from "../../utils/profileImage";
 
 interface UserProfile {
   _id: string;
@@ -142,9 +142,7 @@ export default function UserInfoPage() {
 
         <div className="flex space-x-[5px] mt-6">
           {currentUser?._id === specificUserInfo._id ? (
-            <button className="flex-1 py-3 text-white dark:text-black text-[16px] font-normal bg-primary dark:bg-secondary rounded-[5px]">
-              프로필 수정
-            </button>
+            <button className="flex-1 py-3 text-white dark:text-black text-[16px] font-normal bg-primary dark:bg-secondary rounded-[5px]"></button>
           ) : (
             <div className="flex-1">
               <Follow
