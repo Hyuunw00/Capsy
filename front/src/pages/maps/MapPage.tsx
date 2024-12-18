@@ -6,8 +6,8 @@ import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
 import img_search from "../../assets/Search.svg";
 import { useNavigate } from "react-router";
 import TimeCapsuleModal from "../../components/TimeCapsuleModal";
-import img_capsule from "../../assets/icon_capsule.svg";
 import { CustomOverlayMap, Map, MapMarker } from "react-kakao-maps-sdk";
+import img_capsule from "../../assets/marker.svg";
 
 interface Place {
   place_name: string;
@@ -50,8 +50,11 @@ export default function MapPage() {
 
   // 중앙값 상태관리
   const [mapCenter, setMapCenter] = useState({
-    lat: 37.5666805, // 초기 좌표
-    lng: 126.9784147,
+    center: {
+      lat: 37.5666805, // 초기 좌표
+      lng: 126.9784147,
+    },
+    isPanto: false,
   });
 
   // 마커 상태관리
@@ -162,8 +165,8 @@ export default function MapPage() {
 
     // 맵 중심 이동
     setMapCenter({
-      lat: +searchPlace.lat,
-      lng: +searchPlace.lng,
+      center: { lat: +searchPlace.lat, lng: +searchPlace.lng },
+      isPanto: true,
     });
 
     // 장소를 입력한 타임캡슐만 필터링
@@ -220,9 +223,9 @@ export default function MapPage() {
         </form>
 
         {/* 지도 */}
-        <Map center={mapCenter} level={3} style={{ width: "100%", height: "100vh" }} className="w-full h-screen">
+        <Map center={mapCenter.center} level={3} style={{ width: "100%", height: "100vh" }} className="w-full h-screen">
           {/* 검색된 장소 마커 */}
-          <MapMarker position={mapCenter} />
+          <MapMarker position={mapCenter.center} />
 
           {/* 타임캡슐 마커들 */}
           {selectedMarkers.map((marker, index) => (
@@ -232,7 +235,7 @@ export default function MapPage() {
               onClick={() => handleMarkerClick(index)} // 마커 클릭 시 오버레이 표시
               image={{
                 src: marker.isBlur ? img_capsule : marker.image, // 커스텀 이미지 사용
-                size: { width: 60, height: 60 },
+                size: { width: 50, height: 50 },
               }}
             >
               {/* 기본 UI는 제거하고, 클릭된 마커에 대해서만 CustomOverlayMap 표시 */}
@@ -246,11 +249,11 @@ export default function MapPage() {
                   <div
                     style={{
                       position: "relative",
-                      width: "250px", // 크기 줄임
-                      maxWidth: "300px", // 최대 너비 설정
+                      width: "250px",
+                      maxWidth: "300px",
                       padding: "10px",
                       backgroundColor: "#fff",
-                      borderRadius: "8px", // 테두리 라운드 효과
+                      borderRadius: "8px",
                       boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
                     }}
                     onClick={() => handleClickCapsule(marker)}

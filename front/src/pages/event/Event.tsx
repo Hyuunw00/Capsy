@@ -5,7 +5,6 @@ import { useNavigate } from "react-router";
 import { tokenService } from "../../utils/token";
 import { useLoginStore } from "../../store/loginStore";
 import eventBanner from "../../assets/holiday-event-banner.png";
-import eventTimecapsuleThumbnail from "../../assets/event-timeCapsule-thumbnail.png";
 import eventThumnail from "../../assets/event-thumnails/event-thumnail.svg";
 import eventThumnail1 from "../../assets/event-thumnails/event-thumnail-1.svg";
 import img_heart from "../../assets/Heart_Curved.svg";
@@ -18,59 +17,6 @@ import Loading from "../../components/Loading";
 import eventWriteIcon from "../../assets/event-capsule-icon.svg";
 import TimeCapsuleModal from "../../components/TimeCapsuleModal";
 import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
-
-export interface Like {
-  _id: string;
-  user: string;
-  post: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Channel {
-  authRequired: boolean;
-  posts: string[];
-  _id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Author {
-  role: string;
-  emailVerified: boolean;
-  banned: boolean;
-  isOnline: boolean;
-  posts: string[];
-  likes: string[];
-  comments: string[];
-  followers: string[];
-  following: string[];
-  notifications: string[];
-  messages: string[];
-  _id: string;
-  fullName: string;
-  email: string;
-  createdAt: string;
-  updatedAt: string;
-  username: string | null;
-  image: string;
-  imagePublicId: string;
-}
-
-interface Post {
-  likes: Like[];
-  comments: string[];
-  _id: string;
-  title: string;
-  image?: string;
-  imagePublicId?: string;
-  channel: Channel;
-  author: Author;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export default function Event() {
   // 로그아웃 기능구현을 위해 임시 저장(나중에 삭제)
@@ -181,19 +127,19 @@ export default function Event() {
     }
   };
 
-  // 타임캡슐의 closeAt 날짜 가져오기
-  const getCloseAt = (jsonString: any): Date | null => {
-    try {
-      const parsedData = JSON.parse(jsonString);
-      if (parsedData.closeAt) {
-        return new Date(parsedData.closeAt);
-      }
-      return null;
-    } catch (error) {
-      console.error("JSON parse error: ", error);
-      return null;
-    }
-  };
+  // // 타임캡슐의 closeAt 날짜 가져오기
+  // const getCloseAt = (jsonString: any) => {
+  //   try {
+  //     const parsedData = JSON.parse(jsonString);
+  //     if (parsedData.closeAt) {
+  //       return new Date(parsedData.closeAt);
+  //     }
+  //     return null;
+  //   } catch (error) {
+  //     console.error("JSON parse error: ", error);
+  //     return null;
+  //   }
+  // };
 
   //  이벤트 캡슐 게시글 이동 버튼
   const handleClickEventEdit = () => {
@@ -212,7 +158,7 @@ export default function Event() {
 
   // 포스트 컴포넌트 클릭 시
   const handleImageClick = (item: any) => {
-    const isBeforeCloseAt = new Date().toISOString() < (getCloseAt(item.title)?.toISOString() ?? "");
+    const isBeforeCloseAt = new Date().toISOString() < getParsedData(item.title).closeAt;
     if (isBeforeCloseAt) {
       setModalData({
         imgSrc: img_lock_timeCapsule,
@@ -312,7 +258,7 @@ export default function Event() {
                     <img
                       src={
                         // 캡슐 종료기간이 지나면 이미지 보여주기
-                        new Date().toISOString() < (getCloseAt(item.title)?.toISOString() ?? "")
+                        new Date().toISOString() < getParsedData(item.title).closeAt
                           ? index % 2 === 0
                             ? eventThumnail
                             : eventThumnail1

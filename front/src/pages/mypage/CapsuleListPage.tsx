@@ -51,10 +51,16 @@ function CapsuleListPage() {
         />
       )}
       <div className="capsule-list-page mb-[30px]">
-        {/* 작성자 fullName */}
         <div className="py-[30px] pl-[40px]">
-          <span>@{fullName}님이 작성한 타임캡슐</span>
+          {fullName ? (
+            <span>
+              <strong>@{fullName}</strong>님이 작성한 타임캡슐
+            </span>
+          ) : (
+            <span>나의 타임캡슐</span>
+          )}
         </div>
+
         {/* 작성자 게시물 사진  */}
         <div className="grid grid-cols-3  ">
           {items.map((item, index) => (
