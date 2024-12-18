@@ -15,10 +15,11 @@ import img_heart from "../../assets/Heart_Curved.svg";
 import img_fillHeart from "../../assets/heart-fill.svg";
 import img_noti from "../../assets/Notification-white.svg";
 import img_fillNoti from "../../assets/Notification-fill.svg";
-// import img_noti_disable from "../../assets/Notification-disabled.svg";
+import img_noti_disable from "../../assets/Notification-disabled.svg";
 import img_scroll from "../../assets/scroll-icon.svg";
-// import img_timeCapsule from "../../assets/time-capsule.png";
+import img_timeCapsule from "../../assets/time-capsule.png";
 import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
+import img_alarm from "../../assets/alarm.png";
 
 export default function MainPage() {
   const navigate = useNavigate();
@@ -34,20 +35,42 @@ export default function MainPage() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   // 필터링 드롭다운 선택한 옵션
   const [selectedOption, setSelectedOption] = useState<string>("All");
-  // // 각 게시물 알림 상태 관리
-  const [notiStatus, setNotiStatus] = useState<boolean[]>([]);
+  // 각 게시물 알림 상태 관리
+  const [notiStatus, setNotiStatus] = useState<{ [key: string]: boolean }>({});
+  // const [notiStatus, setNotiStatus] = useState<boolean[]>([]);
   // 각 게시물 좋아요, 알림 상태 관리
-  const [userData, _] = useState(() => {
+  const [userData, setUserData] = useState(() => {
     const storedUserData = sessionStorage.getItem("user");
-    return storedUserData ? JSON.parse(storedUserData) : { likes: [] };
+    return storedUserData ? JSON.parse(storedUserData) : { likes: [], messages: [] };
   });
   // 좋아요 상태
   const [likeStatus, setLikeStatus] = useState<{ [key: string]: boolean }>({});
   // 로딩중인지에 대한 상태
   const [loading, setLoading] = useState<boolean>(true);
-  // 모달 상태 관리
+  // 미공개 타임캡슐 모달을 위한 상태 관리
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({ imgSrc: "", neonText: "", whiteText: "" });
+  // 알림 등록 모달을 위한 상태 관리
+  const [showAlarmModal, setShowAlarmModal] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [alarmModalData, setAlarmModalData] = useState({
+    imgSrc: "",
+    neonText: "",
+    whiteText: "",
+  });
+  // 타임캡슐 열린 모달을 위한 상태 관리
+  const [showOpenModal, setShowOpenModal] = useState(false);
+  const [openModalData, setOpenModalData] = useState<{
+    imgSrc: string;
+    neonText: string;
+    whiteText: string;
+    whiteTextClick: () => void;
+  }>({
+    imgSrc: "",
+    neonText: "",
+    whiteText: "",
+    whiteTextClick: () => {},
+  });
 
   // 전역 상태 변수
   const isFocused = useMainSearchStore((state) => state.isFocused);
@@ -101,9 +124,14 @@ export default function MainPage() {
     setShowModal(false);
   };
 
+  // 오픈된 타임캡슐 있을 시 생기는 모달 컴포넌트 X 버튼 로직
+  const handleOpenTCModal = () => {
+    setShowOpenModal(false);
+  };
+
   // 좋아요 버튼 클릭 이벤트 핸들러
   const handleLikeClick = async (postId: string) => {
-    const userId = userData._id;
+    const userId = userData?._id;
 
     // 전체 데이터와 클릭한 post id 비교
     const post = filterData.find((post) => post._id === postId);
@@ -121,12 +149,11 @@ export default function MainPage() {
         const newLike = {
           _id: response.data._id,
           post: postId,
-          user: userId,
+          user: userId!,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
         post.likes.push(newLike);
-        console.log("좋아요 추가 완료!", post.likes);
         setLikeStatus((prevState) => ({ ...prevState, [postId]: true }));
 
         // 작성자가 자신의 게시글에 좋아요를 누를때는 알림  x
@@ -144,26 +171,166 @@ export default function MainPage() {
         const likeId = userLikes[0]._id;
         await axiosInstance.delete("/likes/delete", { data: { id: likeId } });
         post.likes = post.likes.filter((like) => like._id !== likeId);
-        console.log("좋아요 취소 완료!", post.likes);
         setLikeStatus((prevState) => ({ ...prevState, [postId]: false }));
       }
     } catch (error: any) {
-      // console.error("좋아요 처리 실패: ", error);
       if (error.response && error.response.status === 401) {
-        console.log("좋아요 처리 실패: 로그인이 필요합니다.");
         navigate("/login");
       }
     }
   };
 
-  // 알림 버튼 클릭 이벤트 핸들러
-  const handleNotiClick = (index: number) => {
-    setNotiStatus((prevNotiStatus) => {
-      const newNotiStatus = [...prevNotiStatus];
-      newNotiStatus[index] = !newNotiStatus[index];
-      return newNotiStatus;
+  const handleNotiClick = (postId: string) => {
+    // 이미 해당 게시글에 알림이 설정된 경우
+    const userNoti = userData?.messages.find((message: any) => {
+      try {
+        const parsedMessage = JSON.parse(message.message);
+        return parsedMessage.postId === postId;
+      } catch (error) {
+        return false;
+      }
     });
+
+    if (userNoti) {
+      alert("해당 게시글 알람을 이미 설정하셨습니다.");
+      return;
+    }
+
+    // 알림을 설정하는 모달
+    setAlarmModalData({
+      imgSrc: img_alarm,
+      neonText: "알림을 설정하면 취소할 수 없습니다",
+      whiteText: "알림을 설정하시겠습니까?",
+    });
+    setShowAlarmModal(true);
+    setSelectedPostId(postId);
   };
+
+  const handleAlarmCloseModal = () => {
+    setShowAlarmModal(false);
+    setSelectedPostId(null);
+  };
+
+  // 알림 버튼 클릭 이벤트 핸들러
+  const handleConfirm = async () => {
+    if (!selectedPostId) return;
+
+    try {
+      const post = filterData.find((post) => post._id === selectedPostId);
+      if (!post) return;
+
+      const userId = userData?._id;
+
+      const openAt = getCloseAt(post.title)?.toISOString();
+
+      // 새로운 메세지 전송
+      const messageResponse = await axiosInstance.post("/messages/create", {
+        message: JSON.stringify({ postId: selectedPostId, openAt }),
+        receiver: userId,
+      });
+
+      const newMessage = messageResponse.data;
+      console.log("messageResponse: ", newMessage);
+
+      setUserData((prevUserData: any) => {
+        const updatedMessages = [...(prevUserData.messages || []), newMessage];
+        const updatedUserData = {
+          ...prevUserData,
+          messages: updatedMessages,
+        };
+        sessionStorage.setItem("user", JSON.stringify(updatedUserData));
+        return updatedUserData;
+      });
+      console.log("알림 예약 완료 되었습니다.");
+
+      setNotiStatus((prevStatus: any) => {
+        const updatedStatus = { ...prevStatus, [selectedPostId]: true };
+        sessionStorage.setItem("notiStatus", JSON.stringify(updatedStatus));
+        return updatedStatus;
+      });
+
+      handleAlarmCloseModal();
+    } catch (error: any) {
+      if (error.response && error.response.status === 401) {
+        console.log("알림 처리 실패: 로그인이 필요합니다.");
+        navigate("/login");
+      }
+    }
+  };
+
+  // 알림 리스트 가져오기
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        if (!userData?._id) {
+          return;
+        }
+
+        const userId = userData?._id;
+
+        const response = await axiosInstance.get("/messages", { params: { userId } });
+        const allMessages = response.data;
+
+        const now = new Date().toISOString();
+
+        const expiredMessages = allMessages?.filter((message: any) => {
+          if (!message?.message) return false;
+
+          const parsedMessage = JSON.parse(message.message);
+          if (!parsedMessage.openAt) return false;
+
+          return parsedMessage.openAt <= now;
+        });
+
+        const displayedNotifications = JSON.parse(sessionStorage.getItem("displayedNotifications") || "[]");
+
+        // 중복되지 않은 알림만 추가
+        const newNotifications = expiredMessages?.filter((message: any) => {
+          const parsedMessage = JSON.parse(message.message);
+          return !displayedNotifications.includes(parsedMessage.postId);
+        });
+
+        if (newNotifications.length > 0) {
+          console.log("새로 추가된 알림: ", newNotifications.length);
+          const newPostIds = newNotifications.map((message: any) => JSON.parse(message.message).postId);
+          const updatedDisplayedNotifications = [...displayedNotifications, ...newPostIds];
+          sessionStorage.setItem("displayedNotifications", JSON.stringify(updatedDisplayedNotifications));
+
+          if (newNotifications.length === 1) {
+            const parsedMessage = JSON.parse(newNotifications[0].message);
+            setOpenModalData({
+              imgSrc: img_timeCapsule,
+              neonText: "따끈따끈한 타임 캡슐 도착!",
+              whiteText: "지금 확인하러 가기",
+              whiteTextClick: () => navigate(`/detail/${parsedMessage.postId}`),
+            });
+          } else {
+            setOpenModalData({
+              imgSrc: img_timeCapsule,
+              neonText: "따끈따끈한 타임 캡슐 도착!",
+              whiteText: "지금 확인하러 가기",
+              whiteTextClick: () => navigate("/mypage"),
+            });
+          }
+          setShowOpenModal(true);
+        }
+        // userData 업데이트 및 세션 저장
+        const updatedUserData = {
+          ...userData,
+          messages: allMessages,
+        };
+
+        if (updatedUserData._id) {
+          sessionStorage.setItem("user", JSON.stringify(updatedUserData));
+          setUserData(updatedUserData);
+        }
+      } catch (error) {
+        console.error("메세지를 가져오는 중 오류 발생");
+      }
+    };
+
+    fetchMessages();
+  }, [userData?._id]);
 
   // 게시글 제목 가져오기
   const getTitle = (jsonString: any) => {
@@ -229,6 +396,7 @@ export default function MainPage() {
 
         const allData = [...postResponse.data, ...capsuleResponse.data];
 
+        // createdAt 내림차순 정렬
         const sortedData = allData.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
         setData(sortedData);
@@ -253,7 +421,7 @@ export default function MainPage() {
   // 좋아요 상태 바뀌면 실행
   useEffect(() => {
     const updatedFilterData = filterData.map((post) => {
-      const isLiked = post.likes.some((like) => like.user === userData._id);
+      const isLiked = post.likes.some((like) => like.user === userData?._id);
       return {
         ...post,
         isLiked, // 좋아요 상태 업데이트
@@ -266,6 +434,44 @@ export default function MainPage() {
     setLikeStatus(newLikeStatus);
   }, [filterData]);
 
+  // 알림 상태가 바뀌면 실행
+  useEffect(() => {
+    const updatedFilterData = filterData.map((post) => {
+      const isNotified = userData?.messages?.some((message: any) => {
+        const parsedMessage = message.message ? JSON.parse(message.message) : null;
+        return parsedMessage && parsedMessage.postId === post._id;
+      });
+      return {
+        ...post,
+        isNotified,
+      };
+    });
+
+    const newNotiStatus = updatedFilterData.reduce<{ [key: string]: boolean }>((acc, post) => {
+      acc[post._id] = post.isNotified ?? false;
+      return acc;
+    }, {});
+
+    setNotiStatus(newNotiStatus);
+  }, [filterData]);
+
+  // 페이지 로드 시 sessionStorage에서 데이터 가져오기
+  useEffect(() => {
+    const storedUserData = sessionStorage.getItem("user");
+    if (storedUserData) {
+      const parsedUserData = JSON.parse(storedUserData);
+      setUserData(parsedUserData);
+      setNotiStatus(parsedUserData.notifications || {});
+    }
+  }, []);
+
+  // userData가 업데이트될 때마다 sessionStorage에 저장
+  useEffect(() => {
+    if (userData) {
+      sessionStorage.setItem("user", JSON.stringify(userData));
+    }
+  }, [userData]);
+
   // 필터링 로직
   useEffect(() => {
     if (selectedOption === "All") {
@@ -276,15 +482,6 @@ export default function MainPage() {
       setFilterData(capsuleData);
     }
   }, [selectedOption, data]);
-
-  // 데이터 확인용 console.log
-  useEffect(() => {
-    // console.log("userData", userData);
-    // console.log("filterData", filterData);
-    // console.log("postData", postData);
-    // console.log("capsuleData", capsuleData);
-    // console.log("Date", new Date().toISOString());
-  }, [data, filterData]);
 
   // 검색된 게시물에대한 코드
   useEffect(() => {
@@ -439,12 +636,20 @@ export default function MainPage() {
                 {/* {item.channel.name === "TIMECAPSULE" && ( */}
                 {item.channel?.name === "CAPSULETEST" && (
                   <img
-                    src={notiStatus[index] ? img_fillNoti : img_noti}
+                    src={
+                      new Date().toISOString() >= (getCloseAt(item.title)?.toISOString() ?? "")
+                        ? img_noti_disable // 조건을 만족하면 img_noti_disable 사용
+                        : notiStatus[item._id]
+                          ? img_fillNoti
+                          : img_noti
+                    }
                     alt="noti"
                     className="object-contain cursor-pointer flex-shrink-0 w-[21px] h-[21px]"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleNotiClick(index);
+                      if (new Date().toISOString() <= (getCloseAt(item.title)?.toISOString() ?? "")) {
+                        handleNotiClick(item._id);
+                      }
                     }}
                   />
                 )}
@@ -470,6 +675,27 @@ export default function MainPage() {
           neonText={modalData.neonText}
           whiteText={modalData.whiteText}
           onClose={handleCloseModal}
+        />
+      )}
+
+      {showAlarmModal && selectedPostId && (
+        <TimeCapsuleModal
+          imgSrc={alarmModalData.imgSrc}
+          neonText={alarmModalData.neonText}
+          whiteText={alarmModalData.whiteText}
+          onClose={handleAlarmCloseModal}
+          onCancel={handleAlarmCloseModal}
+          onConfirm={handleConfirm}
+        />
+      )}
+
+      {showOpenModal && (
+        <TimeCapsuleModal
+          imgSrc={openModalData.imgSrc}
+          neonText={openModalData.neonText}
+          whiteText={openModalData.whiteText}
+          whiteTextClick={openModalData.whiteTextClick}
+          onClose={handleOpenTCModal}
         />
       )}
     </>
