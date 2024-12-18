@@ -10,6 +10,8 @@ import MySlideHeader from "./MySlideHeader";
 import MySlideContainer from "./MySlideContainer";
 import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE, getUserPosts } from "../../apis/apis";
 import { tokenService } from "../../utils/token";
+import Loading from "../../components/Loading"; // 로딩 컴포넌트
+
 interface PostType {
   _id: string;
   title: string;
@@ -26,6 +28,7 @@ interface ParsedCapsule {
   title: string;
   content: string;
   closeAt: string;
+  image: string[];
 }
 interface CapsuleItem {
   id: string;
@@ -34,6 +37,7 @@ interface CapsuleItem {
   image?: string;
   closeAt: Date;
 }
+
 // 게시글 내용 가져오기 유틸 함수
 const getContent = (jsonString: string) => {
   try {
@@ -43,18 +47,24 @@ const getContent = (jsonString: string) => {
     return jsonString;
   }
 };
+
 function ProfileContainer() {
   const [selectedTab, setSelectedTab] = useState("capsules");
   const [postItems, setPostItems] = useState<PostType[]>([]);
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
   const navigate = useNavigate();
+
   const handleTabClick = (tab: string) => {
     setSelectedTab(tab);
   };
+
   const handlePostClick = (postId: string) => {
     navigate(`/detail/${postId}`);
   };
+
   const user = tokenService.getUser();
   const userAuthorId = user._id;
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -62,12 +72,16 @@ function ProfileContainer() {
         setPostItems(Array.isArray(posts) ? posts : Object.values(posts));
       } catch (error) {
         console.error("포스트 불러오기 실패", error);
+      } finally {
+        setLoading(false); // 데이터 불러오기 완료 후 로딩 상태 종료
       }
     };
     fetchPosts();
   }, [userAuthorId]);
+
   const articleItems = postItems.filter((post) => post.channel?._id === CHANNEL_ID_POST);
   const capsuleItems = postItems.filter((post) => post.channel?._id === CHANNEL_ID_TIMECAPSULE);
+
   const categorizeCapsules = () => {
     const now = new Date();
     return capsuleItems.reduce<{ opened: CapsuleItem[]; waiting: CapsuleItem[] }>(
@@ -79,7 +93,7 @@ function ProfileContainer() {
             id: item._id,
             title: parsed.title,
             content: parsed.content?.replace(/\\n/g, "\n"),
-            image: item.image,
+            image: item.image ?? parsed.image[0],
             closeAt,
           };
           if (closeAt > now) {
@@ -95,6 +109,7 @@ function ProfileContainer() {
       { opened: [], waiting: [] },
     );
   };
+
   const handleShowAllClick = (type: "open" | "close", tabType: "capsules" | "alarms") => {
     const { opened, waiting } = categorizeCapsules();
     const items = type === "open" ? opened : waiting;
@@ -105,96 +120,120 @@ function ProfileContainer() {
       },
     });
   };
+
   return (
     <div className="profile-container">
-      <div className="flex mb-6 justify-evenly">
-        {[
-          { tab: "capsules", iconBlack: capsuleBlack, iconPurple: capsulePurple, label: "내 캡슐" },
-          { tab: "articles", iconBlack: articleBlack, iconPurple: articlePurple, label: "내 일반글" },
-          { tab: "alarms", iconBlack: alarmBlack, iconPurple: alarmPurple, label: "예약글" },
-        ].map(({ tab, iconBlack, iconPurple, label }) => (
-          <div
-            key={tab}
-            className={`tab flex flex-col items-center cursor-pointer ${
-              selectedTab === tab ? "text-primary dark:text-secondary" : "text-black dark:text-white"
-            }`}
-            onClick={() => handleTabClick(tab)}
-          >
-            <img src={selectedTab === tab ? iconPurple : iconBlack} alt={label} className="w-[25px] h-[25px] mb-2" />
-            <span className="font-semibold font-pretendard">{label}</span>
-          </div>
-        ))}
-      </div>
-      <div className="tab-content">
-        {selectedTab === "capsules" &&
-          (() => {
-            const { opened, waiting } = categorizeCapsules();
-            return (
-              <>
-                <MySlideHeader
-                  title="공개완료"
-                  count={opened.length}
-                  showAllText="전체보기"
-                  onShowAllClick={() => handleShowAllClick("open", "capsules")}
+      {loading ? (
+        <Loading /> // 로딩 중일 때 로딩 화면 표시
+      ) : (
+        <>
+          <div className="flex mb-6 justify-evenly">
+            {[
+              { tab: "capsules", iconBlack: capsuleBlack, iconPurple: capsulePurple, label: "내 캡슐" },
+              { tab: "articles", iconBlack: articleBlack, iconPurple: articlePurple, label: "내 일반글" },
+              { tab: "alarms", iconBlack: alarmBlack, iconPurple: alarmPurple, label: "예약글" },
+            ].map(({ tab, iconBlack, iconPurple, label }) => (
+              <div
+                key={tab}
+                className={`tab flex flex-col items-center cursor-pointer ${
+                  selectedTab === tab ? "text-primary dark:text-secondary" : "text-black dark:text-white"
+                }`}
+                onClick={() => handleTabClick(tab)}
+              >
+                <img
+                  src={selectedTab === tab ? iconPurple : iconBlack}
+                  alt={label}
+                  className="w-[25px] h-[25px] mb-2"
                 />
-                <MySlideContainer uniqueKey="open" items={opened} onItemClick={(item) => handlePostClick(item.id)} />
-                <div className="mt-8 mb-8">
-                  <MySlideHeader
-                    title="공개대기"
-                    count={waiting.length}
-                    showAllText="전체보기"
-                    onShowAllClick={() => handleShowAllClick("close", "capsules")}
-                  />
-                  <MySlideContainer uniqueKey="close" items={waiting} />
-                </div>
-              </>
-            );
-          })()}
-        {selectedTab === "articles" && (
-          <div className="px-[30px]">
-            <h2 className="text-[16px] font-pretendard flex items-center mb-[10px] text-black dark:text-white">
-              <span className="font-semibold text-black dark:text-white">일반글</span>
-              <span className="ml-1 font-semibold">{articleItems.length}</span>
-            </h2>
-            <div className="grid grid-cols-3 gap-[10px] mb-[30px]">
-              {articleItems.map((item, index) => {
-                const content = JSON.parse(item.title);
-                const textContent = getContent(item.title);
-                return (
-                  <div
-                    key={item._id}
-                    className="flex-col w-full cursor-pointer"
-                    onClick={() => handlePostClick(item._id)}
-                  >
-                    {item.image ? (
-                      <img
-                        className="object-cover w-full aspect-[1] bg-black rounded-[10px] item-middle"
-                        src={item.image}
-                        alt={`일반 포스트 이미지 ${index}`}
-                      />
-                    ) : (
-                      <div className="w-full aspect-[1] bg-gray-100 rounded-[10px] flex items-start justify-start p-[10px] border border-gray-200">
-                        <p className="text-black  text-[14px] font-pretendard font-regular break-words">
-                          {textContent}
-                        </p>
-                      </div>
-                    )}
-                    <div className="mt-2 font-pretendard font-regular text-left text-[14px]">
-                      <p className="text-black dark:text-white">{content.title}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                <span className="font-semibold font-pretendard">{label}</span>
+              </div>
+            ))}
           </div>
-        )}
-        {selectedTab === "alarms" && (
-          <>
-            <div className="mt-8 text-center text-gray-500 dark:text-gray-300">알람 기능은 준비 중입니다.</div>
-          </>
-        )}
-      </div>
+
+          <div className="tab-content">
+            {selectedTab === "capsules" &&
+              (() => {
+                const { opened, waiting } = categorizeCapsules();
+                return (
+                  <>
+                    <MySlideHeader
+                      title="공개완료"
+                      count={opened.length}
+                      showAllText="전체보기"
+                      onShowAllClick={() => handleShowAllClick("open", "capsules")}
+                    />
+                    <MySlideContainer
+                      uniqueKey="open"
+                      items={opened}
+                      onItemClick={(item) => handlePostClick(item.id)}
+                    />
+                    <div className="mt-8 mb-8">
+                      <MySlideHeader
+                        title="공개대기"
+                        count={waiting.length}
+                        showAllText="전체보기"
+                        onShowAllClick={() => handleShowAllClick("close", "capsules")}
+                      />
+                      <MySlideContainer uniqueKey="close" items={waiting} />
+                    </div>
+                  </>
+                );
+              })()}
+            {selectedTab === "articles" && (
+              <div className="px-[30px]">
+                <h2 className="text-[16px] font-pretendard flex items-center mb-[10px] text-black dark:text-white">
+                  <span className="font-semibold text-black dark:text-white">일반글</span>
+                  <span className="ml-1 font-semibold">{articleItems.length}</span>
+                </h2>
+                <div className="grid grid-cols-3 gap-[10px] mb-[30px]">
+                  {articleItems.map((item, index) => {
+                    const parsed = JSON.parse(item.title);
+                    const images = parsed.image;
+                    const textContent = getContent(item.title);
+                    return (
+                      <div
+                        key={item._id}
+                        className="flex-col w-full cursor-pointer"
+                        onClick={() => handlePostClick(item._id)}
+                      >
+                        {item.image ? (
+                          <img
+                            className="object-cover w-full aspect-[1] bg-black rounded-[10px] item-middle"
+                            src={item.image}
+                            alt={`일반 포스트 이미지 ${index}`}
+                          />
+                        ) : images && images.length > 0 ? (
+                          <img
+                            className="object-cover w-full aspect-[1] bg-black rounded-[10px] item-middle"
+                            src={images[0]}
+                            alt={`일반 포스트 이미지 ${index}`}
+                          />
+                        ) : (
+                          <div className="w-full aspect-[1] bg-gray-100 rounded-[10px] flex items-start justify-start p-[10px] border border-gray-200">
+                            <p className="text-black text-[14px] font-pretendard font-regular break-words">
+                              {textContent}
+                            </p>
+                          </div>
+                        )}
+                        <div className="mt-2 font-pretendard font-regular text-left text-[14px]">
+                          <p className="text-black dark:text-white">{parsed.title}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {selectedTab === "alarms" && (
+              <>
+                <div className="mt-8 text-center text-gray-500 dark:text-gray-300">알람 기능은 준비 중입니다.</div>
+              </>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
+
 export default ProfileContainer;
