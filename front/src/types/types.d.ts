@@ -206,6 +206,7 @@ interface PostItemProps {
   title: string;
   content?: string;
   image?: string[];
+  capsuleLocation?: string;
 }
 
 interface CommentItemProps {
