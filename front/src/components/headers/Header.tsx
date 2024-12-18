@@ -52,8 +52,7 @@ export default function Header() {
 
   const handleAcceptFollow = async (notification: Notification) => {
     try {
-      // await followUser(notification.userId);
-      await seenNotifications(notification.notificationTypeId);
+      await seenNotifications(notification.notificationId); // notificationId로 수정
       showToastMessage(`${followerNames[notification.userId]}님과 친구가 되었습니다`);
       await fetchNotifications();
       navigate(`/userinfo/${followerNames[notification.userId]}`);
@@ -65,7 +64,7 @@ export default function Header() {
   const handleRejectFollow = async (notification: Notification) => {
     try {
       // 팔로우 거절 시 해당 알림만 읽음 처리
-      await seenNotifications(notification.notificationTypeId);
+      await seenNotifications(notification.notificationId); // notificationId로 수정
       await fetchNotifications();
     } catch (error) {
       showToastMessage("요청이 실패했습니다");
@@ -75,7 +74,7 @@ export default function Header() {
   const handleReadNotification = async (notification: Notification) => {
     try {
       // 특정 알림만 읽음 처리
-      await seenNotifications(notification.notificationTypeId);
+      await seenNotifications(notification.notificationId); // notificationId로 수정
       await fetchNotifications();
     } catch (error) {
       showToastMessage("요청이 실패했습니다");
@@ -85,7 +84,7 @@ export default function Header() {
   const handleMoveToPost = async (notification: Notification) => {
     try {
       // 포스트로 이동하기 전 해당 알림 읽음 처리
-      await seenNotifications(notification.notificationTypeId);
+      await seenNotifications(notification.notificationId); // notificationId로 수정
       await fetchNotifications();
     } catch (error) {
       showToastMessage("요청이 실패했습니다");
@@ -115,14 +114,13 @@ export default function Header() {
                 postTitle = "삭제된 게시물";
               }
             }
-
+      
             return {
               type: notification.comment ? "COMMENT" : notification.follow ? "FOLLOW" : "LIKE",
               userId: notification.author._id,
               postId: notification.post,
               postTitle,
-              // 타입에 따라 적절한 ID 선택
-              notificationTypeId: notification.comment?._id || notification.follow?._id || notification.like?._id,
+              notificationTypeId: notification.follow ? notification.follow._id : (notification.comment?._id || notification.like?._id),  // FOLLOW 타입일 때는 follow._id 사용
               user: {
                 fullName: notification.user.fullName,
               },

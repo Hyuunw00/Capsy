@@ -10,7 +10,6 @@ import SlideHeader from "./SlideHeader";
 import SlideContainer from "./SlideContainer";
 import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE, getUserPosts } from "../../apis/apis";
 import Loading from "../../components/Loading";
-import { Author, Channel, Like } from "../event/Event";
 
 interface PostType {
   _id: string;

@@ -71,8 +71,7 @@ export default function PageHeader() {
 
   const handleAcceptFollow = async (notification: Notification) => {
     try {
-      // await followUser(notification.userId);
-      await seenNotifications(notification.notificationTypeId);
+      await seenNotifications(notification.notificationId); // notificationTypeId 대신 notificationId 사용
       showToastMessage(`${followerNames[notification.userId]}님과 친구가 되었습니다`);
       await fetchNotifications();
       navigate(`/userinfo/${followerNames[notification.userId]}`);
@@ -83,7 +82,7 @@ export default function PageHeader() {
 
   const handleRejectFollow = async (notification: Notification) => {
     try {
-      await seenNotifications(notification.notificationTypeId);
+      await seenNotifications(notification.notificationId); // notificationId로 수정
       await fetchNotifications();
     } catch (error) {
       showToastMessage("요청이 실패했습니다");
@@ -92,7 +91,7 @@ export default function PageHeader() {
 
   const handleReadNotification = async (notification: Notification) => {
     try {
-      await seenNotifications(notification.notificationTypeId);
+      await seenNotifications(notification.notificationId); // notificationId로 수정
       await fetchNotifications();
     } catch (error) {
       showToastMessage("요청이 실패했습니다");
@@ -101,7 +100,7 @@ export default function PageHeader() {
 
   const handleMoveToPost = async (notification: Notification) => {
     try {
-      await seenNotifications(notification.notificationTypeId);
+      await seenNotifications(notification.notificationId); // notificationId로 수정
       await fetchNotifications();
     } catch (error) {
       showToastMessage("요청이 실패했습니다");

@@ -14,6 +14,7 @@ export interface Notification {
     updatedAt: string;
   };
   postTitle?: string;
+  notificationId: string; 
 }
 
 export interface NotifyModalProps {
