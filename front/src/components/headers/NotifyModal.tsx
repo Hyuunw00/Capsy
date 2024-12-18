@@ -1,10 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { Notification, NotifyModalProps } from "../../types/notification";
 import Button from "../Button";
+import { getUserProfile } from "../../apis/apis";
+import { useEffect, useState } from "react";
 
 const NotifyModal = ({
   isVisible,
   notifications,
+  followerNames,
   onAcceptFollow,
   onRejectFollow,
   onReadNotification,
@@ -19,6 +22,12 @@ const NotifyModal = ({
     }
   };
 
+  const handleAcceptFollow = (notification: Notification) => {
+    onAcceptFollow(notification);
+    // 확인 버튼 클릭 시 해당 유저의 프로필 페이지로 이동
+    navigate(`/userinfo/${followerNames[notification.userId]}`);
+  };
+
   const renderNotification = (notification: Notification) => {
     // 각 알림 타입에 따른 고유한 키 생성
     const notificationKey = `${notification.type}-${notification.userId}-${notification.notificationTypeId}`;
@@ -27,7 +36,7 @@ const NotifyModal = ({
       case "FOLLOW":
         return (
           <div key={notificationKey} className="flex items-center justify-between py-2">
-            <p>{notification.user?.fullName || notification.userId}님이 팔로우를 요청했습니다</p>
+            <p>{followerNames[notification.userId] || notification.userId}님이 팔로우를 요청했습니다</p>{" "}
             <div className="flex gap-2">
               <Button
                 onClick={() => onRejectFollow(notification)}
@@ -36,7 +45,7 @@ const NotifyModal = ({
                 거절
               </Button>
               <Button
-                onClick={() => onAcceptFollow(notification)}
+                onClick={() => handleAcceptFollow(notification)}
                 className="px-2 py-0.5 h-7 items-center text-white rounded w-fit bg-black text-sm"
               >
                 확인
