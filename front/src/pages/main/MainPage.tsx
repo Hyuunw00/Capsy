@@ -131,8 +131,7 @@ export default function MainPage() {
 
   // 좋아요 버튼 클릭 이벤트 핸들러
   const handleLikeClick = async (postId: string) => {
-    const userId = userData._id;
-    console.log("userId", userId);
+    const userId = userData?._id;
 
     // 전체 데이터와 클릭한 post id 비교
     const post = filterData.find((post) => post._id === postId);
@@ -150,12 +149,11 @@ export default function MainPage() {
         const newLike = {
           _id: response.data._id,
           post: postId,
-          user: userId,
+          user: userId!,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
         post.likes.push(newLike);
-        console.log("좋아요 추가 완료!", post.likes);
         setLikeStatus((prevState) => ({ ...prevState, [postId]: true }));
 
         // 작성자가 자신의 게시글에 좋아요를 누를때는 알림  x
@@ -173,12 +171,10 @@ export default function MainPage() {
         const likeId = userLikes[0]._id;
         await axiosInstance.delete("/likes/delete", { data: { id: likeId } });
         post.likes = post.likes.filter((like) => like._id !== likeId);
-        console.log("좋아요 취소 완료!", post.likes);
         setLikeStatus((prevState) => ({ ...prevState, [postId]: false }));
       }
     } catch (error: any) {
       if (error.response && error.response.status === 401) {
-        console.log("좋아요 처리 실패: 로그인이 필요합니다.");
         navigate("/login");
       }
     }
@@ -186,7 +182,7 @@ export default function MainPage() {
 
   const handleNotiClick = (postId: string) => {
     // 이미 해당 게시글에 알림이 설정된 경우
-    const userNoti = userData.messages.find((message: any) => {
+    const userNoti = userData?.messages.find((message: any) => {
       try {
         const parsedMessage = JSON.parse(message.message);
         return parsedMessage.postId === postId;
@@ -196,7 +192,7 @@ export default function MainPage() {
     });
 
     if (userNoti) {
-      alert("해당 게시글 알람을 이미 설정하셨어요.");
+      alert("해당 게시글 알람을 이미 설정하셨습니다.");
       return;
     }
 
@@ -208,7 +204,6 @@ export default function MainPage() {
     });
     setShowAlarmModal(true);
     setSelectedPostId(postId);
-    console.log("selectedPostId: ", selectedPostId);
   };
 
   const handleAlarmCloseModal = () => {
@@ -224,7 +219,7 @@ export default function MainPage() {
       const post = filterData.find((post) => post._id === selectedPostId);
       if (!post) return;
 
-      const userId = userData._id;
+      const userId = userData?._id;
 
       const openAt = getCloseAt(post.title)?.toISOString();
 
@@ -248,24 +243,11 @@ export default function MainPage() {
       });
       console.log("알림 예약 완료 되었습니다.");
 
-      // sessionStorage userData 업데이트
-      setUserData((prevUserData: any) => {
-        const updatedUserData = {
-          ...prevUserData,
-          notifications: {
-            ...prevUserData.notifications,
-            [selectedPostId]: true,
-          },
-        };
-        sessionStorage.setItem("user", JSON.stringify(updatedUserData));
-        return updatedUserData;
+      setNotiStatus((prevStatus: any) => {
+        const updatedStatus = { ...prevStatus, [selectedPostId]: true };
+        sessionStorage.setItem("notiStatus", JSON.stringify(updatedStatus));
+        return updatedStatus;
       });
-
-      // notiStatus 상태 업데이트
-      setNotiStatus((prevStatus) => ({
-        ...prevStatus,
-        [selectedPostId]: true,
-      }));
 
       handleAlarmCloseModal();
     } catch (error: any) {
@@ -280,81 +262,75 @@ export default function MainPage() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const userId = userData._id;
+        if (!userData?._id) {
+          return;
+        }
+
+        const userId = userData?._id;
 
         const response = await axiosInstance.get("/messages", { params: { userId } });
         const allMessages = response.data;
-        console.log("전체 메세지:", allMessages);
 
         const now = new Date().toISOString();
 
         const expiredMessages = allMessages?.filter((message: any) => {
-          try {
-            if (!message?.message) {
-              console.log("메세지 내용이 없어요.", message);
-              return false;
-            }
+          if (!message?.message) return false;
 
-            const parsedMessage = JSON.parse(message.message);
-            if (!parsedMessage.openAt) {
-              console.log("openAt 값이 없어요.", parsedMessage);
-              return false;
-            }
-            return parsedMessage.openAt <= now;
-          } catch (error) {
-            console.error("메세지 파싱 오류", error);
-            return false;
-          }
+          const parsedMessage = JSON.parse(message.message);
+          if (!parsedMessage.openAt) return false;
+
+          return parsedMessage.openAt <= now;
         });
 
-        console.log("만료된 알림 수: ", expiredMessages);
+        const displayedNotifications = JSON.parse(sessionStorage.getItem("displayedNotifications") || "[]");
 
-        if (expiredMessages.length > 1) {
-          setOpenModalData({
-            imgSrc: img_timeCapsule,
-            neonText: "따끈따끈한 타임 캡슐 도착!",
-            whiteText: "지금 확인하러 가기",
-            whiteTextClick: () => navigate("/mypage/"),
-          });
-          setShowOpenModal(true);
-          return;
-        }
+        // 중복되지 않은 알림만 추가
+        const newNotifications = expiredMessages?.filter((message: any) => {
+          const parsedMessage = JSON.parse(message.message);
+          return !displayedNotifications.includes(parsedMessage.postId);
+        });
 
-        expiredMessages.forEach((message: any) => {
-          try {
-            const parsedMessage = JSON.parse(message.message);
-            // alert(`알림: ${parsedMessage.postId} 게시글의 알림이 도착했습니다.`);
-            console.log(`알림: ${parsedMessage.postId} 게시글의 알림이 도착했습니다.`);
+        if (newNotifications.length > 0) {
+          console.log("새로 추가된 알림: ", newNotifications.length);
+          const newPostIds = newNotifications.map((message: any) => JSON.parse(message.message).postId);
+          const updatedDisplayedNotifications = [...displayedNotifications, ...newPostIds];
+          sessionStorage.setItem("displayedNotifications", JSON.stringify(updatedDisplayedNotifications));
 
+          if (newNotifications.length === 1) {
+            const parsedMessage = JSON.parse(newNotifications[0].message);
             setOpenModalData({
               imgSrc: img_timeCapsule,
               neonText: "따끈따끈한 타임 캡슐 도착!",
               whiteText: "지금 확인하러 가기",
               whiteTextClick: () => navigate(`/detail/${parsedMessage.postId}`),
             });
-
-            setShowOpenModal(true);
-          } catch (error) {
-            console.error("메세지 파싱 오류", error);
+          } else {
+            setOpenModalData({
+              imgSrc: img_timeCapsule,
+              neonText: "따끈따끈한 타임 캡슐 도착!",
+              whiteText: "지금 확인하러 가기",
+              whiteTextClick: () => navigate("/mypage"),
+            });
           }
-        });
-
+          setShowOpenModal(true);
+        }
+        // userData 업데이트 및 세션 저장
         const updatedUserData = {
           ...userData,
           messages: allMessages,
         };
 
-        sessionStorage.setItem("user", JSON.stringify(updatedUserData));
-        setUserData(updatedUserData);
-
-        console.log("userData 업데이트 완료: ", updatedUserData);
+        if (updatedUserData._id) {
+          sessionStorage.setItem("user", JSON.stringify(updatedUserData));
+          setUserData(updatedUserData);
+        }
       } catch (error) {
         console.error("메세지를 가져오는 중 오류 발생");
       }
     };
 
     fetchMessages();
-  }, [userData._id]);
+  }, [userData?._id]);
 
   // 게시글 제목 가져오기
   const getTitle = (jsonString: any) => {
@@ -420,9 +396,9 @@ export default function MainPage() {
 
         const allData = [...postResponse.data, ...capsuleResponse.data];
 
+        // createdAt 내림차순 정렬
         const sortedData = allData.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        console.log("capsuleData", capsuleResponse.data);
-        console.log("지금 시간은: ", new Date().toISOString());
+
         setData(sortedData);
         setPostData(postResponse.data);
         setCapsuleData(capsuleResponse.data);
@@ -445,7 +421,7 @@ export default function MainPage() {
   // 좋아요 상태 바뀌면 실행
   useEffect(() => {
     const updatedFilterData = filterData.map((post) => {
-      const isLiked = post.likes.some((like) => like.user === userData._id);
+      const isLiked = post.likes.some((like) => like.user === userData?._id);
       return {
         ...post,
         isLiked, // 좋아요 상태 업데이트
@@ -461,7 +437,7 @@ export default function MainPage() {
   // 알림 상태가 바뀌면 실행
   useEffect(() => {
     const updatedFilterData = filterData.map((post) => {
-      const isNotified = userData.messages?.some((message: any) => {
+      const isNotified = userData?.messages?.some((message: any) => {
         const parsedMessage = message.message ? JSON.parse(message.message) : null;
         return parsedMessage && parsedMessage.postId === post._id;
       });
@@ -472,12 +448,29 @@ export default function MainPage() {
     });
 
     const newNotiStatus = updatedFilterData.reduce<{ [key: string]: boolean }>((acc, post) => {
-      acc[post._id] = post.isNotified;
+      acc[post._id] = post.isNotified ?? false;
       return acc;
     }, {});
 
     setNotiStatus(newNotiStatus);
   }, [filterData]);
+
+  // 페이지 로드 시 sessionStorage에서 데이터 가져오기
+  useEffect(() => {
+    const storedUserData = sessionStorage.getItem("user");
+    if (storedUserData) {
+      const parsedUserData = JSON.parse(storedUserData);
+      setUserData(parsedUserData);
+      setNotiStatus(parsedUserData.notifications || {});
+    }
+  }, []);
+
+  // userData가 업데이트될 때마다 sessionStorage에 저장
+  useEffect(() => {
+    if (userData) {
+      sessionStorage.setItem("user", JSON.stringify(userData));
+    }
+  }, [userData]);
 
   // 필터링 로직
   useEffect(() => {
