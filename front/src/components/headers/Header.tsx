@@ -3,11 +3,12 @@ import logo_black from "../../assets/logo_black.svg";
 import NotificationIcon from "../../assets/Notification.svg";
 import NotifyModal from "./NotifyModal";
 import { tokenService } from "../../utils/token";
-import { followUser, getNotifications, getPostDetail, seenNotifications } from "../../apis/apis";
+import { followUser, getNotifications, getPostDetail, getUserProfile, seenNotifications } from "../../apis/apis";
 import { Notification } from "../../types/notification";
 import LightMode from "../../assets/Light-mode.svg";
 import DarkMode from "../../assets/Dark-mode.svg";
 import { useThemeStore } from "../../store/themeStore";
+import { useNavigate } from "react-router";
 
 export default function Header() {
   const [showNoticeModal, setShowNoticeModal] = useState<boolean>(false);
@@ -18,19 +19,44 @@ export default function Header() {
   });
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!tokenService.getToken());
   const { isDark, toggleTheme } = useThemeStore();
+  const [followerNames, setFollowerNames] = useState<{ [key: string]: string }>({});
+  const navigate = useNavigate();
 
   const showToastMessage = (message: string) => {
     setToast({ show: true, message });
     setTimeout(() => setToast({ show: false, message: "" }), 5000);
   };
 
+  useEffect(() => {
+    const fetchFollowerNames = async () => {
+      const names: { [key: string]: string } = {};
+
+      for (const notification of notifications) {
+        if (notification.type === "FOLLOW") {
+          try {
+            const userProfile = await getUserProfile(notification.userId);
+            names[notification.userId] = userProfile.fullName;
+          } catch (error) {
+            console.error("Failed to fetch user profile:", error);
+          }
+        }
+      }
+
+      setFollowerNames(names);
+    };
+
+    if (notifications.length > 0) {
+      fetchFollowerNames();
+    }
+  }, [notifications]);
+
   const handleAcceptFollow = async (notification: Notification) => {
     try {
-      await followUser(notification.userId);
-      // 팔로우 수락 후 해당 알림만 읽음 처리
+      // await followUser(notification.userId);
       await seenNotifications(notification.notificationTypeId);
-      showToastMessage(`${notification.userId}님과 친구가 되었습니다`);
+      showToastMessage(`${followerNames[notification.userId]}님과 친구가 되었습니다`);
       await fetchNotifications();
+      navigate(`/userinfo/${followerNames[notification.userId]}`);
     } catch (error) {
       showToastMessage("요청이 실패했습니다");
     }
@@ -167,9 +193,7 @@ export default function Header() {
           </button>
           <button
             onClick={() => isLoggedIn && setShowNoticeModal((prev) => !prev)}
-            className={`flex items-center justify-center w-5 h-5 relative ${
-              !isLoggedIn ? "hidden" : ""
-            }`}
+            className={`flex items-center justify-center w-5 h-5 relative ${!isLoggedIn ? "hidden" : ""}`}
           >
             <img src={NotificationIcon} alt="Notification" className="object-contain w-full h-full dark:invert" />
             {notifications.length > 0 && <div className="absolute w-2 h-2 rounded-full -top-1 -right-1 bg-secondary" />}
@@ -180,6 +204,7 @@ export default function Header() {
           <NotifyModal
             isVisible={showNoticeModal}
             notifications={notifications}
+            followerNames={followerNames}
             onAcceptFollow={handleAcceptFollow}
             onRejectFollow={handleRejectFollow}
             onReadNotification={handleReadNotification}

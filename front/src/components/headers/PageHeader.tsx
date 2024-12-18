@@ -5,7 +5,7 @@ import logo_black from "../../assets/logo_black.svg";
 import NotificationIcon from "../../assets/Notification.svg";
 import NotifyModal from "./NotifyModal";
 import { tokenService } from "../../utils/token";
-import { followUser, getNotifications, getPostDetail, seenNotifications } from "../../apis/apis";
+import { followUser, getNotifications, getPostDetail, getUserProfile, seenNotifications } from "../../apis/apis";
 import { Notification } from "../../types/notification";
 import LightMode from "../../assets/Light-mode.svg";
 import DarkMode from "../../assets/Dark-mode.svg";
@@ -20,8 +20,9 @@ export default function PageHeader() {
     show: false,
     message: "",
   });
-  const [isLoggedIn, _] = useState<boolean>(!!tokenService.getToken());
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!tokenService.getToken());
   const { isDark, toggleTheme } = useThemeStore();
+  const [followerNames, setFollowerNames] = useState<{ [key: string]: string }>({});
 
   const showToastMessage = (message: string) => {
     setToast({ show: true, message });
@@ -45,12 +46,36 @@ export default function PageHeader() {
     navigate(-1);
   };
 
+  useEffect(() => {
+    const fetchFollowerNames = async () => {
+      const names: { [key: string]: string } = {};
+
+      for (const notification of notifications) {
+        if (notification.type === "FOLLOW") {
+          try {
+            const userProfile = await getUserProfile(notification.userId);
+            names[notification.userId] = userProfile.fullName;
+          } catch (error) {
+            console.error("Failed to fetch user profile:", error);
+          }
+        }
+      }
+
+      setFollowerNames(names);
+    };
+
+    if (notifications.length > 0) {
+      fetchFollowerNames();
+    }
+  }, [notifications]);
+
   const handleAcceptFollow = async (notification: Notification) => {
     try {
-      await followUser(notification.userId);
+      // await followUser(notification.userId);
       await seenNotifications(notification.notificationTypeId);
-      showToastMessage(`${notification.userId}님과 친구가 되었습니다`);
+      showToastMessage(`${followerNames[notification.userId]}님과 친구가 되었습니다`);
       await fetchNotifications();
+      navigate(`/userinfo/${followerNames[notification.userId]}`);
     } catch (error) {
       showToastMessage("요청이 실패했습니다");
     }
@@ -143,6 +168,30 @@ export default function PageHeader() {
     };
   }, []);
 
+  // 로그인 상태 변경 감지
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const currentToken = tokenService.getToken();
+      setIsLoggedIn(!!currentToken);
+      if (currentToken) {
+        fetchNotifications();
+      } else {
+        setShowNoticeModal(false);
+        setNotifications([]);
+      }
+    };
+
+    // 초기 상태 체크
+    checkLoginStatus();
+
+    // 로그인 상태 변경 감지를 위한 이벤트 리스너
+    window.addEventListener("storage", checkLoginStatus);
+
+    return () => {
+      window.removeEventListener("storage", checkLoginStatus);
+    };
+  }, []);
+
   return (
     <>
       <nav className="absolute top-0 z-20 justify-between w-full px-8 py-4 bg-white dark:bg-black item-between">
@@ -164,9 +213,7 @@ export default function PageHeader() {
           </button>
           <button
             onClick={() => isLoggedIn && setShowNoticeModal((prev) => !prev)}
-            className={`flex items-center justify-center w-5 h-5 relative ${
-              !isLoggedIn ? "hidden" : ""
-            }`}
+            className={`flex items-center justify-center w-5 h-5 relative ${!isLoggedIn ? "hidden" : ""}`}
           >
             <img src={NotificationIcon} alt="Notification" className="object-contain w-full h-full dark:invert" />
             {notifications.length > 0 && (
@@ -180,6 +227,7 @@ export default function PageHeader() {
         <NotifyModal
           isVisible={showNoticeModal}
           notifications={notifications}
+          followerNames={followerNames}
           onAcceptFollow={handleAcceptFollow}
           onRejectFollow={handleRejectFollow}
           onReadNotification={handleReadNotification}
@@ -195,4 +243,3 @@ export default function PageHeader() {
     </>
   );
 }
-
