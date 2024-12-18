@@ -33,6 +33,7 @@ export const updatePost = async (data: PostDataType) => {
 interface PostDataType {
   postId: string;
   title: string;
+  channelId : string;
 }
 
 // 포스트 삭제 API

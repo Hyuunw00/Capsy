@@ -22,14 +22,14 @@ const EditPreview = ({ images, showDatePreview, date, location, onDelete }: Edit
   const isVideo = (file: File) => file.type.startsWith("video/");
 
   return (
-    <ul>
+    <ul className="space-y-4">
       {images.length > 0 && (
         <li>
-          <h3 className="mb-2">이미지 미리보기</h3>
+          <h3 className="mb-2 text-black dark:text-white">이미지 미리보기</h3>
           <div className="flex flex-wrap gap-2">
             {images.map((file, index) => (
               <div key={index} className="relative rounded-md shadow-sm">
-                <div className="absolute z-10 flex items-center justify-center w-5 h-5 rounded-full bg-bg-500 top-2 left-2 ">
+                <div className="absolute z-10 flex items-center justify-center w-5 h-5 rounded-full bg-bg-500 top-2 left-2">
                   <span className="text-sm text-white">{index + 1}</span>
                 </div>
                 <button
@@ -65,24 +65,24 @@ const EditPreview = ({ images, showDatePreview, date, location, onDelete }: Edit
       )}
 
       {showDatePreview && date.year && (
-        <li className="gap-4 pr-8 mt-4 item-left">
-          <h3>타임캡슐 오픈 날짜</h3>
+        <li className="pr-8 mt-4">
+          <h3 className="mb-2 text-black dark:text-white">타임캡슐 오픈 날짜</h3>
           <span className="px-2 py-0.5 rounded-3xl bg-bg-200">
             {date.year} / {date.month} / {date.day}
           </span>
         </li>
       )}
 
-      {showDatePreview && location && (
-        <li className="gap-4 pr-8 mt-4 item-left">
-          <h3>타임캡슐 위치</h3>
-          <div className="px-2 py-0.5 rounded-3xl bg-bg-200 item-between gap-2">
-            <h4 className="font-medium">{location.name}</h4>
-            <span className="text-sm text-gray-600">{location.address}</span>
-          </div>
+      {location && (
+        <li className="pr-8 mt-4">
+          <h3 className="mb-2 text-black dark:text-white">선택된 위치</h3>
+          <span className="px-2 py-0.5 rounded-3xl bg-bg-200">
+            {location.name}
+          </span>
         </li>
       )}
     </ul>
   );
 };
+
 export default EditPreview;
