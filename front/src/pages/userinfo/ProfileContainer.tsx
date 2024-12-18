@@ -10,14 +10,14 @@ import SlideHeader from "./SlideHeader";
 import SlideContainer from "./SlideContainer";
 import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE, getUserPosts } from "../../apis/apis";
 import Loading from "../../components/Loading";
+import { Author, Channel, Like } from "../event/Event";
 
 interface PostType {
   _id: string;
   title: string;
   image?: string;
-  channel?: {
-    _id: string;
-  };
+  channel: Channel;
+  author: Author;
   likes: Array<any>;
   comments: Array<any>;
   createdAt: string;
@@ -31,12 +31,15 @@ interface ParsedCapsule {
   image: string[];
 }
 
-interface CapsuleItem {
+export interface CapsuleItem {
   id: string;
   title: string;
   content: string;
   image?: string;
   closeAt: Date;
+  likes: Like[];
+  author: Author;
+  channel: Channel;
 }
 
 interface ProfileContainerProps {
@@ -82,6 +85,7 @@ function ProfileContainer({ userId, fullName }: { userId: string; fullName?: str
     fetchPosts();
   }, [userId]);
 
+  // 사용자의 포스트에서 일반, 캡슐 포스트 필터링
   const articleItems = postItems.filter((post) => post.channel?._id === CHANNEL_ID_POST);
   const capsuleItems = postItems.filter((post) => post.channel?._id === CHANNEL_ID_TIMECAPSULE);
 
@@ -97,8 +101,12 @@ function ProfileContainer({ userId, fullName }: { userId: string; fullName?: str
             id: item._id,
             title: parsed.title,
             content: parsed.content?.replace(/\\n/g, "\n"),
+            // image필드로  들어온 이미지 또는 title 커스텀 필드로 들어왔을 경우 첫번째 이미지
             image: item.image ?? parsed.image[0],
             closeAt,
+            likes: item.likes,
+            author: item.author,
+            channel: item.channel,
           };
           if (closeAt > now) {
             acc.waiting.push(capsuleItem);
@@ -131,10 +139,11 @@ function ProfileContainer({ userId, fullName }: { userId: string; fullName?: str
 
   return (
     <div className="profile-container">
+      {/* 탭 부분 */}
       <div className="flex mb-6 justify-evenly">
         {[
-          { tab: "capsules", iconBlack: capsuleBlack, iconPurple: capsulePurple, label: "내 캡슐" },
-          { tab: "articles", iconBlack: articleBlack, iconPurple: articlePurple, label: "내 일반글" },
+          { tab: "capsules", iconBlack: capsuleBlack, iconPurple: capsulePurple, label: "캡슐" },
+          { tab: "articles", iconBlack: articleBlack, iconPurple: articlePurple, label: "일반글" },
           { tab: "alarms", iconBlack: alarmBlack, iconPurple: alarmPurple, label: "예약글" },
         ].map(({ tab, iconBlack, iconPurple, label }) => (
           <div
@@ -149,7 +158,9 @@ function ProfileContainer({ userId, fullName }: { userId: string; fullName?: str
           </div>
         ))}
       </div>
+      {/* 탭에 해당하는 내용 */}
       <div className="tab-content">
+        {/* 캡슐 탭 내용 */}
         {selectedTab === "capsules" &&
           (() => {
             const { opened, waiting } = categorizeCapsules();
@@ -175,6 +186,7 @@ function ProfileContainer({ userId, fullName }: { userId: string; fullName?: str
               </>
             );
           })()}
+        {/* 일반 탭 내용 */}
         {selectedTab === "articles" && (
           <div className="px-[30px]">
             <h2 className="text-[16px] font-pretendard flex items-center mb-[10px] text-black dark:text-white">
@@ -219,6 +231,7 @@ function ProfileContainer({ userId, fullName }: { userId: string; fullName?: str
             </div>
           </div>
         )}
+        {/* 예약글 탭 */}
         {selectedTab === "alarms" && (
           <>
             <div className="mt-8 text-center text-gray-500 dark:text-gray-300">알람 기능은 준비 중입니다.</div>

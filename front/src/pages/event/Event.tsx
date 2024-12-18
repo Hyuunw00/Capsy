@@ -6,6 +6,8 @@ import { tokenService } from "../../utils/token";
 import { useLoginStore } from "../../store/loginStore";
 import eventBanner from "../../assets/holiday-event-banner.png";
 import eventTimecapsuleThumbnail from "../../assets/event-timeCapsule-thumbnail.png";
+import eventThumnail from "../../assets/event-thumnails/event-thumnail.svg";
+import eventThumnail1 from "../../assets/event-thumnails/event-thumnail-1.svg";
 import img_heart from "../../assets/Heart_Curved.svg";
 import img_fillHeart from "../../assets/heart-fill.svg";
 import img_noti from "../../assets/Notification-white.svg";
@@ -17,7 +19,7 @@ import eventWriteIcon from "../../assets/event-capsule-icon.svg";
 import TimeCapsuleModal from "../../components/TimeCapsuleModal";
 import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
 
-interface Like {
+export interface Like {
   _id: string;
   user: string;
   post: string;
@@ -25,7 +27,7 @@ interface Like {
   updatedAt: string;
 }
 
-interface Channel {
+export interface Channel {
   authRequired: boolean;
   posts: string[];
   _id: string;
@@ -35,7 +37,7 @@ interface Channel {
   updatedAt: string;
 }
 
-interface Author {
+export interface Author {
   role: string;
   emailVerified: boolean;
   banned: boolean;
@@ -287,7 +289,9 @@ export default function Event() {
         {/* 캡슐 제목 */}
         <div className="flex justify-between items-center text-[14px] font-pretendard px-[30px]">
           <div className="flex items-center">
-            <h3 className="text-[18px] mt-4 font-pretendard font-semibold text-black dark:text-white"><span className="text-[22px]">🎄</span> 크리스마스 타임 캡슐</h3>
+            <h3 className="text-[18px] mt-4 font-pretendard font-semibold text-black dark:text-white">
+              <span className="text-[22px]">🎄</span> 크리스마스 타임 캡슐
+            </h3>
           </div>
         </div>
         {/* 캡슐 목록 */}
@@ -303,17 +307,19 @@ export default function Event() {
                   className="relative inline-block w-full overflow-hidden cursor-pointer break-inside-avoid"
                   // 모달창
                 >
-                  <div>
+                  <div className="bg-[#C5BBFF] rounded-lg">
                     {/*  게시물 이미지 */}
                     <img
                       src={
                         // 캡슐 종료기간이 지나면 이미지 보여주기
                         new Date().toISOString() < (getCloseAt(item.title)?.toISOString() ?? "")
-                          ? eventTimecapsuleThumbnail
+                          ? index % 2 === 0
+                            ? eventThumnail
+                            : eventThumnail1
                           : getParsedData(item.title).image[0]
                       }
                       alt="이벤트 타입캡슐 로고"
-                      className="w-full h-auto  object-cover rounded-t-[10px]"
+                      className="w-full h-auto object-cover rounded-t-[10px]"
                     />
                   </div>
 

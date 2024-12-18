@@ -79,6 +79,7 @@ export default function App() {
           <Route element={<Private />}>
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/editor" element={<EditorPage />} />
+            <Route path="/editor/:postId" element={<EditorPage />} />
             <Route path="/eventeditor" element={<EventEditorPage />} />
             <Route path="/detail/:postId" element={<PostDetailPage />} />
             <Route path="/resetpassword" element={<PasswordResetPage />} />
