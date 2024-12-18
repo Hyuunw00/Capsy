@@ -133,8 +133,8 @@ function ProfileContainer({ userId, fullName }: { userId: string; fullName?: str
     <div className="profile-container">
       <div className="flex mb-6 justify-evenly">
         {[
-          { tab: "capsules", iconBlack: capsuleBlack, iconPurple: capsulePurple, label: "내 캡슐" },
-          { tab: "articles", iconBlack: articleBlack, iconPurple: articlePurple, label: "내 일반글" },
+          { tab: "capsules", iconBlack: capsuleBlack, iconPurple: capsulePurple, label: "캡슐" },
+          { tab: "articles", iconBlack: articleBlack, iconPurple: articlePurple, label: "일반글" },
           { tab: "alarms", iconBlack: alarmBlack, iconPurple: alarmPurple, label: "예약글" },
         ].map(({ tab, iconBlack, iconPurple, label }) => (
           <div
