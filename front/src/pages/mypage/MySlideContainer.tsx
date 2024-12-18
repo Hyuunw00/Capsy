@@ -3,6 +3,7 @@ import { Navigation } from "swiper/modules";
 import "swiper/swiper-bundle.css";
 import leftArrowCircle from "../../assets/leftArrowCircle.svg";
 import rightArrowCircle from "../../assets/rightArrowCircle.svg";
+
 interface CapsuleItem {
   id: string;
   title: string;
@@ -13,8 +14,10 @@ interface CapsuleItem {
 interface MySlideContainerProps {
   items: CapsuleItem[];
   uniqueKey: string;
+  onItemClick?: (item: CapsuleItem) => void;
 }
-function MySlideContainer({ items, uniqueKey }: MySlideContainerProps) {
+
+function MySlideContainer({ items, uniqueKey, onItemClick }: MySlideContainerProps) {
   const now = new Date();
   return (
     <div className="relative w-full overflow-hidden px-[30px]">
@@ -33,8 +36,10 @@ function MySlideContainer({ items, uniqueKey }: MySlideContainerProps) {
           const isWaiting = item.closeAt && item.closeAt > now;
           return (
             <SwiperSlide key={item.id} className="flex items-center justify-center">
-              <div className="w-full">
-                {/* 이미지 또는 콘텐츠 박스 */}
+              <div
+                className="w-full"
+                onClick={() => onItemClick?.(item)} // 클릭 이벤트
+              >
                 <div className="relative w-full pb-[100%] bg-gray-200 rounded-[10px] overflow-hidden">
                   {item.image ? (
                     <>
@@ -60,14 +65,12 @@ function MySlideContainer({ items, uniqueKey }: MySlideContainerProps) {
                     </div>
                   )}
                 </div>
-                {/* 타이틀 */}
                 <div className="mt-2 text-[14px] font-pretendard text-left">{item.title}</div>
               </div>
             </SwiperSlide>
           );
         })}
       </Swiper>
-      {/* 커스텀 화살표 버튼 */}
       <button
         className={`absolute left-0 top-1/2 transform -translate-y-[100%] bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-prev-${uniqueKey}`}
         aria-label="Previous slide"
@@ -83,4 +86,5 @@ function MySlideContainer({ items, uniqueKey }: MySlideContainerProps) {
     </div>
   );
 }
+
 export default MySlideContainer;
