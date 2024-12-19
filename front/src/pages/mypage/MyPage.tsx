@@ -72,17 +72,19 @@ export default function MyPage() {
       )}
 
       {isLoading ? (
-        <Loading /> // 데이터 로딩 중에는 로딩 화면 표시
+        <Loading />
       ) : (
-        <>
+        <div className="flex flex-col min-h-screen">
           <ProfileHeader />
-          <ProfileContainer />
-          <div className="flex justify-end px-8">
+          <div className="flex-1 min-h-[calc(100vh-200px)]">
+            <ProfileContainer />
+          </div>
+          <div className="sticky bottom-0 flex justify-end px-8 py-4 mt-auto bg-white dark:bg-black">
             <button className="py-4 text-sm text-gray-300 dark:text-gray-400 underline" onClick={handleClick}>
               로그아웃
             </button>
           </div>
-        </>
+        </div>
       )}
     </>
   );
