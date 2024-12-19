@@ -29,6 +29,16 @@ interface Markers {
   place: string;
 }
 
+interface MapInfo {
+  center: {
+    lat: number; // 초기 좌표
+    lng: number;
+  };
+  isPanto: boolean;
+  isSearch: boolean; //  검색유무
+  // image: string;
+}
+
 export default function MapPage() {
   const navigate = useNavigate();
 
@@ -56,15 +66,17 @@ export default function MapPage() {
   const [showModal, setShowModal] = useState(false);
 
   // 중앙값 상태관리
-  const [mapCenter, setMapCenter] = useState({
+  const [mapCenter, setMapCenter] = useState<MapInfo>({
     center: {
       lat: 37.5666805, // 초기 좌표
       lng: 126.9784147,
     },
     isPanto: true,
     isSearch: false, //  검색유무
-    image: "",
+    // image: "",
   });
+
+  console.log(mapCenter);
 
   // 타임캡슐 마커 상태관리
   const [selectedMarkers, setSelectedMarkers] = useState<Markers[]>([]);
@@ -106,7 +118,12 @@ export default function MapPage() {
 
   // 검색한 장소로 맵 이동
   const handleSelectPlace = (place: Place) => {
-    setMapCenter({ ...mapCenter, isSearch: true, center: { lng: parseFloat(place.x), lat: parseFloat(place.y) } });
+    setMapCenter({
+      ...mapCenter,
+      isSearch: true,
+      // image: "",
+      center: { lng: parseFloat(place.x), lat: parseFloat(place.y) },
+    });
     setSearchResults([]);
   };
 
@@ -126,6 +143,7 @@ export default function MapPage() {
           setMapCenter({
             ...mapCenter,
             isSearch: true,
+            // image: "",
             center: { lng: +searchResults[selectedIndex].x, lat: +searchResults[selectedIndex].y },
           });
           setSearchInput("");
@@ -173,8 +191,6 @@ export default function MapPage() {
       setFilteredMarkers([]);
     }
   };
-
-  console.log(capsuleData);
 
   // 초기 랜더링
   useEffect(() => {
@@ -288,14 +304,14 @@ export default function MapPage() {
             {/* 검색된 장소 마커 */}
             <MapMarker
               position={mapCenter.center}
-              image={
-                mapCenter.image
-                  ? {
-                      src: mapCenter.image, // 이미지가 있을 때 사용자 이미지로 대체
-                      size: { width: 50, height: 50 },
-                    }
-                  : undefined // 이미지가 없으면 기본 마커 사용
-              }
+              // image={
+              //   mapCenter.image != ""
+              //     ? {
+              //         src: mapCenter.image, // 이미지가 있을 때 사용자 이미지로 대체
+              //         size: { width: 50, height: 50 },
+              //       }
+              //     : undefined // 이미지가 없으면 기본 마커 사용
+              // }
             />
 
             {/* 타임캡슐 마커들 */}
@@ -322,8 +338,8 @@ export default function MapPage() {
                     <div
                       style={{
                         position: "relative",
-                        width: "200px",
-                        maxWidth: "250px",
+                        width: "270px",
+                        maxWidth: "300px",
                         padding: "10px",
                         backgroundColor: "#fff",
                         borderRadius: "8px",
@@ -360,7 +376,7 @@ export default function MapPage() {
                           alt="타임캡슐 이미지"
                           style={{
                             width: "150px",
-                            height: "120px",
+                            height: "150px",
                             objectFit: "cover",
                             borderRadius: "6px",
                             margin: "0 auto", // 가운데 정렬
@@ -371,7 +387,7 @@ export default function MapPage() {
                       </div>
                       <div
                         style={{
-                          fontSize: "14px",
+                          fontSize: "12px",
                           fontWeight: "bold",
                           textAlign: "center",
                           color: "#333",
@@ -431,13 +447,15 @@ export default function MapPage() {
                     <li
                       key={marker._id}
                       className={` relative cursor-pointer hover:bg-gray-100 border-b border-gray-100 `}
-                      onClick={() =>
+                      onClick={() => {
+                        map.setLevel(3);
                         setMapCenter({
                           ...mapCenter,
-                          image: marker.isBlur ? img_capsule : marker.image,
+                          isSearch: false,
+                          // image: marker.isBlur ? img_capsule : marker.image,
                           center: { lat: marker.lat, lng: marker.lng },
-                        })
-                      }
+                        });
+                      }}
                     >
                       <div className="flex gap-3 justify-start items-start">
                         <div className="text-[12px] text-gray-500 mt-1">
@@ -446,7 +464,7 @@ export default function MapPage() {
 
                         <div className="font-medium text-[14px]">{marker.title}</div>
 
-                        <div className="  absolute bottom-2 left-[120px] flex items-center gap-2 text-xs text-gray-500 dark:text-gray-200">
+                        <div className="  absolute bottom-2 left-[120px] flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                           <svg
                             width="14"
                             height="14"
