@@ -1,0 +1,24 @@
+<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="18" cy="18" r="18" fill="white"/>
+<circle cx="18" cy="18" r="17.5" stroke="url(#paint0_linear_1356_5175)" stroke-opacity="0.6"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M27.3855 17.2937L14.6412 9.16692L13.4803 10.9875L11.6597 9.82655L8.17675 15.2884L9.99735 16.4493L8.83638 18.2699L21.5806 26.3968L22.7416 24.5761L24.5622 25.7371L28.0451 20.2753L26.2245 19.1143L27.3855 17.2937ZM24.4806 18.0023L26.2245 19.1143L22.7416 24.5761L21.0093 23.4715L24.4806 18.0023ZM18.5785 14.2386L13.4803 10.9875L9.99735 16.4493L15.1072 19.7078L18.5785 14.2386Z" fill="black"/>
+<rect x="26.25" y="19.0864" width="6.59521" height="6.63573" transform="rotate(122.7 26.25 19.0864)" fill="white"/>
+<rect x="25.5591" y="19.2371" width="5.59521" height="5.63573" transform="rotate(122.7 25.5591 19.2371)" stroke="url(#paint1_linear_1356_5175)" stroke-opacity="0.6"/>
+<rect x="18.6582" y="14.2856" width="6.50343" height="6.13018" transform="rotate(122.7 18.6582 14.2856)" fill="#674EFF"/>
+<rect x="17.9673" y="14.4363" width="5.50343" height="5.13018" transform="rotate(122.7 17.9673 14.4363)" stroke="url(#paint2_linear_1356_5175)" stroke-opacity="0.6"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M13.3291 17.5962L13.8622 16.7562L12.4778 15.8774L13.6232 14.0728L12.8564 13.5861L11.5982 15.5684L11.6095 15.5756L11.1891 16.2379L13.3291 17.5962Z" fill="white" fill-opacity="0.8"/>
+<defs>
+<linearGradient id="paint0_linear_1356_5175" x1="18" y1="0" x2="18" y2="36" gradientUnits="userSpaceOnUse">
+<stop stop-color="#674EFF"/>
+<stop offset="1" stop-color="#7CF335"/>
+</linearGradient>
+<linearGradient id="paint1_linear_1356_5175" x1="29.5476" y1="19.0864" x2="29.5476" y2="25.7222" gradientUnits="userSpaceOnUse">
+<stop stop-color="#674EFF"/>
+<stop offset="1" stop-color="#7CF335"/>
+</linearGradient>
+<linearGradient id="paint2_linear_1356_5175" x1="21.9099" y1="14.2856" x2="21.9099" y2="20.4158" gradientUnits="userSpaceOnUse">
+<stop stop-color="#674EFF"/>
+<stop offset="1" stop-color="#7CF335"/>
+</linearGradient>
+</defs>
+</svg>

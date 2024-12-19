@@ -244,6 +244,7 @@ export default function EditorPage() {
         image: incodingImages,
         ...(selectedLocation && {
           capsuleLocation: selectedLocation.name,
+          address: selectedLocation.address,
           latitude: selectedLocation.lat,
           longitude: selectedLocation.lng,
         }),
