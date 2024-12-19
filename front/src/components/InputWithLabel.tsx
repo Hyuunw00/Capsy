@@ -18,7 +18,7 @@ export function InputWithLabel({
 }: InputWithLabelProps) {
   return (
     <div>
-      <label className="text-gray-600 ">{label}</label>
+      <label className="text-gray-600 dark:text-white">{label}</label>
       <input
         type="text"
         placeholder={placeholder}
