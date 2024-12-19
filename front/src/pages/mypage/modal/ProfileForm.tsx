@@ -45,7 +45,7 @@ export default function ProfileForm({ onClose, onUsernameUpdate }: ProfileFormPr
   return (
     <Modal isOpen={true} onClose={onClose}>
       <div className="w-full max-w-md" style={{ padding: "20px" }}>
-        <h2 className="mb-6 text-sm text-center" style={{ fontSize: "16px" }}>
+        <h2 className="mb-6 text-sm text-center dark:text-white" style={{ fontSize: "16px" }}>
           프로필 편집
         </h2>
 
@@ -70,12 +70,12 @@ export default function ProfileForm({ onClose, onUsernameUpdate }: ProfileFormPr
           />
 
           <div className="mt-4" style={{ marginTop: "20px" }}>
-            <p className="mb-4 text-sm text-gray-500">
+            <p className="mb-4 text-sm text-gray-500 dark:text-white">
               <Link to="/resetpassword">비밀번호 재설정</Link>
             </p>
             <Button
               type="submit"
-              className="w-full py-3 text-white bg-black rounded-md hover:bg-gray-800"
+              className="w-full py-3 text-white dark:text-black bg-primary dark:bg-secondary rounded-md hover:opacity-80 transition-opacity duration-200"
               style={{ padding: "12px", fontSize: "16px" }}
             >
               저장하기
