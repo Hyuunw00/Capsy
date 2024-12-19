@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { getAllUsers, getUserProfile } from "../../apis/apis";
 import unknownUserImg from "../../assets/user.png";
 import { useNavigate } from "react-router-dom";
-import Follow from "../post/Follow";
 import Loading from "../../components/Loading";
 
 interface UserProfile {
@@ -24,11 +23,6 @@ const AllUsersList = () => {
     const storedUserData = sessionStorage.getItem("user");
     return storedUserData ? JSON.parse(storedUserData) : { likes: [], following: [] };
   });
-
-  const handleFollowUpdate = (updatedUserData: any) => {
-    setUserData(updatedUserData);
-    sessionStorage.setItem("user", JSON.stringify(updatedUserData));
-  };
 
   const fetchAllUserIds = async () => {
     try {
@@ -101,25 +95,12 @@ const AllUsersList = () => {
           {allUsers.map((user) => (
             <li key={user._id} className="mb-4 font-pretendard">
               <div className="flex items-center justify-between pb-4 mb-4">
-                {/* 왼쪽: 유저 정보 */}
                 <div className="flex items-center cursor-pointer" onClick={() => handleUserClick(user)}>
                   <img src={user.image} alt={user.fullName} className="w-[40px] h-[40px] rounded-full object-cover" />
                   <div className="flex flex-col justify-between ml-4">
                     <span className="text-[16px] font-semibold text-black dark:text-white">{user.fullName}</span>
                     <span className="text-[14px] text-gray-300">{user.username}</span>
                   </div>
-                </div>
-
-                {/* 오른쪽: 팔로우 버튼 */}
-                <div className="ml-auto">
-                  {userData._id !== user._id && (
-                    <Follow
-                      userData={userData}
-                      onFollowUpdate={handleFollowUpdate}
-                      targetUserId={user._id}
-                      className="w-[80px] h-[30px] text-[14px] ml-4"
-                    />
-                  )}
                 </div>
               </div>
             </li>
