@@ -425,7 +425,7 @@ export default function MapPage() {
                 }}
                 onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 이벤트 전파 방지
               >
-                <h3 className=" bg-gray-200 p-3">캡슐 리스트</h3>
+                <h3 className="p-3 bg-gray-200 ">캡슐 리스트</h3>
                 <ul>
                   {filteredMarkers.map((marker) => (
                     <li
@@ -439,7 +439,7 @@ export default function MapPage() {
                         })
                       }
                     >
-                      <div className="flex gap-3 justify-start items-start">
+                      <div className="flex items-start justify-start gap-3">
                         <div className="text-[12px] text-gray-500 mt-1">
                           <img src={marker.isBlur ? img_capsule : marker.image} className="w-28 h-28" />
                         </div>
@@ -462,7 +462,7 @@ export default function MapPage() {
                           <span>{marker.place}</span>
                         </div>
                       </div>
-                      <div className="absolute bottom-2 right-0">
+                      <div className="absolute right-0 bottom-2">
                         <button
                           onClick={() =>
                             marker.isBlur ? handleClickCapsule(marker) : navigate(`/detail/${marker._id}`)
