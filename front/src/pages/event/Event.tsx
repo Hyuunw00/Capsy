@@ -193,6 +193,14 @@ export default function Event() {
 
   return (
     <>
+    {showModal && (
+        <TimeCapsuleModal
+          imgSrc={modalData.imgSrc}
+          neonText={modalData.neonText}
+          whiteText={modalData.whiteText}
+          onClose={handleCloseModal}
+        />
+      )}
       {/* 이벤트 배너 */}
       <img src={eventBanner} alt="이벤트 배너" />
 
