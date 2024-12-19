@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
 import TimeCapsuleModal from "../../components/TimeCapsuleModal";
+import digging from "../../assets/digging.gif";
 
 interface CapsuleListPageState {
   title: string; // 제목 (ex. "공개 완료", "공개 대기")
@@ -51,7 +52,7 @@ function CapsuleListPage() {
         />
       )}
       <div className="capsule-list-page mb-[30px]">
-        <div className="py-[30px] pl-[40px]">
+        <div className="py-[30px] pl-[40px] dark:text-white">
           {fullName ? (
             <span>
               <strong>@{fullName}</strong>님이 작성한 타임캡슐
@@ -61,33 +62,39 @@ function CapsuleListPage() {
           )}
         </div>
 
-        {/* 작성자 게시물 사진  */}
-        <div className="grid grid-cols-3  ">
-          {items.map((item, index) => (
-            <div key={index} className=" aspect-square  relative  overflow-hidden">
-              {title === "공개 대기" ? (
-                <div onClick={handleClickCapsule} className="cursor-pointer">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className={`absolute inset-0 w-full h-full object-cover filter blur-md`} // 공개대기 캡슐이면 blur처리
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center backdrop-blur-md bg-black/30">
-                    <p className="text-sm text-white">{item.closeAt?.toLocaleDateString()} 공개 예정</p>
+        {items.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+            <img src={digging} alt="digging" className="w-[100px] h-[100px]" />
+            <p className="text-gray-300 dark:text-gray-400 text-lg">타임캡슐이 존재하지 않습니다.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3">
+            {items.map((item, index) => (
+              <div key={index} className=" aspect-square  relative  overflow-hidden">
+                {title === "공개 대기" ? (
+                  <div onClick={handleClickCapsule} className="cursor-pointer">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className={`absolute inset-0 w-full h-full object-cover filter blur-md`} // 공개대기 캡슐이면 blur처리
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center backdrop-blur-md bg-black/30">
+                      <p className="text-sm text-white">{item.closeAt?.toLocaleDateString()} 공개 예정</p>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <Link to={`/detail/${item.id}`}>
-                  <img
-                    src={item.image}
-                    alt="첫번째 이미지 썸네일"
-                    className={`absolute inset-0 w-full h-full object-cover `} // 공개대기 캡슐이면 blur처리
-                  />
-                </Link>
-              )}
-            </div>
-          ))}
-        </div>
+                ) : (
+                  <Link to={`/detail/${item.id}`}>
+                    <img
+                      src={item.image}
+                      alt="첫번째 이미지 썸네일"
+                      className={`absolute inset-0 w-full h-full object-cover `} // 공개대기 캡슐이면 blur처리
+                    />
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

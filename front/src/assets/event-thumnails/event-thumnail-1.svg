@@ -3,10 +3,10 @@
 <rect width="100" height="100" fill="#D9D9D9"/>
 </mask>
 <g mask="url(#mask0_1415_6160)">
-<rect y="46" width="58" height="56" fill="url(#pattern0_1415_6160)"/>
+<rect y="38" width="58" height="56" fill="url(#pattern0_1415_6160)"/>
 <rect x="35" y="7" width="70" height="74" fill="url(#pattern1_1415_6160)"/>
 <rect x="69.5" width="2" height="9" fill="#FCB604"/>
-<rect x="30" width="2" height="49" fill="#FCB604"/>
+<rect x="30" y="-8" width="2" height="49" fill="#FCB604"/>
 </g>
 <defs>
 <pattern id="pattern0_1415_6160" patternContentUnits="objectBoundingBox" width="1" height="1">

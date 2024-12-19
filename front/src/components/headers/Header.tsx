@@ -179,8 +179,10 @@ export default function Header() {
   return (
     <>
       <nav className="absolute top-0 z-20 justify-between w-full px-8 py-4 bg-white dark:bg-black item-between">
-        <img src={logo_black} alt="Logo" className="w-[75px] h-[30px] dark:invert" />
-
+      <button onClick={() => navigate('/')}>
+          <img src={logo_black} alt="Logo" className="w-[75px] h-[30px] dark:invert" />
+        </button>
+        
         <div className="flex items-center gap-2">
           <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600">
             <img

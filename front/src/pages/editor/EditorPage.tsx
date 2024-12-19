@@ -244,6 +244,7 @@ export default function EditorPage() {
         image: incodingImages,
         ...(selectedLocation && {
           capsuleLocation: selectedLocation.name,
+          address: selectedLocation.address,
           latitude: selectedLocation.lat,
           longitude: selectedLocation.lng,
         }),
@@ -254,9 +255,9 @@ export default function EditorPage() {
         const response = await updatePost({
           postId,
           title: JSON.stringify(customData),
-          channelId: activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST  // channelId 추가
+          channelId: activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST, // channelId 추가
         });
-      
+
         if (response?._id) {
           setCreatedPostId(response._id);
           setSaveModal(true);
@@ -355,7 +356,7 @@ export default function EditorPage() {
         <div className="flex items-center gap-4">
           <button
             onClick={handleSaveClick}
-            className="px-4 py-1 text-sm text-white bg-black rounded dark:bg-secondary dark:text-black"
+            className="px-4 py-1 text-sm text-white bg-primary rounded dark:bg-secondary dark:text-black"
           >
             저장
           </button>
@@ -405,7 +406,10 @@ export default function EditorPage() {
         title={notificationModal.title}
         description={notificationModal.description}
       >
-        <button onClick={handleCloseModal} className="w-full px-4 py-2 text-white bg-black rounded-md">
+        <button
+          onClick={handleCloseModal}
+          className="w-full px-4 py-2 text-white dark:text-black bg-primary dark:bg-secondary rounded-md hover:opacity-80 transition-opacity duration-200"
+        >
           확인
         </button>
       </NotificationModal>
