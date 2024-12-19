@@ -5,6 +5,7 @@ import { tokenService } from "../../utils/token";
 import { getMyProfile, uploadUserPhoto } from "../../apis/apis";
 import { useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading"; // 로딩 컴포넌트
+import userImg from "../../assets/user.png";
 
 export default function ProfileHeader() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export default function ProfileHeader() {
     try {
       const userData = await getMyProfile();
       setUser(userData);
-      setProfileImage(userData.image || null);
+      setProfileImage(userData.image || userImg);
       setUsername(userData.username || "");
       tokenService.setUser(userData);
     } catch (error) {
