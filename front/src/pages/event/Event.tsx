@@ -253,7 +253,7 @@ export default function Event() {
                   className="relative inline-block w-full overflow-hidden cursor-pointer break-inside-avoid"
                   // 모달창
                 >
-                  <div className="bg-[#C5BBFF] rounded-lg  pb-[100%] ">
+                  <div className="bg-[#C5BBFF] rounded-lg  aspect-square overflow-hidden ">
                     {/* 게시물 이미지 */}
 
                     <img
