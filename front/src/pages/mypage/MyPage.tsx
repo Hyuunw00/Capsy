@@ -58,8 +58,15 @@ export default function MyPage() {
       {isOpen && (
         <NotificationModal isOpen={isOpen} title="알림" description="로그아웃 하시겠습니까?">
           <div className="gap-2 item-between">
-            <button className="w-full h-10 border border-black rounded-md" onClick={() => setIsOpen(false)}>취소</button>
-            <button className="w-full h-10 text-white bg-black rounded-md" onClick={handleLogout}>확인</button>
+            <button
+              className="w-full h-10 border border-black dark:border-gray-100 dark:text-white rounded-md"
+              onClick={() => setIsOpen(false)}
+            >
+              취소
+            </button>
+            <button className="w-full h-10 text-white bg-gray-300 dark:bg-gray-400 rounded-md" onClick={handleLogout}>
+              확인
+            </button>
           </div>
         </NotificationModal>
       )}
@@ -70,7 +77,11 @@ export default function MyPage() {
         <>
           <ProfileHeader />
           <ProfileContainer />
-          <button className="px-8 py-4 text-sm text-gray-400 underline" onClick={handleClick}>로그아웃</button>
+          <div className="flex justify-end px-8">
+            <button className="py-4 text-sm text-gray-300 dark:text-gray-400 underline" onClick={handleClick}>
+              로그아웃
+            </button>
+          </div>
         </>
       )}
     </>

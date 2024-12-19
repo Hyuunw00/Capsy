@@ -221,7 +221,7 @@ function ProfileContainer() {
                 );
               })()}
             {selectedTab === "articles" && (
-              <div className="px-[30px]">
+              <div className="px-[30px] h-[500px]">
                 <h2 className="text-[16px] font-pretendard flex items-center mb-[10px] text-black dark:text-white">
                   <span className="font-semibold text-black dark:text-white">일반글</span>
                   <span className="ml-1 font-semibold">{articleItems.length}</span>
@@ -267,7 +267,9 @@ function ProfileContainer() {
             )}
             {selectedTab === "alarms" && (
               <>
-                <div className="mt-8 text-center text-gray-500 dark:text-gray-300">알람 기능은 준비 중입니다.</div>
+                <div className="mt-8 text-center text-gray-500 dark:text-gray-300 h-[500px]">
+                  알람 기능은 준비 중입니다.
+                </div>
               </>
             )}
           </div>
