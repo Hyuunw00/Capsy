@@ -77,13 +77,22 @@ const EditLocationModal = ({ onClose, onSelectLocation }: LocationModalProps) =>
   };
 
   return (
-    <div className="absolute top-32 left-12 shadow-md z-50 w-[80%] p-4 bg-white rounded-lg">
+    <div className="absolute top-32 left-12 shadow-md z-50 w-[80%] p-4 bg-white dark:bg-gray-600 rounded-lg">
       <button className="absolute right-2 top-1" onClick={onClose}>
-        <img className="w-[24px] h-[24px] object-contain" src={closeIcon} alt="닫기 버튼" />
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="fill-black dark:fill-white"
+        >
+          <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" />
+        </svg>
       </button>
-      <h5 className="mb-3 text-primary">타임캡슐 장소 선택</h5>
+      <h5 className="mb-3 text-primary dark:text-secondary">타임캡슐 장소 선택</h5>
       <div className="space-y-4">
-        <p className="text-gray-600">타임캡슐을 묻을 장소를 선택해주세요.</p>
+        <p className="text-gray-600 dark:text-white">타임캡슐을 묻을 장소를 선택해주세요.</p>
         <div className="relative">
           <div className="flex w-full gap-2 item-between">
             <GlobalInput
@@ -91,9 +100,12 @@ const EditLocationModal = ({ onClose, onSelectLocation }: LocationModalProps) =>
               onChange={(e) => setSearchKeyword(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="장소를 검색해주세요"
-              className="w-full p-2 text-black border rounded dark:text-gray-50"
+              className="w-full p-2 text-black border rounded"
             />
-            <Button onClick={searchPlaces} className="flex-shrink-0 w-10 h-10 bg-black rounded item-middle">
+            <Button
+              onClick={searchPlaces}
+              className="flex-shrink-0 w-10 h-10 bg-primary dark:bg-secondary rounded item-middle"
+            >
               <img src={searchIcon} alt="검색 아이콘" />
             </Button>
           </div>

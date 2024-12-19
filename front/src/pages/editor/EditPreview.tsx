@@ -67,7 +67,7 @@ const EditPreview = ({ images, showDatePreview, date, location, onDelete }: Edit
       {showDatePreview && date.year && (
         <li className="pr-8 mt-4">
           <h3 className="mb-2 text-black dark:text-white">타임캡슐 오픈 날짜</h3>
-          <span className="px-2 py-0.5 rounded-3xl bg-bg-200">
+          <span className="px-2 py-0.5 rounded-3xl bg-bg-200 dark:bg-gray-400 dark:text-white">
             {date.year} / {date.month} / {date.day}
           </span>
         </li>
@@ -76,9 +76,7 @@ const EditPreview = ({ images, showDatePreview, date, location, onDelete }: Edit
       {location && (
         <li className="pr-8 mt-4">
           <h3 className="mb-2 text-black dark:text-white">선택된 위치</h3>
-          <span className="px-2 py-0.5 rounded-3xl bg-bg-200">
-            {location.name}
-          </span>
+          <span className="px-2 py-0.5 rounded-3xl bg-bg-200 dark:bg-gray-400 dark:text-white">{location.name}</span>
         </li>
       )}
     </ul>
