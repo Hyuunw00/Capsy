@@ -315,12 +315,12 @@ export default function PostDetailPage() {
             </div>
           </div>
 
-          {/* 팔로우 버튼 */}
+          {/* 더보기 버튼 */}
           {currentUser?._id === post.author._id ? (
             <div className="relative">
               <button
                 onClick={toggleDropdown}
-                className="flex items-center justify-center w-8 h-8 transition-colors rounded-full hover:bg-gray-100"
+                className="flex items-center justify-center w-8 h-8 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-500"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -330,9 +330,9 @@ export default function PostDetailPage() {
                   />
                 </svg>
               </button>
-              {/* 더보기 드롭다운 */}
+              {/* 더보기 드롭다운 메뉴 */}
               {showDropdown && (
-                <div className="absolute right-0 mt-2 w-32 px-[6px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                <div className="absolute right-0 mt-2 w-32 px-[6px] bg-white dark:bg-gray-600 rounded-lg shadow-lg border border-gray-200 dark:border-gray-500 z-50">
                   <ul className="py-1">
                     <li>
                       <button
@@ -341,7 +341,7 @@ export default function PostDetailPage() {
                             state: { isEdit: true },
                           });
                         }}
-                        className="w-full px-4 py-2 text-sm font-normal text-center text-gray-600 transition-all hover:font-semibold hover:bg-gray-100"
+                        className="w-full px-4 py-2 text-sm font-normal text-center text-gray-600 dark:text-white transition-all hover:font-semibold hover:bg-gray-500"
                       >
                         수정
                       </button>
@@ -352,7 +352,7 @@ export default function PostDetailPage() {
                           setShowPostDeleteModal(true);
                           setShowDropdown(false);
                         }}
-                        className="w-full px-4 py-2 text-sm font-normal text-center transition-all text-primary hover:font-semibold hover:bg-gray-100"
+                        className="w-full px-4 py-2 text-sm font-normal text-center transition-all text-primary dark:text-secondary hover:font-semibold hover:bg-gray-500"
                       >
                         삭제
                       </button>
@@ -565,7 +565,7 @@ export default function PostDetailPage() {
             취소
           </button>
           <button
-            className="w-full py-2 text-white transition-opacity rounded bg-primary dark:bg-primary-dark hover:opacity-40"
+            className="w-full py-2 text-white dark:text-black transition-opacity rounded bg-primary dark:bg-primary-dark hover:opacity-40"
             onClick={handlePostDelete}
           >
             삭제
