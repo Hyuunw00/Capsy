@@ -193,7 +193,7 @@ export default function Event() {
 
   return (
     <>
-      {showModal && (
+    {showModal && (
         <TimeCapsuleModal
           imgSrc={modalData.imgSrc}
           neonText={modalData.neonText}

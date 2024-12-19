@@ -150,7 +150,7 @@ export default function UserInfoPage() {
                 userData={userData}
                 onFollowUpdate={handleFollowUpdate}
                 targetUserId={specificUserInfo._id}
-                className="w-full py-3 text-[16px] font-normal rounded-[5px]"
+                className="w-full h-12 py-3 text-[16px] font-normal rounded-[5px]"
               />
             </div>
           )}
