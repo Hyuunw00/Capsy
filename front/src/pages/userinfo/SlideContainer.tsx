@@ -1,15 +1,11 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/swiper-bundle.css";
-import leftArrowCircle from "../../assets/leftArrowCircle.svg";
-import rightArrowCircle from "../../assets/rightArrowCircle.svg";
 import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
 import { Link, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import TimeCapsuleModal from "../../components/TimeCapsuleModal";
 import axiosInstance from "../../apis/axiosInstance";
-import img_heart from "../../assets/Heart_Curved.svg";
-import img_fillHeart from "../../assets/heart-fill.svg";
 import img_noti from "../../assets/Notification-white.svg";
 import img_fillNoti from "../../assets/Notification-fill.svg";
 import { createNotifications } from "../../apis/apis";
@@ -175,7 +171,7 @@ function SlideContainer({ items, uniqueKey }: SlideContainerProps) {
                             className="absolute inset-0 w-full h-full object-cover rounded-[10px] "
                           />
 
-                          <div className="absolute inset-0 flex items-center justify-center backdrop-blur-md bg-black/30">
+                          <div className="absolute inset-0 flex items-center justify-center backdrop-blur-md bg-black/30 scale-130">
                             <p className="text-sm text-white">{item.closeAt?.toLocaleDateString()} 공개 예정</p>
                           </div>
                         </div>
@@ -207,7 +203,9 @@ function SlideContainer({ items, uniqueKey }: SlideContainerProps) {
                     )}
                   </div>
                   {/* 타이틀 */}
-                  <div className="mt-2 text-[14px] font-pretendard text-left">{item.title}</div>
+                  <div className="mt-2 text-[14px] font-pretendard text-left text-black dark:text-white">
+                    {item.title}
+                  </div>
                 </div>
               </SwiperSlide>
             );
