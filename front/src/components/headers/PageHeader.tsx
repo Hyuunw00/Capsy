@@ -10,6 +10,7 @@ import { Notification } from "../../types/notification";
 import LightMode from "../../assets/Light-mode.svg";
 import DarkMode from "../../assets/Dark-mode.svg";
 import { useThemeStore } from "../../store/themeStore";
+import { flushSync } from "react-dom";
 
 export default function PageHeader() {
   const navigate = useNavigate();
@@ -36,9 +37,11 @@ export default function PageHeader() {
     }
 
     if (location.pathname.startsWith("/detail/")) {
-      const { fromEditor } = location.state || {};
-      if (fromEditor) {
-        navigate("/");
+      const scrollPosition = location.state?.scrollPosition;
+      if (scrollPosition !== undefined) {
+        flushSync(() => {
+          navigate("/", { state: { scrollPosition } });
+        });
         return;
       }
     }
@@ -198,7 +201,7 @@ export default function PageHeader() {
           <img src={Left} alt="Left" className="w-7 h-7 dark:invert" />
         </button>
 
-        <button onClick={() => navigate('/')}>
+        <button onClick={() => navigate("/")}>
           <img src={logo_black} alt="Logo" className="w-[75px] h-[30px] dark:invert" />
         </button>
 
@@ -215,9 +218,7 @@ export default function PageHeader() {
             className={`flex items-center justify-center w-5 h-5 relative ${!isLoggedIn ? "hidden" : ""}`}
           >
             <img src={NotificationIcon} alt="Notification" className="object-contain w-full h-full dark:invert" />
-            {notifications.length > 0 && (
-              <div className="absolute w-2 h-2 rounded-full -top-1 -right-1 bg-secondary" />
-            )}
+            {notifications.length > 0 && <div className="absolute w-2 h-2 rounded-full -top-1 -right-1 bg-secondary" />}
           </button>
         </div>
       </nav>
