@@ -1,5 +1,6 @@
 @import "./tailwind.css";
 @import "./variable.css";
+@import "./map.css";
 
 @font-face {
   font-family: "Galmuri14";
