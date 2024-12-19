@@ -24,13 +24,52 @@ export default function SignUpPage() {
     isIdValid: true,
     isPasswordValid: true,
     isPasswordConfirmValid: true,
+
+    isEmailUnique: false,
+    isIdUnique: false,
   });
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     if (!auth.isIdValid || !auth.isEmailValid || !auth.isPasswordValid || !auth.isPasswordConfirmValid) {
-      setOpenModal({ ...openModal, isOpen: true, value: "입력 값을 확인해주세요!" });
+      setOpenModal({ ...openModal, isOpen: true, value: "입력 형식에 맞게 작성해주세요!" });
+      setAuth({
+        ...auth,
+        email: "",
+        id: "",
+        password: "",
+        passwordConfirm: "",
+        isEmailValid: false,
+        isIdValid: false,
+        isPasswordValid: false,
+        isPasswordConfirmValid: false,
+      });
+      return;
+    } //  이메일, 아이디 고유성 검사 체크(추가)
+    if (!auth.isEmailUnique || !auth.isIdUnique) {
+      setOpenModal({ ...openModal, isOpen: true, value: "중복 확인을 해주세요!" });
+      setAuth({
+        ...auth,
+        email: "",
+        id: "",
+        isEmailValid: false,
+        isIdValid: false,
+        isEmailUnique: false,
+        isIdUnique: false,
+      });
+      return;
+    }
+
+    if (!testPasswordConfirm(auth.password, auth.passwordConfirm)) {
+      setOpenModal({ ...openModal, isOpen: true, value: "비밀번호가 같지 않습니다!" });
+      setAuth({
+        ...auth,
+        password: "",
+        passwordConfirm: "",
+        isPasswordValid: false,
+        isPasswordConfirmValid: false,
+      });
       return;
     }
     try {
@@ -41,44 +80,61 @@ export default function SignUpPage() {
       console.error(error);
     }
   };
-
+  // email 유효성검사를 만족하면 isEmailValid :true
   const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newEmail = e.target.value;
-    setAuth({ ...auth, email: newEmail, isEmailValid: testEmail(newEmail) });
+    const newEmail = e.target.value.trim();
+    setAuth({ ...auth, email: newEmail, isEmailValid: testEmail(newEmail), isEmailUnique: false });
   };
   const handleCheckEmail = async () => {
     const { data } = await userLists();
     const isExist = data.find((user: UserLists) => user.email === auth.email);
+    // 빈 값 입력시 return
+    if (auth.email === "") {
+      setAuth({ ...auth, email: "", isEmailValid: false });
+      return;
+    }
     if (isExist) {
       setOpenModal({ ...openModal, isOpen: true, value: "이미 존재하는 이메일입니다!" });
       setAuth({ ...auth, email: "", isEmailValid: false });
     } else {
       auth.isEmailValid && setOpenModal({ ...openModal, isOpen: true, value: "사용 가능한 이메일입니다!" });
+      setAuth({ ...auth, isEmailUnique: true });
     }
   };
 
+  // id 유효성검사를 만족하면 isIdValid :true
   const handleChangeId = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newId = e.target.value;
-    setAuth({ ...auth, id: newId, isIdValid: testId(newId) });
+    const newId = e.target.value.trim();
+    setAuth({ ...auth, id: newId, isIdValid: testId(newId), isIdUnique: false });
   };
   const handleCheckId = async () => {
     const { data } = await userLists();
     const isExist = data.find((user: UserLists) => user.fullName === auth.id);
+
+    // 빈 값 입력시 return
+    if (auth.id === "") {
+      setAuth({ ...auth, id: "", isIdValid: false });
+      return;
+    }
+
     if (isExist) {
       setOpenModal({ ...openModal, isOpen: true, value: "이미 존재하는 아이디입니다!" });
       setAuth({ ...auth, id: "", isIdValid: false });
     } else {
       auth.isIdValid && setOpenModal({ ...openModal, isOpen: true, value: "사용 가능한 아이디입니다!" });
+      setAuth({ ...auth, isIdUnique: true });
     }
   };
 
+  // password 유효성검사를 만족하면 isPasswordValid :true
   const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPassword = e.target.value;
+    const newPassword = e.target.value.trim();
     setAuth({ ...auth, password: newPassword, isPasswordValid: testPassword(newPassword) });
   };
 
+  // passwordConfirm  유효성검사를 만족하면 isPasswordConfirmValid :true
   const handleChangePasswordConfirm = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPasswordConfirm = e.target.value;
+    const newPasswordConfirm = e.target.value.trim();
     setAuth({
       ...auth,
       passwordConfirm: newPasswordConfirm,
@@ -109,7 +165,8 @@ export default function SignUpPage() {
             >
               <button
                 onClick={handleCheckEmail}
-                className="bg-primary dark:bg-secondary text-white dark:text-black text-center w-fit h-12 py-[13px] px-[21px] text-[14px] rounded-[6px] flex items-center justify-center"
+                disabled={!auth.isEmailValid}
+                className={`${!auth.isEmailValid && "opacity-80"} bg-primary text-[#ffffff] text-center w-[20%] h-[47px] py-[13px] px-[21px] text-[14px] rounded-[6px] flex items-center justify-center`}
               >
                 확인
               </button>
@@ -126,7 +183,8 @@ export default function SignUpPage() {
             >
               <button
                 onClick={handleCheckId}
-                className="bg-primary dark:bg-secondary text-white dark:text-black text-center w-fit h-12 py-[13px] px-[21px] text-[14px] rounded-[6px] flex items-center justify-center"
+                className={`${!auth.isIdValid && "opacity-80"} bg-primary text-[#ffffff] text-center w-[20%] h-[47px] py-[13px] px-[21px] text-[14px] rounded-[6px] flex items-center justify-center`}
+                disabled={!auth.isEmailValid}
               >
                 확인
               </button>

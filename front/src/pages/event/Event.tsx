@@ -241,23 +241,23 @@ export default function Event() {
           </div>
         </div>
         {/* 캡슐 목록 */}
-        <div className="w-[600px] p-5">
+        <div className="w-full p-5">
           <div className="grid grid-cols-3 gap-[10px]">
             {eventCapsuleData.map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col rounded-[10px] items-center justify-center cursor-pointer"
+                className=" rounded-[10px] items-center justify-center cursor-pointer"
                 onClick={() => handleImageClick(item)}
               >
                 <div
                   className="relative inline-block w-full overflow-hidden cursor-pointer break-inside-avoid"
                   // 모달창
                 >
-                  <div className="bg-[#C5BBFF] rounded-lg">
-                    {/*  게시물 이미지 */}
+                  <div className="bg-[#C5BBFF] rounded-lg  aspect-square overflow-hidden ">
+                    {/* 게시물 이미지 */}
+
                     <img
                       src={
-                        // 캡슐 종료기간이 지나면 이미지 보여주기
                         new Date().toISOString() < getParsedData(item.title).closeAt
                           ? index % 2 === 0
                             ? eventThumnail
@@ -265,7 +265,7 @@ export default function Event() {
                           : getParsedData(item.title).image[0]
                       }
                       alt="이벤트 타입캡슐 로고"
-                      className="w-full h-auto object-cover rounded-t-[10px]"
+                      className="absolute inset-0 w-full h-full object-cover rounded-[10px]"
                     />
                   </div>
 

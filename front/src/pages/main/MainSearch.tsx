@@ -73,23 +73,28 @@ const Tab2 = ({ setIsFocused, onBackClick }: Tab2Props) => {
 
   return (
     <div className="flex h-[36px] rounded-[10px]">
-      <img src={img_left} alt="뒤로 가기" onClick={onBackClick} className="cursor-pointer dark:invert" />
+      <img
+        src={img_left}
+        alt="뒤로 가기"
+        onClick={onBackClick}
+        className="cursor-pointer dark:invert max-[550px]:w-[25px]"
+      />
       <div className="w-full rounded-[10px] bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-primary)] p-[1px]">
         <div className="flex items-center w-full h-full bg-white rounded-[10px] px-4 overflow-hidden">
           <input
             type="text"
             id="search-input"
             name="search"
-            className="w-full h-[14px] my-[4px] outline-none bg-white text-black dark:text-gray-100"
+            className="w-full h-[14px] my-[4px] outline-none bg-white text-black dark:text-gray-100 max-[550px]:text-[12px]"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             autoFocus
-            maxLength={27}
+            maxLength={23}
           />
           <button className="bg-bg-400 w-7 h-6 rounded-[50px] mr-2" onClick={handleClose}>
-            <img className="w-full h-full" src={img_close} alt="취소" />
+            <img className="w-full h-full " src={img_close} alt="취소" />
           </button>
           <button className="w-6 h-6" onClick={handleSearch}>
             <img className="w-full h-full" src={img_search} alt="검색" />

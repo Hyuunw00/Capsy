@@ -41,13 +41,14 @@ export default function PasswordResetPage() {
     }
     // 유효성 검사
     if (!testEmail(email) || !testPassword(password)) {
+      setOpenModal({ ...openModal, isOpen: true, value: "형식에 맞게 입력해주세요!" });
       setAuth({ ...auth, isEmailValid: false, isPasswordValid: false, email: "", password: "" });
 
       return;
     }
     // 로그인한 사용자 이메일이 아닐 경우 return
     if (userEmail !== email) {
-      setOpenModal({ ...openModal, isOpen: true, value: "로그인한 사용자가 아닙니다" });
+      setOpenModal({ ...openModal, isOpen: true, value: "로그인한 사용자가 아닙니다!" });
       setAuth({ ...auth, isEmailValid: false, isPasswordValid: false, email: "", password: "" });
       return;
     }
@@ -60,7 +61,7 @@ export default function PasswordResetPage() {
         setUserAuth(true); // 인증성공시 상태값 변환
       }
     } catch (error) {
-      setOpenModal({ ...openModal, isOpen: true, value: "아이디 또는 비밀번호가 틀립니다" });
+      setOpenModal({ ...openModal, isOpen: true, value: "아이디 또는 비밀번호가 틀립니다!" });
     } finally {
       setAuth({ ...auth, isEmailValid: false, isPasswordValid: false, email: "", password: "" });
     }
