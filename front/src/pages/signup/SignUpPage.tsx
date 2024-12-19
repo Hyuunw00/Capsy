@@ -166,7 +166,7 @@ export default function SignUpPage() {
               <button
                 onClick={handleCheckEmail}
                 disabled={!auth.isEmailValid}
-                className={`${!auth.isEmailValid && "opacity-80"} bg-primary text-[#ffffff] text-center w-[20%] h-[47px] py-[13px] px-[21px] text-[14px] rounded-[6px] flex items-center justify-center`}
+                className={`${!auth.isEmailValid && "opacity-80"} bg-primary dark:bg-secondary text-white dark:text-black text-center w-[20%] h-[47px] py-[13px] px-[21px] text-[14px] rounded-[6px] flex items-center justify-center`}
               >
                 확인
               </button>
@@ -183,7 +183,7 @@ export default function SignUpPage() {
             >
               <button
                 onClick={handleCheckId}
-                className={`${!auth.isIdValid && "opacity-80"} bg-primary text-[#ffffff] text-center w-[20%] h-[47px] py-[13px] px-[21px] text-[14px] rounded-[6px] flex items-center justify-center`}
+                className={`${!auth.isIdValid && "opacity-80"} bg-primary dark:bg-secondary text-white dark:text-black text-center w-[20%] h-[47px] py-[13px] px-[21px] text-[14px] rounded-[6px] flex items-center justify-center`}
                 disabled={!auth.isEmailValid}
               >
                 확인
