@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { tokenService } from "../../utils/token";
 import Follow from "../post/Follow";
 import { getProfileImage } from "../../utils/profileImage";
+import userImg from "../../assets/user.png";
 
 interface UserProfile {
   _id: string;
@@ -108,7 +109,7 @@ export default function UserInfoPage() {
         <div className="flex items-center justify-evenly">
           <div className="relative w-[90px] h-[90px]">
             <img
-              src={getProfileImage(specificUserInfo)}
+              src={getProfileImage(specificUserInfo) || userImg}
               alt="Profile"
               className="object-cover w-full h-full rounded-full"
             />

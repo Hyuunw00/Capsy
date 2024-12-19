@@ -203,7 +203,7 @@ function SlideContainer({ items, uniqueKey }: SlideContainerProps) {
                     )}
                   </div>
                   {/* 타이틀 */}
-                  <div className="mt-2 text-[14px] font-pretendard text-left text-black dark:text-white">
+                  <div className="mt-2 text-[14px] font-pretendard text-left truncate text-black dark:text-white">
                     {item.title}
                   </div>
                 </div>
