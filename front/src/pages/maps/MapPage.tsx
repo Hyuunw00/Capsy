@@ -444,7 +444,7 @@ export default function MapPage() {
                     className={` cursor-pointer hover:bg-gray-50 border-b border-gray-100 `}
                     onClick={() => setMapCenter({ ...mapCenter, center: { lat: marker.lat, lng: marker.lng } })}
                   >
-                    <div className="flex justify-start items-start gap-3">
+                    <div className="flex items-start justify-start gap-3">
                       <div className="text-[12px] text-gray-500 mt-1">
                         <img src={marker.isBlur ? img_capsule : marker.image} className="w-28 h-28" />
                       </div>
