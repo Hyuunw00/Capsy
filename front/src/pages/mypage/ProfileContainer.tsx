@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import capsuleBlack from "../../assets/profile-capsule-black.svg";
-import capsulePurple from "../../assets/profile-capsule-purple.svg";
-import articleBlack from "../../assets/profile-article-black.svg";
-import articlePurple from "../../assets/profile-article-purple.svg";
-import alarmBlack from "../../assets/profile-alarm-black.svg";
-import alarmPurple from "../../assets/profile-alarm-purple.svg";
 import MySlideHeader from "./MySlideHeader";
 import MySlideContainer from "./MySlideContainer";
 import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE, getUserPosts } from "../../apis/apis";
