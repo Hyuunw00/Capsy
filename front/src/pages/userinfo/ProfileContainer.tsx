@@ -277,7 +277,7 @@ function ProfileContainer({ userId, fullName }: { userId: string; fullName?: str
                       </div>
                     )}
                     <div className="mt-2 font-pretendard font-regular text-left text-[14px]">
-                      <p className="text-black dark:text-white">{parsed.title}</p>
+                      <p className="truncate text-black dark:text-white">{parsed.title}</p>
                     </div>
                   </div>
                 );

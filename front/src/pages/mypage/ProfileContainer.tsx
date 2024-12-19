@@ -257,7 +257,7 @@ function ProfileContainer() {
                           </div>
                         )}
                         <div className="mt-2 font-pretendard font-regular text-left text-[14px]">
-                          <p className="text-black dark:text-white">{parsed.title}</p>
+                          <p className="truncate text-black dark:text-white ">{parsed.title}</p>
                         </div>
                       </div>
                     );
@@ -265,11 +265,34 @@ function ProfileContainer() {
                 </div>
               </div>
             )}
-            {selectedTab === "alarms" && (
-              <>
-                <div className="mt-8 text-center text-gray-500 dark:text-gray-300">알람 기능은 준비 중입니다.</div>
-              </>
-            )}
+            {selectedTab === "alarms" &&
+              (() => {
+                const { opened, waiting } = categorizeCapsules();
+                return (
+                  <>
+                    <MySlideHeader
+                      title="공개완료"
+                      count={opened.length}
+                      showAllText="전체보기"
+                      onShowAllClick={() => handleShowAllClick("open", "capsules")}
+                    />
+                    <MySlideContainer
+                      uniqueKey="open"
+                      items={opened}
+                      onItemClick={(item) => handlePostClick(item.id)}
+                    />
+                    <div className="mt-8 mb-8">
+                      <MySlideHeader
+                        title="공개대기"
+                        count={waiting.length}
+                        showAllText="전체보기"
+                        onShowAllClick={() => handleShowAllClick("close", "capsules")}
+                      />
+                      <MySlideContainer uniqueKey="close" items={waiting} />
+                    </div>
+                  </>
+                );
+              })()}
           </div>
         </>
       )}
