@@ -297,7 +297,6 @@ export default function Event() {
           </button>
         </div>
       </div>
-
     </>
   );
 }
