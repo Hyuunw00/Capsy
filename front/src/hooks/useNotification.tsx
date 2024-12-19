@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { tokenService } from '../utils/token';
 import { getNotifications, getPostDetail, getUserProfile, seenNotifications } from '../apis/apis';
 import { Notification } from '../types/notification';
 
 export const useNotification = () => {
+  const location = useLocation();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNoticeModal, setShowNoticeModal] = useState(false);
   const [followerNames, setFollowerNames] = useState<{ [key: string]: string }>({});
@@ -12,11 +14,13 @@ export const useNotification = () => {
     message: "",
   });
 
+  // 토스트 메시지 표시 함수
   const showToastMessage = useCallback((message: string) => {
     setToast({ show: true, message });
     setTimeout(() => setToast({ show: false, message: "" }), 5000);
   }, []);
 
+  // 알림 데이터 가져오는 함수
   const fetchNotifications = useCallback(async () => {
     const currentToken = tokenService.getToken();
     if (!currentToken) {
@@ -41,6 +45,7 @@ export const useNotification = () => {
             
             console.log('결정된 타입:', type);
   
+            // 게시물 제목 가져오기
             let postTitle;
             if (notification.post) {
               try {
@@ -52,6 +57,7 @@ export const useNotification = () => {
               }
             }
   
+            // 알림 데이터 형식화
             const formattedNotification = {
               type,
               userId: notification.author._id,
@@ -76,6 +82,7 @@ export const useNotification = () => {
     }
   }, []);
 
+  // 팔로워 이름 가져오는 함수
   const fetchFollowerNames = useCallback(async () => {
     const names: { [key: string]: string } = {};
     for (const notification of notifications) {
@@ -91,6 +98,7 @@ export const useNotification = () => {
     setFollowerNames(names);
   }, [notifications]);
 
+  // 팔로우 수락 처리
   const handleAcceptFollow = useCallback(async (notification: Notification) => {
     try {
       await seenNotifications(notification.notificationId);
@@ -103,6 +111,7 @@ export const useNotification = () => {
     }
   }, [followerNames, showToastMessage, fetchNotifications]);
 
+  // 팔로우 거절 처리
   const handleRejectFollow = useCallback(async (notification: Notification) => {
     try {
       await seenNotifications(notification.notificationId);
@@ -114,6 +123,7 @@ export const useNotification = () => {
     }
   }, [fetchNotifications, showToastMessage]);
 
+  // 알림 읽음 처리
   const handleReadNotification = useCallback(async (notification: Notification) => {
     try {
       await seenNotifications(notification.notificationId);
@@ -125,6 +135,7 @@ export const useNotification = () => {
     }
   }, [fetchNotifications, showToastMessage]);
 
+  // 게시물로 이동 처리
   const handleMoveToPost = useCallback(async (notification: Notification) => {
     try {
       await seenNotifications(notification.notificationId);
@@ -144,26 +155,23 @@ export const useNotification = () => {
     setShowNoticeModal(prev => !prev);
   }, []);
 
+  // 알림이 있을 때 팔로워 이름 가져오기
   useEffect(() => {
     if (notifications.length > 0) {
       fetchFollowerNames();
     }
   }, [notifications, fetchFollowerNames]);
 
-  // 모달이 열릴 때만 알림을 새로고침
-  useEffect(() => {
-    if (showNoticeModal) {
-      fetchNotifications();
-    }
-  }, [showNoticeModal, fetchNotifications]);
-
-  // 초기 마운트시 한 번만 알림을 가져옴
+  // 알림 갱신 로직 (조건)
+  // 1. 페이지 이동 시 (location.pathname 변경)
+  // 2. 모달 열릴 때 (showNoticeModal 변경)
+  // 3. 컴포넌트 마운트 시 (초기 렌더링)
   useEffect(() => {
     const currentToken = tokenService.getToken();
-    if (currentToken) {
+    if (currentToken && (location.pathname || showNoticeModal)) {
       fetchNotifications();
     }
-  }, [fetchNotifications]);
+  }, [location.pathname, showNoticeModal, fetchNotifications]);
 
   return {
     notifications,
