@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../../apis/axiosInstance";
 import { useMainSearchStore } from "../../store/mainSearchStore";
 import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE, createNotifications } from "../../apis/apis";
@@ -22,8 +22,10 @@ import img_timeCapsule from "../../assets/time-capsule.png";
 import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
 import img_alarm from "../../assets/alarm.png";
 import { useThemeStore } from "../../store/themeStore";
+import { flushSync } from "react-dom";
 
 export default function MainPage() {
+  const location = useLocation();
   // 다크모드
   const { isDark } = useThemeStore();
   const navigate = useNavigate();
@@ -75,6 +77,8 @@ export default function MainPage() {
     whiteText: "",
     whiteTextClick: () => {},
   });
+  // 페이지 진입 시 최초 실행 여부 체크
+  const [initialLoad, setInitialLoad] = useState(true);
 
   // 전역 상태 변수
   const isFocused = useMainSearchStore((state) => state.isFocused);
@@ -119,7 +123,10 @@ export default function MainPage() {
       });
       setShowModal(true);
     } else {
-      navigate(`/detail/${item._id}`);
+      const scrollPosition = window.scrollY;
+      flushSync(() => {
+        navigate(`/detail/${item._id}`, { state: { scrollPosition } });
+      });
     }
   };
 
@@ -185,6 +192,12 @@ export default function MainPage() {
   };
 
   const handleNotiClick = (postId: string) => {
+    // 로그인하지 않은 경우 로그인 페이지로 리디렉션
+    if (!userData?._id) {
+      navigate("/login");
+      return;
+    }
+
     // 이미 해당 게시글에 알림이 설정된 경우
     const userNoti = userData?.messages.find((message: any) => {
       try {
@@ -269,13 +282,25 @@ export default function MainPage() {
         if (!userData?._id) {
           return;
         }
-
+        // 최초 실행 여부를 확인해서 최초에만 메세지를 가져오도록 제한
+        if (!initialLoad) {
+          return;
+        }
         const userId = userData?._id;
 
         const response = await axiosInstance.get("/messages", { params: { userId } });
         const allMessages = response.data;
 
-        const now = new Date().toISOString();
+        // 어제의 00:00:00 (KST) → UTC 변환 (UTC 기준 전날 15:00:00)
+        const yesterdayStart = new Date();
+        yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+        yesterdayStart.setHours(0, 0, 0, 0); // 00:00:00 (KST)
+        const yesterdayStartUTC = yesterdayStart.toISOString();
+
+        // 오늘의 00:00:00 (KST) → UTC 변환 (UTC 기준 당일 15:00:00)
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0); // 00:00:00 (KST)
+        const todayStartUTC = todayStart.toISOString();
 
         const expiredMessages = allMessages?.filter((message: any) => {
           if (!message?.message) return false;
@@ -283,7 +308,7 @@ export default function MainPage() {
           const parsedMessage = JSON.parse(message.message);
           if (!parsedMessage.openAt) return false;
 
-          return parsedMessage.openAt <= now;
+          return parsedMessage.openAt <= todayStartUTC && parsedMessage.openAt >= yesterdayStartUTC;
         });
 
         const displayedNotifications = JSON.parse(sessionStorage.getItem("displayedNotifications") || "[]");
@@ -328,6 +353,9 @@ export default function MainPage() {
           sessionStorage.setItem("user", JSON.stringify(updatedUserData));
           setUserData(updatedUserData);
         }
+
+        // 최초 실행 여부를 false로 변경해서 이후 실행 방지
+        setInitialLoad(false);
       } catch (error) {
         console.error("메세지를 가져오는 중 오류 발생");
       }
@@ -499,6 +527,18 @@ export default function MainPage() {
     };
     getSearchPost();
   }, [isFocused]);
+
+  // 페이지에 다시 돌아왔을 때 스크롤 복구
+  useEffect(() => {
+    if (!loading) {
+      const scrollPosition = location.state?.scrollPosition;
+      if (scrollPosition !== null) {
+        requestAnimationFrame(() => {
+          window.scrollTo(0, scrollPosition);
+        });
+      }
+    }
+  }, [loading]);
 
   if (isFocused) {
     return (
