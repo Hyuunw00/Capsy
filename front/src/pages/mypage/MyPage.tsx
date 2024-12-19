@@ -1,10 +1,19 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+import { tokenService } from "../../utils/token";
+import { useLoginStore } from "../../store/loginStore";
+import axiosInstance from "../../apis/axiosInstance";
+import NotificationModal from "../../components/NotificationModal";
 import ProfileHeader from "./ProfileHeader";
 import ProfileContainer from "./ProfileContainer";
 import Loading from "../../components/Loading";
 
 export default function MyPage() {
   const [isLoading, setIsLoading] = useState(true);
+  // 로그아웃 모달 상태
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const logout = useLoginStore((state) => state.logout);
 
   // 데이터 로딩을 위한 함수 예시
   const loadData = async () => {
@@ -26,14 +35,42 @@ export default function MyPage() {
     loadData(); // 데이터 로딩 시작
   }, []);
 
+  // 로그아웃 모달
+  const handleClick = () => {
+    setIsOpen(true);
+  };
+
+  // 로그아웃 처리
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post("/logout");
+      navigate("/");
+      logout();
+      tokenService.clearAll();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
+      {/* 로그아웃 확인 모달 */}
+      {isOpen && (
+        <NotificationModal isOpen={isOpen} title="알림" description="로그아웃 하시겠습니까?">
+          <div className="gap-2 item-between">
+            <button className="w-full h-10 border border-black rounded-md" onClick={() => setIsOpen(false)}>취소</button>
+            <button className="w-full h-10 text-white bg-black rounded-md" onClick={handleLogout}>확인</button>
+          </div>
+        </NotificationModal>
+      )}
+
       {isLoading ? (
         <Loading /> // 데이터 로딩 중에는 로딩 화면 표시
       ) : (
         <>
           <ProfileHeader />
           <ProfileContainer />
+          <button className="px-8 py-4 text-sm text-gray-400 underline" onClick={handleClick}>로그아웃</button>
         </>
       )}
     </>

@@ -19,10 +19,7 @@ import TimeCapsuleModal from "../../components/TimeCapsuleModal";
 import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
 
 export default function Event() {
-  // 로그아웃 기능구현을 위해 임시 저장(나중에 삭제)
-  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const logout = useLoginStore((state) => state.logout);
 
   // 로딩중인지에 대한 상태
   const [loading, setLoading] = useState<boolean>(true);
@@ -43,11 +40,6 @@ export default function Event() {
   // 공개 대기 캡슐 아이템 예시
   const [likeStatus, setLikeStatus] = useState<{ [key: string]: boolean }>({});
   const [notiStatus, setNotiStatus] = useState<boolean[]>([]);
-
-  // 로그아웃 모달
-  const handleClcik = () => {
-    setIsOpen(true);
-  };
 
   // 좋아요 버튼 클릭 이벤트 핸들러
   const handleLikeClick = async (postId: string) => {
@@ -145,16 +137,6 @@ export default function Event() {
   const handleClickEventEdit = () => {
     navigate("/eventeditor");
   };
-  const handleLogout = async () => {
-    try {
-      await axiosInstance.post("/logout");
-      navigate("/");
-      logout();
-      tokenService.clearAll();
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   // 포스트 컴포넌트 클릭 시
   const handleImageClick = (item: any) => {
@@ -211,23 +193,6 @@ export default function Event() {
 
   return (
     <>
-      {isOpen && (
-        <NotificationModal isOpen={isOpen} title="알림" description="로그아웃 하시겠습니까?">
-          <div>
-            <button onClick={() => setIsOpen(false)}>취소</button>
-            <button onClick={handleLogout}>확인</button>
-          </div>
-        </NotificationModal>
-      )}
-      {showModal && (
-        <TimeCapsuleModal
-          imgSrc={modalData.imgSrc}
-          neonText={modalData.neonText}
-          whiteText={modalData.whiteText}
-          onClose={handleCloseModal}
-        />
-      )}
-
       {/* 이벤트 배너 */}
       <img src={eventBanner} alt="이벤트 배너" />
 
@@ -241,23 +206,23 @@ export default function Event() {
           </div>
         </div>
         {/* 캡슐 목록 */}
-        <div className="w-[600px] p-5">
+        <div className="w-full p-5">
           <div className="grid grid-cols-3 gap-[10px]">
             {eventCapsuleData.map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col rounded-[10px] items-center justify-center cursor-pointer"
+                className=" rounded-[10px] items-center justify-center cursor-pointer"
                 onClick={() => handleImageClick(item)}
               >
                 <div
                   className="relative inline-block w-full overflow-hidden cursor-pointer break-inside-avoid"
                   // 모달창
                 >
-                  <div className="bg-[#C5BBFF] rounded-lg">
-                    {/*  게시물 이미지 */}
+                  <div className="bg-[#C5BBFF] rounded-lg  aspect-square overflow-hidden ">
+                    {/* 게시물 이미지 */}
+
                     <img
                       src={
-                        // 캡슐 종료기간이 지나면 이미지 보여주기
                         new Date().toISOString() < getParsedData(item.title).closeAt
                           ? index % 2 === 0
                             ? eventThumnail
@@ -265,7 +230,7 @@ export default function Event() {
                           : getParsedData(item.title).image[0]
                       }
                       alt="이벤트 타입캡슐 로고"
-                      className="w-full h-auto object-cover rounded-t-[10px]"
+                      className="absolute inset-0 w-full h-full object-cover rounded-[10px]"
                     />
                   </div>
 
@@ -325,9 +290,6 @@ export default function Event() {
         </div>
       </div>
 
-      <div>
-        <button onClick={handleClcik}>logout</button>
-      </div>
     </>
   );
 }
