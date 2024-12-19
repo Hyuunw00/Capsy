@@ -20,7 +20,7 @@ interface MySlideContainerProps {
 function MySlideContainer({ items, uniqueKey, onItemClick }: MySlideContainerProps) {
   const now = new Date();
   return (
-    <div className="relative w-full overflow-hidden px-[30px]">
+    <div className="relative w-full cursor-pointer overflow-hidden px-[30px]">
       <Swiper
         key={uniqueKey}
         modules={[Navigation]}
@@ -37,7 +37,7 @@ function MySlideContainer({ items, uniqueKey, onItemClick }: MySlideContainerPro
           return (
             <SwiperSlide key={item.id} className="flex items-center justify-center">
               <div
-                className="w-full"
+                className="w-full cursor-pointer"
                 onClick={() => onItemClick?.(item)} // 클릭 이벤트
               >
                 <div className="relative w-full pb-[100%] bg-gray-200 rounded-[10px] overflow-hidden">
@@ -75,32 +75,14 @@ function MySlideContainer({ items, uniqueKey, onItemClick }: MySlideContainerPro
         className={`absolute left-0 top-1/2 transform -translate-y-[100%] bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-prev-${uniqueKey}`}
         aria-label="Previous slide"
       >
-        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            className="fill-primary dark:fill-primary-dark"
-            d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5Z"
-          />
-          <path
-            className="fill-white dark:fill-black"
-            d="M6.7675 7.5L9.86125 10.5938L8.9775 11.4775L5 7.5L8.9775 3.5225L9.86125 4.40625L6.7675 7.5Z"
-          />
-        </svg>
+        <img src={leftArrowCircle} className="w-[24px] h-[24px] cursor-pointer" alt="Previous" />
       </button>
 
       <button
         className={`absolute right-0 top-1/2 transform -translate-y-[100%] bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-next-${uniqueKey}`}
         aria-label="Next slide"
       >
-        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            className="fill-primary dark:fill-primary-dark"
-            d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5Z"
-          />
-          <path
-            className="fill-white dark:fill-black"
-            d="M9.2325 7.5L6.13875 4.40625L7.0225 3.5225L11 7.5L7.0225 11.4775L6.13875 10.5938L9.2325 7.5Z"
-          />
-        </svg>
+        <img src={rightArrowCircle} className="w-[24px] h-[24px] cursor-pointer" alt="Next" />
       </button>
     </div>
   );

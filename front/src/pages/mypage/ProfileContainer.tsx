@@ -194,7 +194,9 @@ function ProfileContainer() {
               </div>
             ))}
           </div>
-
+          <div className="px-[30px] mt-[20px] mb-[30px]">
+            <hr className="border-t border-gray-200 dark:border-gray-400" />
+          </div>
           <div className="tab-content">
             {selectedTab === "capsules" &&
               (() => {

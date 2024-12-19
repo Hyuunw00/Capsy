@@ -218,6 +218,10 @@ function ProfileContainer({ userId, fullName }: { userId: string; fullName?: str
           </div>
         ))}
       </div>
+      <div className="px-[30px] mt-[20px] mb-[30px]">
+        <hr className="border-t border-gray-200 dark:border-gray-400" />
+      </div>
+
       {/* 탭에 해당하는 내용 */}
       <div className="tab-content">
         {/* 캡슐 탭 내용 */}
