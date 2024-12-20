@@ -55,6 +55,8 @@ export default {
       backgroundImage: {
         "custom-gradient":
           "linear-gradient(180deg, rgba(91, 91, 91, 0.00) 0%, rgba(77, 77, 77, 0.10) 35.5%, rgba(57, 57, 57, 0.25) 68.5%, rgba(0, 0, 0, 0.40) 100%), linear-gradient(180deg, rgba(91, 91, 91, 0.00) 0%, rgba(77, 77, 77, 0.20) 35.5%, rgba(57, 57, 57, 0.45) 68.5%, rgba(0, 0, 0, 0.60) 100%)",
+        "custom-gradient-dark":
+          "linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, rgba(200, 200, 200, 0.10) 35.5%, rgba(150, 150, 150, 0.25) 68.5%, rgba(100, 100, 100, 0.40) 100%), linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, rgba(200, 200, 200, 0.20) 35.5%, rgba(150, 150, 150, 0.45) 68.5%, rgba(100, 100, 100, 0.60) 100%)",
       },
     },
   },

@@ -85,7 +85,7 @@ const Tab2 = ({ setIsFocused, onBackClick }: Tab2Props) => {
             type="text"
             id="search-input"
             name="search"
-            className="w-full h-[14px] my-[4px] outline-none bg-white text-black dark:text-gray-100 max-[550px]:text-[12px]"
+            className="w-full h-[14px] my-[4px] outline-none bg-white text-black max-[550px]:text-[12px]"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onBlur={handleBlur}
