@@ -282,9 +282,13 @@ export default function MainPage() {
         if (!initialLoad) {
           return;
         }
+
         const userId = userData?._id;
+
         const response = await axiosInstance.get("/messages", { params: { userId } });
         const allMessages = response.data;
+
+        console.log(new Date().toISOString());
 
         // 어제의 00:00:00 (KST) → UTC 변환 (UTC 기준 전날 15:00:00)
         const yesterdayStart = new Date();
@@ -315,6 +319,7 @@ export default function MainPage() {
         });
 
         if (newNotifications.length > 0) {
+          console.log("새로 갱신된 게시물 개수: ", newNotifications.length);
           const newPostIds = newNotifications.map((message: any) => JSON.parse(message.message).postId);
 
           // 존재하지 않는 게시글에 대한 알림 제거
@@ -337,16 +342,12 @@ export default function MainPage() {
 
           if (newNotifications.length === 1) {
             const parsedMessage = JSON.parse(newNotifications[0].message);
-            const postExists = filterData.some((post) => post._id === parsedMessage.postId);
-
-            if (postExists) {
-              setOpenModalData({
-                imgSrc: img_timeCapsule,
-                neonText: "따끈따끈한 타임 캡슐 도착!",
-                whiteText: "지금 확인하러 가기",
-                whiteTextClick: () => navigate(`/detail/${parsedMessage.postId}`),
-              });
-            }
+            setOpenModalData({
+              imgSrc: img_timeCapsule,
+              neonText: "따끈따끈한 타임 캡슐 도착!",
+              whiteText: "지금 확인하러 가기",
+              whiteTextClick: () => navigate(`/detail/${parsedMessage.postId}`),
+            });
           } else {
             setOpenModalData({
               imgSrc: img_timeCapsule,
