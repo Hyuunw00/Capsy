@@ -153,6 +153,7 @@ export default function MapPage() {
         break;
     }
   };
+  console.log(filteredMarkers);
 
   // 줌인 ,줌 아웃 버튼 동작 함수
   const zoomIn = () => {
