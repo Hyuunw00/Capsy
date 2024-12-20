@@ -85,9 +85,7 @@ export default function PostDetailPage() {
           ...prevState,
           [postId]: isLiked,
         }));
-      } catch (error) {
-        // console.error("포스트를 불러오는데 실패했습니다.:", error);
-      }
+      } catch (error) {}
     };
 
     loadPostDetail();
@@ -105,7 +103,6 @@ export default function PostDetailPage() {
     try {
       return JSON.parse(jsonString) as PostItemProps;
     } catch (error) {
-      //console.error("포스트를 불러오는데 실패했습니다.:", error);
       return { title: "", content: "", image: [] };
     }
   };
@@ -269,7 +266,6 @@ export default function PostDetailPage() {
   // 좋아요 로직
   const handleLikeClick = async (postId: string) => {
     const userId = userData._id;
-    // console.log("userId: ", userId);
 
     const isLiked = post.likes.some((like: Like) => like.user === userId);
 
