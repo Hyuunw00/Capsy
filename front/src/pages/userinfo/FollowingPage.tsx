@@ -4,6 +4,7 @@ import { searchUsersByFullName, getUserProfile } from "../../apis/apis";
 import AllUsersList from "./AllUserList";
 import Loading from "../../components/Loading";
 import Follow from "../post/Follow";
+import userImg from "../../assets/user.png";
 
 interface UserProfile {
   _id: string;
@@ -60,7 +61,7 @@ const FollowingPage = () => {
                 _id: followingProfile._id,
                 fullName: followingProfile.fullName,
                 username: followingProfile.username,
-                image: followingProfile.image,
+                image: followingProfile.image || userImg,
               };
             } catch (err) {
               console.error(`팔로잉 정보 로드 실패: ${followingObj.follower}`, err);
