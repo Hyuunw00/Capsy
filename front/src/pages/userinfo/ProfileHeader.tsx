@@ -150,7 +150,7 @@ export default function UserInfoPage() {
                 userData={userData}
                 onFollowUpdate={handleFollowUpdate}
                 targetUserId={specificUserInfo._id}
-                className="w-full h-12 py-3 text-[16px] font-normal rounded-[5px]"
+                className="!w-full !h-12 !py-3 !text-[16px] !font-normal !rounded-[5px]" // !important를 사용하여 이 컴포넌트에서만 스타일 강제 적용
               />
             </div>
           )}
