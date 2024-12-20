@@ -1,6 +1,13 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
-import { getPostDetail, deletePost, createComment, deleteComment, createNotifications, CHANNEL_ID_EVENT } from "../../apis/apis";
+import {
+  getPostDetail,
+  deletePost,
+  createComment,
+  deleteComment,
+  createNotifications,
+  CHANNEL_ID_EVENT,
+} from "../../apis/apis";
 import { Link } from "react-router";
 import { tokenService } from "../../utils/token";
 import { elapsedText } from "./ElapsedText";
@@ -391,7 +398,7 @@ export default function PostDetailPage() {
         <hr className="border-t border-gray200 " />
 
         {/* 포스트 이미지 렌더링 */}
-        <div className="relative max-w-[600px] h-[600px] bg-black mx-auto overflow-hidden">
+        <div className="relative w-full max-w-[600px] h-[600px] bg-black mx-auto overflow-hidden">
           <div
             className="flex w-full h-full transition-transform duration-300 ease-in-out"
             style={{
@@ -512,7 +519,7 @@ export default function PostDetailPage() {
 
         {/* 댓글 입력폼 */}
         <form
-          className="fixed bottom-[60px] left-1/2 -translate-x-1/2 max-w-[600px] border-t border-white bg-white dark:bg-black dark:border-black py-1.5"
+          className="fixed bottom-[60px] left-1/2 -translate-x-1/2 w-full max-w-[600px] border-t border-white bg-white dark:bg-black dark:border-black py-1.5"
           onSubmit={handleSubmitComment}
         >
           <div className="flex items-center gap-2 px-[10px]">
