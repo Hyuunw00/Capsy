@@ -1,8 +1,8 @@
 import axiosInstance from "./axiosInstance";
 
-export const CHANNEL_ID_TIMECAPSULE = "675c3793afaf9312bedbccd3";
-export const CHANNEL_ID_POST = "675c379fafaf9312bedbccd7";
-export const CHANNEL_ID_EVENT = "675c65b6adb5881a22f7c224";
+export const CHANNEL_ID_TIMECAPSULE = "6765772de07bc44af495da0a";
+export const CHANNEL_ID_POST = "676576ede07bc44af495da04";
+export const CHANNEL_ID_EVENT = "6765764ce07bc44af495d9ee";
 
 // Post -------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ export const updatePost = async (data: PostDataType) => {
 interface PostDataType {
   postId: string;
   title: string;
-  channelId : string;
+  channelId: string;
 }
 
 // 포스트 삭제 API
