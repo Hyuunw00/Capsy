@@ -58,10 +58,10 @@ export default function MyPage() {
       {isOpen && (
         <NotificationModal isOpen={isOpen} title="알림" description="로그아웃 하시겠습니까?">
           <div className="gap-2 item-between">
-            <button className="w-full h-10 border border-black rounded-md" onClick={() => setIsOpen(false)}>
+            <button className="w-full h-10 border border-black rounded-md dark:border-white dark:text-white" onClick={() => setIsOpen(false)}>
               취소
             </button>
-            <button className="w-full h-10 text-white bg-black rounded-md" onClick={handleLogout}>
+            <button className="w-full h-10 text-white bg-black rounded-md dark:text-black dark:bg-white" onClick={handleLogout}>
               확인
             </button>
           </div>

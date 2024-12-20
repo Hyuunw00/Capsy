@@ -250,7 +250,7 @@ export default function EventEditorPage() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           className="flex-1 w-full mt-2 overflow-x-hidden overflow-y-scroll text-gray-600 placeholder-gray-300 whitespace-pre-wrap bg-white resize-none h-96 focus:outline-none dark:bg-black dark:text-gray-100"
-          placeholder="타임캡슐을 작성해주세요.\n타임캡슐은 이미지 첨부 및 날짜 지정이 필수입니다."
+          placeholder={'타임캡슐을 작성해주세요.\n타임캡슐은 이미지 첨부 및 날짜 지정이 필수입니다.'}
         />
         <EditPreview images={uploadedImages} showDatePreview={true} date={selectedDate} onDelete={handleDeleteFile} />
       </main>
