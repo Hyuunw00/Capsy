@@ -19,14 +19,14 @@ const EditComplete = ({ isOpen, onClose, isTimeCapsule, onConfirm, isLoading }: 
         <div className="gap-2 item-between">
           <button 
             onClick={onClose} 
-            className="w-full h-10 border border-black rounded-md"
+            className="w-full h-10 border border-black rounded-md dark:border-white dark:text-white"
             disabled={isLoading}
           >
             취소
           </button>
           <button
             onClick={onConfirm}
-            className="w-full h-10 text-white transition-opacity duration-200 rounded-md bg-primary hover:opacity-80"
+            className="w-full h-10 text-white transition-opacity duration-200 rounded-md bg-primary dark:bg-secondary dark:text-black hover:opacity-80"
             disabled={isLoading}
           >
             {isLoading ? (
