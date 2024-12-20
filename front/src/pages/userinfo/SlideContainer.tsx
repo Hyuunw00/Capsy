@@ -176,7 +176,7 @@ function SlideContainer({ items, uniqueKey }: SlideContainerProps) {
                           </div>
                         </div>
                         <div className="absolute bottom-0 right-0 px-2.5 py-2 flex flex-col justify-center items-center space-y-1">
-                          {item.channel.name === "CAPSULETEST" && (
+                          {item.channel.name === "TIMECAPSULE" && (
                             //  알림 이미지
                             <img
                               src={notiStatus[index] ? img_fillNoti : img_noti}
