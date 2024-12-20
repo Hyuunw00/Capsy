@@ -653,7 +653,7 @@ export default function MainPage() {
                 </div>
               )}
               <div
-                className={`absolute bottom-0 left-0 px-2.5 py-2 w-full text-white rounded-b-[10px] ${item.image || getFirstImage(item.title) ? "bg-custom-gradient" : "bg-[#674EFF]"}`}
+                className={`absolute bottom-0 left-0 px-2.5 py-2 w-full text-white dark:text-black rounded-b-[10px] ${item.image || getFirstImage(item.title) ? "bg-custom-gradient dark:bg-custom-gradient-dark" : "bg-[#674EFF] dark:bg-secondary"}`}
               >
                 <p
                   className="inline-block font-semibold"
