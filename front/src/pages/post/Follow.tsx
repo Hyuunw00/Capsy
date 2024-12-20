@@ -86,8 +86,8 @@ export default function Follow({ userData, onFollowUpdate, targetUserId, classNa
     <button
       className={`flex items-center justify-center w-[80px] h-[30px] py-[3px] text-[16px] font-normal rounded-[5px] transition-colors ${
         followStatus[targetUserId]
-          ? "bg-white border-2 border-primary/30 text-primary dark:bg-gray-50"
-          : "bg-primary text-white dark:bg-secondary"
+          ? "bg-white border-2 dark:bg-gray-500 border-primary/30 dark:border-secondary/30 text-primary dark:text-secondary"
+          : "bg-primary text-white dark:bg-secondary dark:text-black"
       } ${className}`}
       onClick={() => handleFollowClick(targetUserId)}
     >
