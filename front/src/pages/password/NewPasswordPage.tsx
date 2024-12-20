@@ -45,14 +45,14 @@ export default function NewPasswordPage() {
     // 비밀번호 형식 검사
     if (!testPassword(password)) {
       setAuth({ ...auth, isPasswordValid: false, password: "", passwordConfirm: "", isPasswordConfirmValid: false });
-      setOpenModal({ isOpen: true, value: "비밀번호 형식에 맞게 작성해주세요!" });
+      setOpenModal({ isOpen: true, value: "형식에 맞게 입력해주세요!" });
       return;
     }
 
     // 비밀번호 동일 여부 검사
     if (password !== passwordConfirm) {
       setAuth({ ...auth, isPasswordValid: true, isPasswordConfirmValid: false, passwordConfirm: "" });
-      setOpenModal({ isOpen: true, value: "새 비밀번호와 동일한 비밀번호를 입력해주세요!" });
+      setOpenModal({ isOpen: true, value: "동일한 비밀번호를 입력해주세요!" });
       return;
     }
 
@@ -118,7 +118,10 @@ export default function NewPasswordPage() {
         title="비밀번호 변경 완료 🎉"
         description="확인 버튼을 누르면 로그인 페이지로 이동합니다!"
       >
-        <button onClick={() => navigate("/login")} className="w-full py-2 text-white bg-black rounded-md">
+        <button
+          onClick={() => navigate("/login")}
+          className="w-full py-2 text-white dark:text-black bg-primary dark:bg-secondary rounded "
+        >
           확인
         </button>
       </NotificationModal>
