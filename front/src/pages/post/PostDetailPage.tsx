@@ -24,6 +24,7 @@ import Loading from "../../components/Loading";
 import axiosInstance from "../../apis/axiosInstance";
 import NotificationModal from "../../components/NotificationModal";
 import Follow from "./Follow";
+import userImg from "../../assets/user.png";
 
 export default function PostDetailPage() {
   const [commentText, setCommentText] = useState(""); // 댓글 상태 관리
@@ -168,7 +169,7 @@ export default function PostDetailPage() {
             <div className="relative w-[40px] h-[40px] rounded-full overflow-hidden cursor-pointer">
               <img
                 className="w-[40px] h-[40px] rounded-full object-cover"
-                src={author.image ? author.image : "/Capsy.svg"}
+                src={author.image ? author.image : "/user.png"}
                 alt="프로필 이미지"
               />
             </div>
@@ -316,7 +317,7 @@ export default function PostDetailPage() {
               <div className="relative w-[40px] h-[40px] rounded-full overflow-hidden cursor-pointer">
                 <img
                   className="w-[40px] h-[40px] rounded-full object-cover"
-                  src={post.author.image ? post.author.image : "/Capsy.svg"}
+                  src={post.author.image ? post.author.image : "/user.png"}
                   alt="작성자 프로필 이미지"
                 />
               </div>
