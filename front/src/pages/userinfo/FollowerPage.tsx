@@ -4,6 +4,7 @@ import { searchUsersByFullName, getUserProfile } from "../../apis/apis";
 import AllUsersList from "./AllUserList";
 import Loading from "../../components/Loading";
 import Follow from "../post/Follow";
+import userImg from "../../assets/user.png";
 
 interface UserProfile {
   _id: string;
@@ -88,7 +89,7 @@ const FollowerPage = () => {
                 _id: followerProfile._id,
                 fullName: followerProfile.fullName,
                 username: followerProfile.username,
-                image: followerProfile.image,
+                image: followerProfile.image || userImg,
               };
             } catch (err) {
               console.error(`팔로워 정보 로드 실패: ${followerObj.follower}`, err);
