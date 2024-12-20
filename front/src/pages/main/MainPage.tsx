@@ -3,11 +3,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../../apis/axiosInstance";
 import { useMainSearchStore } from "../../store/mainSearchStore";
 import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE, createNotifications } from "../../apis/apis";
+import { flushSync } from "react-dom";
 
 import MainSearch from "./MainSearch";
 import MainSearchModal from "./MainSearchModal";
 import Loading from "../../components/Loading";
 import TimeCapsuleModal from "../../components/TimeCapsuleModal";
+import { useThemeStore } from "../../store/themeStore";
 
 import img_bottom from "../../assets/bottom-arrow.svg";
 import img_bottom_white from "../../assets/bottom-arrow-white.svg";
@@ -21,8 +23,6 @@ import img_scroll from "../../assets/scroll-icon.svg";
 import img_timeCapsule from "../../assets/time-capsule.png";
 import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
 import img_alarm from "../../assets/alarm.png";
-import { useThemeStore } from "../../store/themeStore";
-import { flushSync } from "react-dom";
 
 export default function MainPage() {
   const location = useLocation();
@@ -43,7 +43,6 @@ export default function MainPage() {
   const [selectedOption, setSelectedOption] = useState<string>("All");
   // 각 게시물 알림 상태 관리
   const [notiStatus, setNotiStatus] = useState<{ [key: string]: boolean }>({});
-  // const [notiStatus, setNotiStatus] = useState<boolean[]>([]);
   // 각 게시물 좋아요, 알림 상태 관리
   const [userData, setUserData] = useState(() => {
     const storedUserData = sessionStorage.getItem("user");
@@ -247,7 +246,6 @@ export default function MainPage() {
       });
 
       const newMessage = messageResponse.data;
-      console.log("messageResponse: ", newMessage);
 
       setUserData((prevUserData: any) => {
         const updatedMessages = [...(prevUserData.messages || []), newMessage];
@@ -258,7 +256,6 @@ export default function MainPage() {
         sessionStorage.setItem("user", JSON.stringify(updatedUserData));
         return updatedUserData;
       });
-      console.log("알림 예약 완료 되었습니다.");
 
       setNotiStatus((prevStatus: any) => {
         const updatedStatus = { ...prevStatus, [selectedPostId]: true };
@@ -269,7 +266,6 @@ export default function MainPage() {
       handleAlarmCloseModal();
     } catch (error: any) {
       if (error.response && error.response.status === 401) {
-        console.log("알림 처리 실패: 로그인이 필요합니다.");
         navigate("/login");
       }
     }
@@ -287,7 +283,6 @@ export default function MainPage() {
           return;
         }
         const userId = userData?._id;
-
         const response = await axiosInstance.get("/messages", { params: { userId } });
         const allMessages = response.data;
 
@@ -320,19 +315,38 @@ export default function MainPage() {
         });
 
         if (newNotifications.length > 0) {
-          console.log("새로 추가된 알림: ", newNotifications.length);
           const newPostIds = newNotifications.map((message: any) => JSON.parse(message.message).postId);
+
+          // 존재하지 않는 게시글에 대한 알림 제거
+          const validPostIds = filterData.map((post) => post._id);
+          const filteredMessages = allMessages.filter((message: any) => {
+            const parsedMessage = JSON.parse(message.message);
+            return validPostIds.includes(parsedMessage.postId);
+          });
+
+          // 세션 스토리지에 message 업데이트
+          const updatedUserData = {
+            ...userData,
+            messages: filteredMessages,
+          };
+          sessionStorage.setItem("user", JSON.stringify(updatedUserData));
+          setUserData(updatedUserData);
+
           const updatedDisplayedNotifications = [...displayedNotifications, ...newPostIds];
           sessionStorage.setItem("displayedNotifications", JSON.stringify(updatedDisplayedNotifications));
 
           if (newNotifications.length === 1) {
             const parsedMessage = JSON.parse(newNotifications[0].message);
-            setOpenModalData({
-              imgSrc: img_timeCapsule,
-              neonText: "따끈따끈한 타임 캡슐 도착!",
-              whiteText: "지금 확인하러 가기",
-              whiteTextClick: () => navigate(`/detail/${parsedMessage.postId}`),
-            });
+            const postExists = filterData.some((post) => post._id === parsedMessage.postId);
+
+            if (postExists) {
+              setOpenModalData({
+                imgSrc: img_timeCapsule,
+                neonText: "따끈따끈한 타임 캡슐 도착!",
+                whiteText: "지금 확인하러 가기",
+                whiteTextClick: () => navigate(`/detail/${parsedMessage.postId}`),
+              });
+            }
           } else {
             setOpenModalData({
               imgSrc: img_timeCapsule,
