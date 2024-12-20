@@ -225,12 +225,12 @@ function ProfileContainer() {
                 );
               })()}
             {selectedTab === "articles" && (
-              <div className="px-[30px]">
+              <div className="px-[30px] ">
                 <h2 className="text-[16px] font-pretendard flex items-center mb-[10px] text-black dark:text-white">
                   <span className="font-semibold text-black dark:text-white">일반글</span>
                   <span className="ml-1 font-semibold">{articleItems.length}</span>
                 </h2>
-                <div className="grid grid-cols-3 gap-[10px] mb-[30px]">
+                <div className="grid grid-cols-3 gap-[10px] mb-[30px]  min-h-[400px]">
                   {articleItems.map((item, index) => {
                     const parsed = JSON.parse(item.title);
                     const images = parsed.image;

@@ -1,6 +1,6 @@
 const Loading = () => {
   return (
-    <div className="absolute top-0 left-0 z-30 w-full  bg-white abs h-full item-middle dark:bg-black">
+    <div className="absolute top-0 left-0 z-30 w-full  bg-white abs h-dvh item-middle dark:bg-black">
       <svg width="492" height="206" viewBox="0 0 492 206" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
           fillRule="evenodd"
