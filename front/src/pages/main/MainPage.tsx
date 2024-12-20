@@ -111,7 +111,7 @@ export default function MainPage() {
 
   // 포스트 컴포넌트 클릭 시
   const handleImageClick = (item: any) => {
-    const isCapsuleTest = item.channel?.name === "CAPSULETEST";
+    const isCapsuleTest = item.channel?.name === "TIMECAPSULE";
     const isBeforeCloseAt = new Date().toISOString() < (getCloseAt(item.title)?.toISOString() ?? "");
 
     if (isCapsuleTest && isBeforeCloseAt) {
@@ -632,7 +632,7 @@ export default function MainPage() {
                     className="w-full h-auto rounded-[10px] object-cover"
                   />
 
-                  {item.channel?.name === "CAPSULETEST" && (
+                  {item.channel?.name === "TIMECAPSULE" && (
                     <>
                       <div className="absolute top-1.5 right-1.5 bg-black bg-opacity-40 w-[30px] h-[30px] flex items-center justify-center rounded-full">
                         <img src={img_capsule} alt="캡슐" className="w-[16px]" />
@@ -661,8 +661,7 @@ export default function MainPage() {
                   </div>
                 </div>
               )}
-              {/* {item.channel.name === "TIMECAPSULE" && ( */}
-              {item.channel?.name === "CAPSULETEST" && (
+              {item.channel.name === "TIMECAPSULE" && (
                 <div className="absolute top-1.5 right-1.5 bg-black bg-opacity-40 w-[30px] h-[30px] flex item-center justify-center rounded-full">
                   <img src={img_capsule} alt="캡슐" className="w-[16px]" />
                 </div>
@@ -692,8 +691,7 @@ export default function MainPage() {
                     handleLikeClick(item._id);
                   }}
                 />
-                {/* {item.channel.name === "TIMECAPSULE" && ( */}
-                {item.channel?.name === "CAPSULETEST" && (
+                {item.channel.name === "TIMECAPSULE" && (
                   <img
                     src={
                       new Date().toISOString() >= (getCloseAt(item.title)?.toISOString() ?? "")
