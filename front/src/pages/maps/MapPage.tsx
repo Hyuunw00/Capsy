@@ -428,15 +428,17 @@ export default function MapPage() {
               // onClick={() => setIsListView(false)} // 모달 외부 클릭 시 모달 닫기
             >
               <div
-                className="w-full px-8 overflow-y-auto bg-white shadow-lg rounded-3xl h-80"
+                className="w-full px-8 overflow-y-auto bg-white dark:bg-gray-600 shadow-lg rounded-3xl h-80"
                 onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 이벤트 전파 방지
               >
-                <h3 className="p-3 pb-6 text-lg font-bold text-center border-b border-b-gray-200">캡슐 리스트</h3>
-                <ul className="h-56 overflow-scroll">
+                <h3 className="p-3 pb-6 text-lg font-bold text-center border-b dark:text-white border-b-gray-200 dark:border-b-gray-400">
+                  캡슐 리스트
+                </h3>
+                <ul className="h-56 overflow-auto">
                   {filteredMarkers.map((marker) => (
                     <li
                       key={marker._id}
-                      className="relative px-2 py-4 transition border-b border-gray-100 cursor-pointer hover:bg-gray-100 item-between hover:bg-bg-100"
+                      className="relative px-2 py-4 transition border-b border-gray-100 dark:border-b-gray-400 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-500 item-between hover:bg-bg-100"
                       onClick={() => {
                         map.setLevel(3);
                         setMapInfo({
@@ -457,11 +459,13 @@ export default function MapPage() {
 
                         <div className="flex flex-col justify-between h-20">
                           <div className="flex flex-col ">
-                            <h3 className="font-medium text-md">{marker.title}</h3>
-                            <span className="font-medium text-[14px] text-gray-500">{marker.placeName}</span>
+                            <h3 className="font-medium text-md dark:text-white">{marker.title}</h3>
+                            <span className="font-medium text-[14px] text-gray-500 dark:text-gray-200">
+                              {marker.placeName}
+                            </span>
                           </div>
 
-                          <div className="flex gap-2 text-xs text-gray-500 dark:text-gray-400">
+                          <div className="flex gap-2 text-xs text-gray-500 dark:text-gray-300">
                             <img src={map_location} alt="주소 아이콘" />
                             <span>{marker.addressName}</span>
                           </div>
@@ -471,11 +475,20 @@ export default function MapPage() {
                         onClick={() => (marker.isBlur ? handleClickCapsule(marker) : navigate(`/detail/${marker._id}`))}
                         className="w-10 h-12 group"
                       >
-                        <img
-                          src={pixel_arrow}
-                          alt="상세보기"
-                          className="object-contain transition-transform duration-400 transform-gpu group-hover:translate-x-2"
-                        />
+                        <svg
+                          width="10"
+                          height="16"
+                          viewBox="0 0 10 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="transition-transform duration-400 transform-gpu group-hover:translate-x-2"
+                        >
+                          <path
+                            d="M0 16V12.8H3.2V16H0ZM0 3.2V0H3.2V3.2H0ZM3.2 6.4V3.2H6.4V6.4H3.2ZM3.2 12.8V9.6H6.4V12.8H3.2ZM6.4 6.4H9.6V9.6H6.4V6.4Z"
+                            fill="currentColor"
+                            className="text-black dark:text-white"
+                          />
+                        </svg>
                       </button>
                     </li>
                   ))}
