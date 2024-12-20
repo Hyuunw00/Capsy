@@ -8,6 +8,7 @@ import { createPost } from "../../apis/apis";
 import { CHANNEL_ID_EVENT } from "../../apis/apis";
 import EventEditModal from "./EventEditModal";
 import NotificationModal from "../../components/NotificationModal";
+import { compressImage, convertFileToBase64, validateBase64Size } from "./imageUtils";
 
 export default function EventEditorPage() {
   const navigate = useNavigate();
@@ -153,13 +154,13 @@ export default function EventEditorPage() {
 
       // 이미지 파일 base64로 인코딩
       const incodingImages = await Promise.all(
-        uploadedImages.map((file) => {
-          return new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = () => reject("Base64 인코딩 실패");
-            reader.readAsDataURL(file);
-          });
+        uploadedImages.map(async (file) => {
+          const base64 = file.type.startsWith("image/") ? await compressImage(file) : await convertFileToBase64(file);
+          const validation = validateBase64Size(base64);
+          if (!validation.isValid) {
+            throw new Error(validation.error);
+          }
+          return base64;
         }),
       );
 

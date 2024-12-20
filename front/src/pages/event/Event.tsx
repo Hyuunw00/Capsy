@@ -382,8 +382,7 @@ export default function Event() {
                         handleLikeClick(item._id);
                       }}
                     />
-                    {/* {item.channel.name === "TIMECAPSULE" && ( */}
-                    {item.channel?.name === "EVENTTEST" && (
+                    {item.channel?.name === "EVENTPOST" && (
                       //  알림 이미지
                       <img
                         src={notiStatus[item._id] ? img_fillNoti : img_noti}

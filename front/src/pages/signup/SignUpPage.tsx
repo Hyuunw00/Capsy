@@ -14,6 +14,7 @@ export default function SignUpPage() {
     value: "",
   });
 
+  // 인증과 관련된 상태
   const [auth, setAuth] = useState({
     email: "",
     id: "",
@@ -29,9 +30,11 @@ export default function SignUpPage() {
     isIdUnique: false,
   });
 
+  //  회원가입 버튼 클릭시
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
+    // 이메일,아이디,비밀번호,비밀번호 변경 유효성검사 체크
     if (!auth.isIdValid || !auth.isEmailValid || !auth.isPasswordValid || !auth.isPasswordConfirmValid) {
       setOpenModal({ ...openModal, isOpen: true, value: "입력 형식에 맞게 작성해주세요!" });
       setAuth({
@@ -44,9 +47,12 @@ export default function SignUpPage() {
         isIdValid: false,
         isPasswordValid: false,
         isPasswordConfirmValid: false,
+        isEmailUnique: false,
+        isIdUnique: false,
       });
       return;
-    } //  이메일, 아이디 고유성 검사 체크(추가)
+    }
+    //  이메일, 아이디 고유성 검사 체크
     if (!auth.isEmailUnique || !auth.isIdUnique) {
       setOpenModal({ ...openModal, isOpen: true, value: "중복 확인을 해주세요!" });
       setAuth({
@@ -61,6 +67,7 @@ export default function SignUpPage() {
       return;
     }
 
+    // 비밀번호와 비밀번호 확인 값이 같지 않은 경우
     if (!testPasswordConfirm(auth.password, auth.passwordConfirm)) {
       setOpenModal({ ...openModal, isOpen: true, value: "비밀번호가 같지 않습니다!" });
       setAuth({
@@ -72,6 +79,7 @@ export default function SignUpPage() {
       });
       return;
     }
+    // 회원가입 API 호출
     try {
       await signupAuth(auth.email, auth.id, auth.password);
       setOpenModal({ ...openModal, isOpen: true, value: "회원가입 성공!" });
@@ -80,11 +88,14 @@ export default function SignUpPage() {
       console.error(error);
     }
   };
-  // email 유효성검사를 만족하면 isEmailValid :true
+
+  // 입력값이 유효성 검사를 만족할 경우 상태 변경
   const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value.trim();
     setAuth({ ...auth, email: newEmail, isEmailValid: testEmail(newEmail), isEmailUnique: false });
   };
+
+  // 입력값이 고유성 검사를 만족할 경우 상태 변경
   const handleCheckEmail = async () => {
     const { data } = await userLists();
     const isExist = data.find((user: UserLists) => user.email === auth.email);
@@ -102,7 +113,6 @@ export default function SignUpPage() {
     }
   };
 
-  // id 유효성검사를 만족하면 isIdValid :true
   const handleChangeId = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newId = e.target.value.trim();
     setAuth({ ...auth, id: newId, isIdValid: testId(newId), isIdUnique: false });
