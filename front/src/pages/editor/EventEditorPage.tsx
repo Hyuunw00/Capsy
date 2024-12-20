@@ -6,6 +6,7 @@ import EditComplete from "./EditComplete";
 import { createPost } from "../../apis/apis";
 import { CHANNEL_ID_EVENT } from "../../apis/apis";
 import EventEditModal from "./EventEditModal";
+import { compressImage, convertFileToBase64, validateBase64Size } from "./imageUtils";
 
 export default function EventEditorPage() {
   const activeTab = "event";
@@ -107,16 +108,16 @@ export default function EventEditorPage() {
       const channelId = CHANNEL_ID_EVENT;
 
       // 이미지 파일 base64로 인코딩
-      const incodingImages = uploadedImages.map((file) => {
-        return new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = () => reject("Base64 인코딩 실패");
-          reader.readAsDataURL(file); // Base64 인코딩
-        });
-      });
-      const base64Images = await Promise.all(incodingImages);
-      console.log(base64Images);
+      const incodingImages = await Promise.all(
+        uploadedImages.map(async (file) => {
+          const base64 = file.type.startsWith("image/") ? await compressImage(file) : await convertFileToBase64(file);
+          const validation = validateBase64Size(base64);
+          if (!validation.isValid) {
+            throw new Error(validation.error);
+          }
+          return base64;
+        }),
+      );
 
       // 커스텀 데이터 만들기
       const customData = {
@@ -129,7 +130,7 @@ export default function EventEditorPage() {
           date.setHours(date.getHours() - 9);
           return date.toISOString();
         })(),
-        image: base64Images, // 인코딩된 문자열 배열
+        image: incodingImages, // 인코딩된 문자열 배열
       };
 
       const formData = new FormData();
@@ -177,7 +178,10 @@ export default function EventEditorPage() {
           )}
         </div>
         <div className="flex items-center gap-4">
-          <button onClick={handleSaveClick} className="px-4 py-1 text-sm text-white bg-black rounded">
+          <button
+            onClick={handleSaveClick}
+            className="px-4 py-1 text-sm text-white bg-black rounded dark:bg-white dark:text-black"
+          >
             저장
           </button>
         </div>
