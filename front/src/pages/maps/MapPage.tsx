@@ -36,7 +36,7 @@ interface MapInfo {
   };
   isPanto: boolean;
   isSearch: boolean; //  검색유무
-  // image: string;
+  image: string;
 }
 
 export default function MapPage() {
@@ -65,18 +65,16 @@ export default function MapPage() {
   const [modalData, setModalData] = useState({ imgSrc: "", neonText: "", whiteText: "" });
   const [showModal, setShowModal] = useState(false);
 
-  // 중앙값 상태관리
-  const [mapCenter, setMapCenter] = useState<MapInfo>({
+  // 지도정보 상태관리
+  const [mapInfo, setMapInfo] = useState<MapInfo>({
     center: {
       lat: 37.5666805, // 초기 좌표
       lng: 126.9784147,
     },
     isPanto: true,
     isSearch: false, //  검색유무
-    // image: "",
+    image: "",
   });
-
-  console.log(mapCenter);
 
   // 타임캡슐 마커 상태관리
   const [selectedMarkers, setSelectedMarkers] = useState<Markers[]>([]);
@@ -93,7 +91,7 @@ export default function MapPage() {
   const handleMarkerClick = (index: number) => {
     // 클릭한 마커의 인덱스를 setState로 저장하여 해당 마커에 오버레이를 표시하도록 설정
     setOpenMarkerIndex(index);
-    setMapCenter((prev) => ({ ...prev })); // 상태 강제 업데이트 커스텀 오버레이가 보여지도록
+    setMapInfo((prev) => ({ ...prev })); // 상태 강제 업데이트 커스텀 오버레이가 보여지도록
   };
   // 커스텀 오버레이를 닫는 함수
   const handleCloseOverlay = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -118,8 +116,8 @@ export default function MapPage() {
 
   // 검색한 장소로 맵 이동
   const handleSelectPlace = (place: Place) => {
-    setMapCenter({
-      ...mapCenter,
+    setMapInfo({
+      ...mapInfo,
       isSearch: true,
       // image: "",
       center: { lng: parseFloat(place.x), lat: parseFloat(place.y) },
@@ -140,8 +138,8 @@ export default function MapPage() {
       case "Enter":
         e.preventDefault();
         if (selectedIndex >= 0) {
-          setMapCenter({
-            ...mapCenter,
+          setMapInfo({
+            ...mapInfo,
             isSearch: true,
             // image: "",
             center: { lng: +searchResults[selectedIndex].x, lat: +searchResults[selectedIndex].y },
@@ -210,8 +208,8 @@ export default function MapPage() {
   // 장소 검색시  지도 레벨 재설정
   useEffect(() => {
     const map = mapRef.current;
-    if (mapCenter.isSearch && map) map.setLevel(5);
-  }, [mapCenter]);
+    if (mapInfo.isSearch && map) map.setLevel(3);
+  }, [mapInfo]);
 
   useEffect(() => {
     // capsuleData에 마커 생성
@@ -283,9 +281,9 @@ export default function MapPage() {
 
         {/* 지도 */}
         <Map
-          center={mapCenter.center}
+          center={mapInfo.center}
           level={13}
-          style={{ width: "100%", height: "calc(100vh - 188px)", position: "relative", overflow: "hidden" }}
+          style={{ width: "100%", height: "calc(100vh - 180px)", position: "relative", overflow: "hidden" }}
           ref={mapRef}
         >
           {/* 지도 확대, 축소 컨트롤 div */}
@@ -303,11 +301,11 @@ export default function MapPage() {
           >
             {/* 검색된 장소 마커 */}
             <MapMarker
-              position={mapCenter.center}
+              position={mapInfo.center}
               // image={
-              //   mapCenter.image != ""
+              //   mapInfo.image != ""
               //     ? {
-              //         src: mapCenter.image, // 이미지가 있을 때 사용자 이미지로 대체
+              //         src: mapInfo.image, // 이미지가 있을 때 사용자 이미지로 대체
               //         size: { width: 50, height: 50 },
               //       }
               //     : undefined // 이미지가 없으면 기본 마커 사용
@@ -449,10 +447,10 @@ export default function MapPage() {
                       className={` relative cursor-pointer hover:bg-gray-100 border-b border-gray-100 `}
                       onClick={() => {
                         map.setLevel(3);
-                        setMapCenter({
-                          ...mapCenter,
+                        setMapInfo({
+                          ...mapInfo,
                           isSearch: false,
-                          // image: marker.isBlur ? img_capsule : marker.image,
+                          image: marker.isBlur ? img_capsule : marker.image,
                           center: { lat: marker.lat, lng: marker.lng },
                         });
                       }}
