@@ -6,12 +6,11 @@ import Button from "../../components/Button";
 import Logo from "../../components/Logo";
 import { testEmail, testPassword } from "../../utils/regex";
 import { loginAuth } from "../../apis/auth";
-import { AuthInput } from "../../components/AuthInput"
+import { AuthInput } from "../../components/AuthInput";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useLoginStore();
-
 
   const [openModal, setOpenModal] = useState({
     isOpen: false,
@@ -56,13 +55,7 @@ export default function LoginPage() {
       login(token); // 로그인 상태 업데이트
       navigate(`/`); // 홈으로 이동
     } catch (error) {
-      setOpenModal({ ...openModal, isOpen: true, value: "아이디 또는 비밀번호가 틀립니다!" });
-    } finally {
-      // 입력값 초기화
-      // setPassword("");
-      // setEmail("");
-      // setIsEmailValid(false);
-      // setIsPasswordValid(false);
+      setOpenModal({ ...openModal, isOpen: true, value: "이메일 또는 비밀번호가 틀립니다!" });
       setAuth({ ...auth, isEmailValid: false, isPasswordValid: false, email: "", password: "" });
     }
   };

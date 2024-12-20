@@ -61,7 +61,7 @@ export default function PasswordResetPage() {
         setUserAuth(true); // 인증성공시 상태값 변환
       }
     } catch (error) {
-      setOpenModal({ ...openModal, isOpen: true, value: "아이디 또는 비밀번호가 틀립니다!" });
+      setOpenModal({ ...openModal, isOpen: true, value: "이메일 또는 비밀번호가 틀립니다!" });
     } finally {
       setAuth({ ...auth, isEmailValid: false, isPasswordValid: false, email: "", password: "" });
     }
