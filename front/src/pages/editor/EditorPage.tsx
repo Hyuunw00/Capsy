@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate, useLocation, useParams } from "react-router";
 import pictureIcon from "../../assets/pick-picture-icon.svg";
 import dateIcon from "../../assets/pick-date-icon.svg";
 import locationIcon from "../../assets/location-icon.svg";
@@ -10,17 +11,17 @@ import { CHANNEL_ID_TIMECAPSULE, CHANNEL_ID_POST } from "../../apis/apis";
 import EditLocationModal from "./EditLocationModal";
 import NotificationModal from "../../components/NotificationModal";
 import { validateBase64Size, compressImage, convertFileToBase64 } from "./imageUtils";
-import { useLocation, useParams } from "react-router";
 
 export default function EditorPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("general");
   const [showModal, setShowModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [saveModal, setSaveModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [createdPostId, setCreatedPostId] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<{
     name: string;
     address: string;
@@ -62,7 +63,11 @@ export default function EditorPage() {
           setTitle(parsedData.title);
           setText(parsedData.content.replace(/\\n/g, "\n"));
 
-          // 날짜 데이터 설정
+          // 채널 ID를 확인하여 게시물 타입 설정
+          const postType = postData.channel._id === CHANNEL_ID_TIMECAPSULE ? "timeCapsule" : "general";
+          setActiveTab(postType);
+
+          // 날짜 데이터 설정 (타임캡슐인 경우)
           if (parsedData.closeAt) {
             const date = new Date(parsedData.closeAt);
             setSelectedDate({
@@ -70,7 +75,6 @@ export default function EditorPage() {
               month: (date.getMonth() + 1).toString(),
               day: date.getDate().toString(),
             });
-            setActiveTab("timeCapsule");
           }
 
           // 이미지 데이터 설정
@@ -172,8 +176,8 @@ export default function EditorPage() {
     setShowModal(false);
   };
 
-  const handleSaveClick = async () => {
-    // 기본 유효성 검사
+  const handleSaveClick = () => {
+    // 유효성 검사
     if (!title.trim()) {
       setNotificationModal({
         isOpen: true,
@@ -211,10 +215,15 @@ export default function EditorPage() {
       }
     }
 
+    // 유효성 검사 통과 시 저장 모달 표시
+    setSaveModal(true);
+  };
+
+  const handleConfirmSave = async () => {
+    setIsLoading(true);
     try {
       const channelId = activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST;
 
-      // 이미지 변환 처리
       const incodingImages = await Promise.all(
         uploadedImages.map(async (file) => {
           const base64 = file.type.startsWith("image/") ? await compressImage(file) : await convertFileToBase64(file);
@@ -228,7 +237,6 @@ export default function EditorPage() {
         }),
       );
 
-      // 공통 데이터 구성
       const customData = {
         title: title,
         content: text.split("\n").join("\\n"),
@@ -244,7 +252,6 @@ export default function EditorPage() {
         image: incodingImages,
         ...(selectedLocation && {
           capsuleLocation: selectedLocation.name,
-          address: selectedLocation.address,
           latitude: selectedLocation.lat,
           longitude: selectedLocation.lng,
         }),
@@ -255,13 +262,11 @@ export default function EditorPage() {
         const response = await updatePost({
           postId,
           title: JSON.stringify(customData),
-          channelId: activeTab === "timeCapsule" ? CHANNEL_ID_TIMECAPSULE : CHANNEL_ID_POST, // channelId 추가
+          channelId,
         });
-
-        if (response?._id) {
-          setCreatedPostId(response._id);
-          setSaveModal(true);
-        }
+        navigate(`/detail/${response._id}`, {
+          state: { fromEditor: true },
+        });
       } else {
         // 신규 생성 요청
         const formData = new FormData();
@@ -269,21 +274,18 @@ export default function EditorPage() {
         formData.append("channelId", channelId);
 
         const response = await createPost(formData);
-
-        if (response?._id) {
-          setCreatedPostId(response._id);
-          setSaveModal(true);
-        }
+        navigate(`/detail/${response._id}`, {
+          state: { fromEditor: true },
+        });
       }
     } catch (error) {
+      setIsLoading(false);
+      setSaveModal(false);
       setNotificationModal({
         isOpen: true,
-        title: "네트워크 에러",
-        description:
-          error instanceof Error ? error.message : "네트워크 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.",
+        title: "저장 실패",
+        description: error instanceof Error ? error.message : "저장 중 오류가 발생했습니다.",
       });
-      console.error(isEdit ? "게시물 수정 실패:" : "게시물 생성 실패:", error);
-      return;
     }
   };
 
@@ -295,7 +297,7 @@ export default function EditorPage() {
   return (
     <div className="relative flex flex-col h-dvh">
       <nav className="border-b">
-        <div className="flex items-center">
+        <div className="relative flex items-center">
           <button
             className={`py-3 px-6 border-b-2 w-1/2 transition ${
               activeTab === "general"
@@ -303,6 +305,9 @@ export default function EditorPage() {
                 : "text-gray-400 border-transparent dark:text-gray-200"
             }`}
             onClick={() => setActiveTab("general")}
+            disabled={isEdit}
+            style={{ cursor: isEdit ? "not-allowed" : "pointer" }}
+            title={isEdit ? "수정 시에는 게시물 타입을 변경할 수 없습니다" : ""}
           >
             일반 포스트
           </button>
@@ -313,6 +318,9 @@ export default function EditorPage() {
                 : "text-gray-400 border-transparent dark:text-gray-200"
             }`}
             onClick={() => setActiveTab("timeCapsule")}
+            disabled={isEdit}
+            style={{ cursor: isEdit ? "not-allowed" : "pointer" }}
+            title={isEdit ? "수정 시에는 게시물 타입을 변경할 수 없습니다" : ""}
           >
             타임캡슐
           </button>
@@ -356,7 +364,7 @@ export default function EditorPage() {
         <div className="flex items-center gap-4">
           <button
             onClick={handleSaveClick}
-            className="px-4 py-1 text-sm text-white bg-primary rounded dark:bg-secondary dark:text-black"
+            className="px-4 py-1 text-sm text-white rounded dark:text-black bg-primary dark:bg-secondary"
           >
             저장
           </button>
@@ -398,7 +406,8 @@ export default function EditorPage() {
           isOpen={saveModal}
           onClose={() => setSaveModal(false)}
           isTimeCapsule={activeTab === "timeCapsule"}
-          postId={createdPostId!}
+          onConfirm={handleConfirmSave}
+          isLoading={isLoading}
         />
       )}
       <NotificationModal
@@ -408,7 +417,7 @@ export default function EditorPage() {
       >
         <button
           onClick={handleCloseModal}
-          className="w-full px-4 py-2 text-white dark:text-black bg-primary dark:bg-secondary rounded-md hover:opacity-80 transition-opacity duration-200"
+          className="w-full px-4 py-2 text-white transition-opacity duration-200 rounded-md dark:text-black bg-primary dark:bg-secondary hover:opacity-80"
         >
           확인
         </button>

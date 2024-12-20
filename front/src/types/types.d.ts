@@ -163,6 +163,7 @@ interface CustomPostData {
   closeAt?: string; // YYYY-MM-DD 형식의 공개 날짜
 }
 interface PostDetail {
+  channel: any;
   likes?: any;
   _id: string;
   title: string;

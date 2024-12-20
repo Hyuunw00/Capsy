@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
-import { getPostDetail, deletePost, createComment, deleteComment, createNotifications } from "../../apis/apis";
+import { getPostDetail, deletePost, createComment, deleteComment, createNotifications, CHANNEL_ID_EVENT } from "../../apis/apis";
 import { Link } from "react-router";
 import { tokenService } from "../../utils/token";
 import { elapsedText } from "./ElapsedText";
@@ -28,6 +28,7 @@ export default function PostDetailPage() {
   const { postId } = useParams<{ postId: string }>(); // URL 파라미터에서 postId 추출
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const currentUser = tokenService.getUser(); // 현재 로그인한 사용자 정보
+  const [showEventModal, setShowEventModal] = useState(false); // 이벤트 캡슐 수정 불가 모달 (추가 : 윤슬)
   const navigate = useNavigate();
   const randomThumbnail = useMemo(() => {
     const thumbnails = [thumbnail1, thumbnail2, thumbnail3, thumbnail4, thumbnail5, thumbnail6];
@@ -348,11 +349,16 @@ export default function PostDetailPage() {
                     <li>
                       <button
                         onClick={() => {
-                          navigate(`/editor/${post._id}`, {
-                            state: { isEdit: true },
-                          });
+                          if (post.channel._id === CHANNEL_ID_EVENT) {
+                            setShowEventModal(true);
+                            setShowDropdown(false);
+                          } else {
+                            navigate(`/editor/${post._id}`, {
+                              state: { isEdit: true },
+                            });
+                          }
                         }}
-                        className="w-full px-4 py-2 text-sm font-normal text-center text-gray-600 transition-all dark:text-white hover:font-semibold hover:bg-gray-500"
+                        className="w-full px-4 py-2 text-sm font-normal text-center text-gray-600 transition-all dark:text-white hover:font-semibold dark:hover:bg-gray-500 hover:bg-gray-100"
                       >
                         수정
                       </button>
@@ -363,7 +369,7 @@ export default function PostDetailPage() {
                           setShowPostDeleteModal(true);
                           setShowDropdown(false);
                         }}
-                        className="w-full px-4 py-2 text-sm font-normal text-center transition-all text-primary dark:text-secondary hover:font-semibold hover:bg-gray-500"
+                        className="w-full px-4 py-2 text-sm font-normal text-center transition-all text-primary dark:text-secondary hover:font-semibold dark:hover:bg-gray-500 hover:bg-gray-100"
                       >
                         삭제
                       </button>
