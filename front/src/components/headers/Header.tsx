@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { tokenService } from "../../utils/token";
 import { useNotification } from "../../hooks/useNotification";
 import { useThemeStore } from "../../store/themeStore";
@@ -11,7 +10,6 @@ import LightMode from "../../assets/Light-mode.svg";
 import DarkMode from "../../assets/Dark-mode.svg";
 
 export default function Header() {
-  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!tokenService.getToken());
   const { isDark, toggleTheme } = useThemeStore();
 
@@ -25,7 +23,7 @@ export default function Header() {
     handleReadNotification,
     handleMoveToPost,
     closeModal,
-    toggleModal
+    toggleModal,
   } = useNotification();
 
   // 로그인 상태 변경 감지
@@ -52,7 +50,12 @@ export default function Header() {
   return (
     <>
       <nav className="absolute top-0 z-20 justify-between w-full px-8 py-4 bg-white dark:bg-black item-between">
-        <button onClick={() => navigate("/")}>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            window.location.reload();
+          }}
+        >
           <img src={logo_black} alt="Logo" className="w-[75px] h-[30px] dark:invert" />
         </button>
 
@@ -66,10 +69,7 @@ export default function Header() {
           </button>
 
           {isLoggedIn && (
-            <button
-              onClick={toggleModal}
-              className="relative flex items-center justify-center w-5 h-5"
-            >
+            <button onClick={toggleModal} className="relative flex items-center justify-center w-5 h-5">
               <img src={NotificationIcon} alt="Notification" className="object-contain w-full h-full dark:invert" />
               {notifications.length > 0 && (
                 <div className="absolute w-2 h-2 rounded-full -top-1 -right-1 bg-secondary" />
