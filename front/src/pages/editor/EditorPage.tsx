@@ -100,7 +100,7 @@ export default function EditorPage() {
           if (parsedData.capsuleLocation) {
             setSelectedLocation({
               name: parsedData.capsuleLocation,
-              address: "",
+              address: parsedData.address,
               lat: parsedData.latitude,
               lng: parsedData.longitude,
             });
@@ -252,6 +252,7 @@ export default function EditorPage() {
         image: incodingImages,
         ...(selectedLocation && {
           capsuleLocation: selectedLocation.name,
+          address: selectedLocation.address,
           latitude: selectedLocation.lat,
           longitude: selectedLocation.lng,
         }),
