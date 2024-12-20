@@ -151,7 +151,7 @@ export default function PostDetailPage() {
                   ? "M6.7675 7.50002L9.86125 10.5938L8.9775 11.4775L5 7.50002L8.9775 3.52252L9.86125 4.40627L6.7675 7.50002Z"
                   : "M8.2325 7.50002L5.13875 4.40627L6.0225 3.52252L10 7.50002L6.0225 11.4775L5.13875 10.5938L8.2325 7.50002Z"
               }
-              className="fill-primary"
+              className="fill-primary dark:fill-secondary"
             />
           </svg>
         </button>
@@ -443,7 +443,7 @@ export default function PostDetailPage() {
                 <div
                   key={index}
                   className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                    index === currentImageIndex ? "bg-primary" : "bg-gray-100"
+                    index === currentImageIndex ? "bg-primary dark:bg-secondary" : "bg-gray-100 dark:bg-gray-500"
                   }`}
                 />
               ))}
