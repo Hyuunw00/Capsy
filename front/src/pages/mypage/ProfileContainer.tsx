@@ -5,6 +5,7 @@ import MySlideContainer from "./MySlideContainer";
 import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE, getUserPosts } from "../../apis/apis";
 import { tokenService } from "../../utils/token";
 import Loading from "../../components/Loading"; // 로딩 컴포넌트
+import axiosInstance from "../../apis/axiosInstance";
 
 interface PostType {
   _id: string;
@@ -46,6 +47,8 @@ function ProfileContainer() {
   const [selectedTab, setSelectedTab] = useState("capsules");
   const [postItems, setPostItems] = useState<PostType[]>([]);
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
+  const [capsuleData, setCapsuleData] = useState<Post[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
   const navigate = useNavigate();
 
   const handleTabClick = (tab: string) => {
@@ -64,6 +67,12 @@ function ProfileContainer() {
       try {
         const posts = await getUserPosts(userAuthorId);
         setPostItems(Array.isArray(posts) ? posts : Object.values(posts));
+
+        const response = await axiosInstance.get("/messages", { params: { userId: userAuthorId } });
+        const allMessages = response.data;
+        user.messages = allMessages;
+
+        sessionStorage.setItem("user", JSON.stringify(user));
       } catch (error) {
         console.error("포스트 불러오기 실패", error);
       } finally {
@@ -72,6 +81,36 @@ function ProfileContainer() {
     };
     fetchPosts();
   }, [userAuthorId]);
+
+  // sessionStorage에서 사용자 데이터 가져오기
+  useEffect(() => {
+    const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+    if (user && user.messages) {
+      setMessages(user.messages);
+    }
+  }, []);
+
+  // 데이터 call
+  useEffect(() => {
+    if (messages.length > 0) {
+      const updateData = async () => {
+        try {
+          const response = await axiosInstance.get(`/posts/channel/${CHANNEL_ID_TIMECAPSULE}`);
+
+          const filteredCapsules = response.data.filter((capsule: any) => {
+            return messages.some((message) => {
+              const parsedMessage = JSON.parse(message.message);
+              return parsedMessage.postId === capsule._id;
+            });
+          });
+          setCapsuleData(filteredCapsules);
+        } catch (error) {
+          console.error("Error: ", error);
+        }
+      };
+      updateData();
+    }
+  }, [messages]);
 
   const articleItems = postItems.filter((post) => post.channel?._id === CHANNEL_ID_POST);
   const capsuleItems = postItems.filter((post) => post.channel?._id === CHANNEL_ID_TIMECAPSULE);
@@ -104,9 +143,50 @@ function ProfileContainer() {
     );
   };
 
+  const categorizeAlarmCapsules = () => {
+    const now = new Date();
+    return capsuleData.reduce<{ opened: CapsuleItem[]; waiting: CapsuleItem[] }>(
+      (acc, item) => {
+        try {
+          const parsed: ParsedCapsule = JSON.parse(item.title);
+          const closeAt = new Date(parsed.closeAt);
+          const capsuleItem: CapsuleItem = {
+            id: item._id,
+            title: parsed.title,
+            content: parsed.content?.replace(/\\n/g, "\n"),
+            image: item.image ?? parsed.image[0],
+            closeAt,
+          };
+          if (closeAt > now) {
+            acc.waiting.push(capsuleItem);
+          } else {
+            acc.opened.push(capsuleItem);
+          }
+        } catch (error) {
+          console.error("Error parsing capsule data:", error);
+        }
+        return acc;
+      },
+      { opened: [], waiting: [] },
+    );
+  };
+
   const handleShowAllClick = (type: "open" | "close", tabType: "capsules" | "alarms") => {
-    const { opened, waiting } = categorizeCapsules();
+    let opened: CapsuleItem[] = [];
+    let waiting: CapsuleItem[] = [];
+
+    if (tabType === "capsules") {
+      const { opened: openedCapsules, waiting: waitingCapsules } = categorizeCapsules();
+      opened = openedCapsules;
+      waiting = waitingCapsules;
+    } else if (tabType === "alarms") {
+      const { opened: openedAlarms, waiting: waitingAlarms } = categorizeAlarmCapsules();
+      opened = openedAlarms;
+      waiting = waitingAlarms;
+    }
+
     const items = type === "open" ? opened : waiting;
+
     navigate(tabType === "capsules" ? "/capsule-list" : "/alarm-list", {
       state: {
         title: type === "open" ? "공개 완료" : "공개 대기",
@@ -271,14 +351,14 @@ function ProfileContainer() {
             )}
             {selectedTab === "alarms" &&
               (() => {
-                const { opened, waiting } = categorizeCapsules();
+                const { opened, waiting } = categorizeAlarmCapsules();
                 return (
                   <>
                     <MySlideHeader
                       title="공개완료"
                       count={opened.length}
                       showAllText="전체보기"
-                      onShowAllClick={() => handleShowAllClick("open", "capsules")}
+                      onShowAllClick={() => handleShowAllClick("open", "alarms")}
                     />
                     <MySlideContainer
                       uniqueKey="open"
@@ -290,7 +370,7 @@ function ProfileContainer() {
                         title="공개대기"
                         count={waiting.length}
                         showAllText="전체보기"
-                        onShowAllClick={() => handleShowAllClick("close", "capsules")}
+                        onShowAllClick={() => handleShowAllClick("close", "alarms")}
                       />
                       <MySlideContainer uniqueKey="close" items={waiting} />
                     </div>
