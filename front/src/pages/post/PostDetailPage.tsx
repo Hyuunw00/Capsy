@@ -352,7 +352,7 @@ export default function PostDetailPage() {
                             state: { isEdit: true },
                           });
                         }}
-                        className="w-full px-4 py-2 text-sm font-normal text-center text-gray-600 transition-all dark:text-white hover:font-semibold hover:bg-gray-500"
+                        className="w-full px-4 py-2 text-sm font-normal text-center text-gray-600 transition-all dark:text-white hover:font-semibold dark:hover:bg-gray-500 hover:bg-gray-100"
                       >
                         수정
                       </button>
@@ -363,7 +363,7 @@ export default function PostDetailPage() {
                           setShowPostDeleteModal(true);
                           setShowDropdown(false);
                         }}
-                        className="w-full px-4 py-2 text-sm font-normal text-center transition-all text-primary dark:text-secondary hover:font-semibold hover:bg-gray-500"
+                        className="w-full px-4 py-2 text-sm font-normal text-center transition-all text-primary dark:text-secondary hover:font-semibold dark:hover:bg-gray-500 hover:bg-gray-100"
                       >
                         삭제
                       </button>
