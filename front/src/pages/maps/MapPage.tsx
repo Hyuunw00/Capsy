@@ -338,15 +338,7 @@ export default function MapPage() {
                     zIndex={3}
                   >
                     <div
-                      style={{
-                        position: "relative",
-                        width: "270px",
-                        maxWidth: "300px",
-                        padding: "10px",
-                        backgroundColor: "#fff",
-                        borderRadius: "8px",
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                      }}
+                      className="relative w-[270px] max-w-[300px] p-[10px]  bg-white dark:bg-gray-700 rounded-[8px] shadow-[0_4px_8px_rgba(0,0,0,0.2)] dark:shadow-[0_4px_8px_rgba(0,0,0,0.4)]"
                       onClick={() => handleClickCapsule(marker)}
                     >
                       <div
@@ -365,10 +357,17 @@ export default function MapPage() {
                         onClick={(e) => handleCloseOverlay(e)}
                         // 닫기 버튼 클릭 시 오버레이 닫기
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 18 18" fill="none">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 18 18"
+                          fill="none"
+                          className="text-black dark:text-white"
+                        >
                           <path
                             d="M14.121 3.879a1 1 0 0 0-1.415 0L9 7.586 5.293 3.879a1 1 0 1 0-1.415 1.415L7.586 9 3.879 12.707a1 1 0 0 0 1.415 1.415L9 10.414l3.707 3.707a1 1 0 1 0 1.415-1.415L10.414 9l3.707-3.707a1 1 0 0 0 0-1.415z"
-                            fill="#000"
+                            fill="currentColor"
                           />
                         </svg>
                       </div>
@@ -387,15 +386,7 @@ export default function MapPage() {
                           }}
                         />
                       </div>
-                      <div
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: "bold",
-                          textAlign: "center",
-                          color: "#333",
-                          marginTop: "5px",
-                        }}
-                      >
+                      <div className="mt-[5px] text-[12px] font-bold text-center text-gray-700 dark:text-gray-100">
                         {marker.title}
                       </div>
                     </div>
@@ -407,15 +398,15 @@ export default function MapPage() {
 
           {/* 검색 결과 목록 */}
           {searchResults.length > 0 && (
-            <ul className="absolute left-0 top-[50px] z-10 mt-1 bg-white w-full overflow-auto  max-h-60 ">
+            <ul className="absolute left-0 top-[50px] z-10 mt-1 bg-white dark:bg-gray-700 dark:text-white w-full overflow-auto  max-h-60 ">
               {searchResults.map((place, index) => (
                 <li
                   key={place.id}
-                  className={`p-3 cursor-pointer hover:bg-gray-50 border-b border-gray-100 ${index === selectedIndex ? "bg-gray-100" : "hover:bg-gray-50"}`}
+                  className={`p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-500 border-b border-gray-100 dark:border-gray-500 ${index === selectedIndex ? "bg-gray-100" : "hover:bg-gray-50"}`}
                   onClick={() => handleSelectPlace(place)}
                 >
                   <div className="font-medium text-[14px]">{place.place_name}</div>
-                  <div className="text-[12px] text-gray-500 mt-1">{place.address_name}</div>
+                  <div className="text-[12px] text-gray-500 dark:text-gray-300 mt-1">{place.address_name}</div>
                 </li>
               ))}
             </ul>
@@ -428,7 +419,7 @@ export default function MapPage() {
               // onClick={() => setIsListView(false)} // 모달 외부 클릭 시 모달 닫기
             >
               <div
-                className="w-full px-8 overflow-y-auto bg-white dark:bg-gray-600 shadow-lg rounded-3xl h-80"
+                className="w-full px-8 overflow-y-auto bg-white dark:bg-gray-600 shadow-lg rounded-t-3xl h-80"
                 onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 이벤트 전파 방지
               >
                 <h3 className="p-3 pb-6 text-lg font-bold text-center border-b dark:text-white border-b-gray-200 dark:border-b-gray-400">
