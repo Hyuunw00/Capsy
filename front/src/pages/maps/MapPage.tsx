@@ -8,8 +8,10 @@ import { CustomOverlayMap, Map, MapMarker, MarkerClusterer } from "react-kakao-m
 import img_capsule from "../../assets/marker.svg";
 import icon_plus from "../../assets/map/ico_plus.png";
 import icon_minus from "../../assets/map/ico_minus.png";
+import map_location from "../../assets/map/map-location-icon.svg";
 import Loading from "../../components/Loading";
 import MapSearch from "./MapSearch";
+import pixel_arrow from "../../assets/map/arrow.svg";
 
 interface Place {
   place_name: string;
@@ -26,7 +28,8 @@ interface Markers {
   image: string;
   isBlur: boolean;
   _id: string;
-  place: string;
+  placeName: string;
+  addressName: string;
 }
 
 interface MapInfo {
@@ -226,7 +229,8 @@ export default function MapPage() {
         image: parsedData.image[0],
         isBlur: closeAt && new Date().toISOString() < closeAt.toISOString(),
         _id: post._id,
-        place: parsedData.address ?? parsedData.capsuleLocation,
+        placeName: parsedData.capsuleLocation,
+        addressName: parsedData.address || "주소 정보 없음",
       };
     });
 
@@ -422,31 +426,19 @@ export default function MapPage() {
           {/* 클러스터링안의 타임캡슐 목록 */}
           {filteredMarkers.length > 0 && (
             <div
-              style={{
-                position: "absolute",
-                right: "0",
-                bottom: "0px",
-                zIndex: "10",
-              }}
+              className="absolute bottom-0 right-0 z-10 w-full max-w-[600px]"
               // onClick={() => setIsListView(false)} // 모달 외부 클릭 시 모달 닫기
             >
               <div
-                style={{
-                  backgroundColor: "white",
-                  borderRadius: "8px",
-                  overflowY: "auto",
-                  width: "600px",
-                  height: "300px",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                }}
+                className="w-full px-8 overflow-y-auto bg-white shadow-lg rounded-3xl h-80"
                 onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 이벤트 전파 방지
               >
-                <h3 className="p-3 bg-gray-200 ">캡슐 리스트</h3>
-                <ul>
+                <h3 className="p-3 pb-6 text-lg font-bold text-center border-b border-b-gray-200">캡슐 리스트</h3>
+                <ul className="h-56 overflow-scroll">
                   {filteredMarkers.map((marker) => (
                     <li
                       key={marker._id}
-                      className={` relative cursor-pointer hover:bg-gray-100 border-b border-gray-100 `}
+                      className="relative px-2 py-4 transition border-b border-gray-100 cursor-pointer hover:bg-gray-100 item-between hover:bg-bg-100"
                       onClick={() => {
                         map.setLevel(3);
                         setMapCenter({
@@ -458,38 +450,35 @@ export default function MapPage() {
                       }}
                     >
                       <div className="flex items-start justify-start gap-3">
-                        <div className="text-[12px] text-gray-500 mt-1">
-                          <img src={marker.isBlur ? img_capsule : marker.image} className="w-28 h-28" />
+                        <div className="w-20 h-20 overflow-hidden rounded-lg item-middle">
+                          <img
+                            className="object-cover w-full h-full"
+                            src={marker.isBlur ? img_capsule : marker.image}
+                          />
                         </div>
 
-                        <div className="font-medium text-[14px]">{marker.title}</div>
+                        <div className="flex flex-col justify-between h-20">
+                          <div className="flex flex-col ">
+                            <h3 className="font-medium text-md">{marker.title}</h3>
+                            <span className="font-medium text-[14px] text-gray-500">{marker.placeName}</span>
+                          </div>
 
-                        <div className="  absolute bottom-2 left-[120px] flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                          <span>{marker.place}</span>
+                          <div className="flex gap-2 text-xs text-gray-500 dark:text-gray-400">
+                            <img src={map_location} alt="주소 아이콘" />
+                            <span>{marker.addressName}</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="absolute right-0 bottom-2">
-                        <button
-                          onClick={() =>
-                            marker.isBlur ? handleClickCapsule(marker) : navigate(`/detail/${marker._id}`)
-                          }
-                          className="hover:text-primary"
-                        >
-                          상세보기
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => (marker.isBlur ? handleClickCapsule(marker) : navigate(`/detail/${marker._id}`))}
+                        className="w-10 h-12 group"
+                      >
+                        <img
+                          src={pixel_arrow}
+                          alt="상세보기"
+                          className="object-contain transition-transform duration-400 transform-gpu group-hover:translate-x-2"
+                        />
+                      </button>
                     </li>
                   ))}
                 </ul>
