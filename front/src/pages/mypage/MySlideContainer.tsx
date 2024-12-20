@@ -104,7 +104,7 @@ function MySlideContainer({ items, uniqueKey, onItemClick }: MySlideContainerPro
           })}
         </Swiper>
         <button
-          className={`absolute left-0 top-1/2 transform -translate-y-[100%] bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-prev-${uniqueKey}`}
+          className={`absolute left-[5px] top-1/2 transform -translate-y-[100%] bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-prev-${uniqueKey}`}
           aria-label="Previous slide"
         >
           <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -120,7 +120,7 @@ function MySlideContainer({ items, uniqueKey, onItemClick }: MySlideContainerPro
         </button>
 
         <button
-          className={`absolute right-0 top-1/2 transform -translate-y-[100%] bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-next-${uniqueKey}`}
+          className={`absolute right-[5px] top-1/2 transform -translate-y-[100%] bg-transparent border-none transition-all duration-300 ease-in-out swiper-button-next-${uniqueKey}`}
           aria-label="Next slide"
         >
           <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
