@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
-import { getPostDetail, deletePost, createComment, deleteComment } from "../../apis/apis";
+import { getPostDetail, deletePost, createComment, deleteComment, createNotifications } from "../../apis/apis";
 import { Link } from "react-router";
 import { tokenService } from "../../utils/token";
 import { elapsedText } from "./ElapsedText";
@@ -261,7 +261,7 @@ export default function PostDetailPage() {
   // 좋아요 로직
   const handleLikeClick = async (postId: string) => {
     const userId = userData._id;
-    console.log("userId: ", userId);
+    // console.log("userId: ", userId);
 
     const isLiked = post.likes.some((like: Like) => like.user === userId);
 
@@ -278,6 +278,17 @@ export default function PostDetailPage() {
         };
         post.likes.push(newLike);
         setLikeStatus((prevState) => ({ ...prevState, [postId]: true }));
+
+        // 작성자가 자신의 게시글에 좋아요를 누를때는 알림 x // 메인 로직과 동일하게 추가
+        if (post?.author._id === userId) return;
+
+        // 알림 생성 로직 추가 (윤슬)
+        await createNotifications({
+          notificationType: "LIKE",
+          notificationTypeId: response.data._id,
+          userId: post.author._id,
+          postId: post._id,
+        });
       } else {
         // 좋아요 취소
         const likeId = post.likes.find((like: Like) => like.user === userId)._id;
@@ -341,7 +352,7 @@ export default function PostDetailPage() {
                             state: { isEdit: true },
                           });
                         }}
-                        className="w-full px-4 py-2 text-sm font-normal text-center text-gray-600 dark:text-white transition-all hover:font-semibold hover:bg-gray-500"
+                        className="w-full px-4 py-2 text-sm font-normal text-center text-gray-600 transition-all dark:text-white hover:font-semibold hover:bg-gray-500"
                       >
                         수정
                       </button>
@@ -565,7 +576,7 @@ export default function PostDetailPage() {
             취소
           </button>
           <button
-            className="w-full py-2 text-white dark:text-black transition-opacity rounded bg-primary dark:bg-primary-dark hover:opacity-40"
+            className="w-full py-2 text-white transition-opacity rounded dark:text-black bg-primary dark:bg-primary-dark hover:opacity-40"
             onClick={handlePostDelete}
           >
             삭제
