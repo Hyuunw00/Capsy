@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../apis/axiosInstance";
-import NotificationModal from "../../components/NotificationModal";
 import { useNavigate } from "react-router";
-import { tokenService } from "../../utils/token";
-import { useLoginStore } from "../../store/loginStore";
 import eventBanner from "../../assets/holiday-event-banner.png";
 import eventThumnail from "../../assets/event-thumnails/event-thumnail.svg";
 import eventThumnail1 from "../../assets/event-thumnails/event-thumnail-1.svg";
@@ -17,6 +14,7 @@ import Loading from "../../components/Loading";
 import eventWriteIcon from "../../assets/event-capsule-icon.svg";
 import TimeCapsuleModal from "../../components/TimeCapsuleModal";
 import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
+import img_alarm from "../../assets/alarm.png";
 
 export default function Event() {
   const navigate = useNavigate();
@@ -32,14 +30,22 @@ export default function Event() {
   const [modalData, setModalData] = useState({ imgSrc: "", neonText: "", whiteText: "" });
 
   // 각 게시물 좋아요, 알림 상태 관리
-  const [userData, _] = useState(() => {
+  const [userData, setUserData] = useState(() => {
     const storedUserData = sessionStorage.getItem("user");
-    return storedUserData ? JSON.parse(storedUserData) : { likes: [] };
+    return storedUserData ? JSON.parse(storedUserData) : { likes: [], messages: [] };
   });
 
   // 공개 대기 캡슐 아이템 예시
   const [likeStatus, setLikeStatus] = useState<{ [key: string]: boolean }>({});
-  const [notiStatus, setNotiStatus] = useState<boolean[]>([]);
+  const [notiStatus, setNotiStatus] = useState<{ [key: string]: boolean }>({});
+  // 알림 등록 모달을 위한 상태 관리
+  const [showAlarmModal, setShowAlarmModal] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [alarmModalData, setAlarmModalData] = useState({
+    imgSrc: "",
+    neonText: "",
+    whiteText: "",
+  });
 
   // 좋아요 버튼 클릭 이벤트 핸들러
   const handleLikeClick = async (postId: string) => {
@@ -98,13 +104,87 @@ export default function Event() {
     }
   };
 
+  const handleAlarmCloseModal = () => {
+    setShowAlarmModal(false);
+    setSelectedPostId(null);
+  };
+
   // 알림 버튼 클릭 이벤트 핸들러
-  const handleNotiClick = (index: number) => {
-    setNotiStatus((prevNotiStatus) => {
-      const newNotiStatus = [...prevNotiStatus];
-      newNotiStatus[index] = !newNotiStatus[index];
-      return newNotiStatus;
+  const handleNotiClick = (postId: string) => {
+    // 로그인하지 않은 경우 로그인 페이지로 리디렉션
+    if (!userData?._id) {
+      navigate("/login");
+      return;
+    }
+
+    // 이미 해당 게시글에 알림이 설정된 경우
+    const userNoti = userData?.messages.find((message: any) => {
+      try {
+        const parsedMessage = JSON.parse(message.message);
+        return parsedMessage.postId === postId;
+      } catch (error) {
+        return false;
+      }
     });
+
+    if (userNoti) {
+      alert("해당 게시글 알람을 이미 설정하셨습니다.");
+      return;
+    }
+
+    // 알림을 설정하는 모달
+    setAlarmModalData({
+      imgSrc: img_alarm,
+      neonText: "알림을 설정하면 취소할 수 없습니다",
+      whiteText: "알림을 설정하시겠습니까?",
+    });
+    setShowAlarmModal(true);
+    setSelectedPostId(postId);
+  };
+
+  // 알림 버튼 클릭 이벤트 핸들러
+  const handleConfirm = async () => {
+    if (!selectedPostId) return;
+
+    try {
+      const post = eventCapsuleData.find((post) => post._id === selectedPostId);
+      if (!post) return;
+
+      const userId = userData?._id;
+
+      const openAt = getCloseAt(post.title)?.toISOString();
+
+      // 새로운 메세지 전송
+      const messageResponse = await axiosInstance.post("/messages/create", {
+        message: JSON.stringify({ postId: selectedPostId, openAt }),
+        receiver: userId,
+      });
+
+      const newMessage = messageResponse.data;
+
+      setUserData((prevUserData: any) => {
+        const updatedMessages = [...(prevUserData.messages || []), newMessage];
+        const updatedUserData = {
+          ...prevUserData,
+          messages: updatedMessages,
+        };
+        sessionStorage.setItem("user", JSON.stringify(updatedUserData));
+        return updatedUserData;
+      });
+
+      setNotiStatus((prevStatus: any) => {
+        const updatedStatus = { ...prevStatus, [selectedPostId]: true };
+        sessionStorage.setItem("notiStatus", JSON.stringify(updatedStatus));
+        return updatedStatus;
+      });
+
+      handleAlarmCloseModal();
+    } catch (error: any) {
+      if (error.response && error.response.status === 401) {
+        console.log("알림 처리 실패: 로그인이 필요합니다.");
+        navigate("/login");
+      }
+    }
   };
 
   // 파싱된 title 필드 가져오기
@@ -119,19 +199,19 @@ export default function Event() {
     }
   };
 
-  // // 타임캡슐의 closeAt 날짜 가져오기
-  // const getCloseAt = (jsonString: any) => {
-  //   try {
-  //     const parsedData = JSON.parse(jsonString);
-  //     if (parsedData.closeAt) {
-  //       return new Date(parsedData.closeAt);
-  //     }
-  //     return null;
-  //   } catch (error) {
-  //     console.error("JSON parse error: ", error);
-  //     return null;
-  //   }
-  // };
+  // 타임캡슐의 closeAt 날짜 가져오기
+  const getCloseAt = (jsonString: any) => {
+    try {
+      const parsedData = JSON.parse(jsonString);
+      if (parsedData.closeAt) {
+        return new Date(parsedData.closeAt);
+      }
+      return null;
+    } catch (error) {
+      console.error("JSON parse error: ", error);
+      return null;
+    }
+  };
 
   //  이벤트 캡슐 게시글 이동 버튼
   const handleClickEventEdit = () => {
@@ -189,11 +269,49 @@ export default function Event() {
     setLikeStatus(newLikeStatus);
   }, [eventCapsuleData]);
 
+  // 알림 상태가 바뀌면 실행
+  useEffect(() => {
+    const updatedFilterData = eventCapsuleData.map((post) => {
+      const isNotified = userData?.messages?.some((message: any) => {
+        const parsedMessage = message.message ? JSON.parse(message.message) : null;
+        return parsedMessage && parsedMessage.postId === post._id;
+      });
+      return {
+        ...post,
+        isNotified,
+      };
+    });
+
+    const newNotiStatus = updatedFilterData.reduce<{ [key: string]: boolean }>((acc, post) => {
+      acc[post._id] = post.isNotified ?? false;
+      return acc;
+    }, {});
+
+    setNotiStatus(newNotiStatus);
+  }, [eventCapsuleData]);
+
+  // 페이지 로드 시 sessionStorage에서 데이터 가져오기
+  useEffect(() => {
+    const storedUserData = sessionStorage.getItem("user");
+    if (storedUserData) {
+      const parsedUserData = JSON.parse(storedUserData);
+      setUserData(parsedUserData);
+      setNotiStatus(parsedUserData.notifications || {});
+    }
+  }, []);
+
+  // userData가 업데이트될 때마다 sessionStorage에 저장
+  useEffect(() => {
+    if (userData) {
+      sessionStorage.setItem("user", JSON.stringify(userData));
+    }
+  }, [userData]);
+
   if (loading) return <Loading />;
 
   return (
     <>
-    {showModal && (
+      {showModal && (
         <TimeCapsuleModal
           imgSrc={modalData.imgSrc}
           neonText={modalData.neonText}
@@ -201,6 +319,18 @@ export default function Event() {
           onClose={handleCloseModal}
         />
       )}
+
+      {showAlarmModal && selectedPostId && (
+        <TimeCapsuleModal
+          imgSrc={alarmModalData.imgSrc}
+          neonText={alarmModalData.neonText}
+          whiteText={alarmModalData.whiteText}
+          onClose={handleAlarmCloseModal}
+          onCancel={handleAlarmCloseModal}
+          onConfirm={handleConfirm}
+        />
+      )}
+
       {/* 이벤트 배너 */}
       <img src={eventBanner} alt="이벤트 배너" />
 
@@ -256,12 +386,12 @@ export default function Event() {
                     {item.channel?.name === "EVENTTEST" && (
                       //  알림 이미지
                       <img
-                        src={notiStatus[index] ? img_fillNoti : img_noti}
+                        src={notiStatus[item._id] ? img_fillNoti : img_noti}
                         alt="noti"
                         className="object-contain cursor-pointer flex-shrink-0 w-[21px] h-[21px]"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleNotiClick(index);
+                          handleNotiClick(item._id);
                         }}
                       />
                     )}

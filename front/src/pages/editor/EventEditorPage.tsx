@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import pictureIcon from "../../assets/pick-picture-icon.svg";
 import dateIcon from "../../assets/pick-date-icon.svg";
 import EditPreview from "./EditPreview";
@@ -6,16 +7,28 @@ import EditComplete from "./EditComplete";
 import { createPost } from "../../apis/apis";
 import { CHANNEL_ID_EVENT } from "../../apis/apis";
 import EventEditModal from "./EventEditModal";
+import NotificationModal from "../../components/NotificationModal";
 import { compressImage, convertFileToBase64, validateBase64Size } from "./imageUtils";
 
 export default function EventEditorPage() {
+  const navigate = useNavigate();
   const activeTab = "event";
   const [showModal, setShowModal] = useState(false);
   const [saveModal, setSaveModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showEventModal, setShowEventModal] = useState(false);
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [createdPostId, setCreatedPostId] = useState<string | null>(null);
+  const [notificationModal, setNotificationModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+  });
 
   // 업로드 받은 이미지 상태
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
@@ -26,6 +39,14 @@ export default function EventEditorPage() {
     month: "",
     day: "",
   });
+
+  const handleCloseModal = () => {
+    setNotificationModal({
+      isOpen: false,
+      title: "",
+      description: "",
+    });
+  };
 
   // 프리뷰에서 선택한 사진을 배열에서 제거하는 함수
   const handleDeleteFile = (indexToDelete: number) => {
@@ -64,7 +85,11 @@ export default function EventEditorPage() {
     for (const file of files) {
       const validation = validateFile(file);
       if (!validation.isValid) {
-        alert(validation.error);
+        setNotificationModal({
+          isOpen: true,
+          title: "파일 오류",
+          description: validation.error || "파일 검증에 실패했습니다.",
+        });
         return;
       }
     }
@@ -81,29 +106,49 @@ export default function EventEditorPage() {
   };
 
   // 저장 버튼 클릭 시 유효성 검사
-  const handleSaveClick = async () => {
+  const handleSaveClick = () => {
     if (!title.trim()) {
-      alert("제목을 입력해주세요.");
+      setNotificationModal({
+        isOpen: true,
+        title: "입력 오류",
+        description: "제목을 입력해주세요.",
+      });
       return;
     }
 
     if (!text.trim()) {
-      alert("내용을 입력해주세요.");
+      setNotificationModal({
+        isOpen: true,
+        title: "입력 오류",
+        description: "내용을 입력해주세요.",
+      });
       return;
     }
 
-    if (activeTab === "event") {
-      if (uploadedImages.length === 0) {
-        alert("타임캡슐에는 이미지 첨부가 필수입니다.");
-        return;
-      }
-      if (!selectedDate.year || !selectedDate.month || !selectedDate.day) {
-        alert("타임캡슐에는 날짜 지정이 필수입니다.");
-        return;
-      }
+    if (uploadedImages.length === 0) {
+      setNotificationModal({
+        isOpen: true,
+        title: "필수 항목 누락",
+        description: "타임캡슐에는 이미지 첨부가 필수입니다.",
+      });
+      return;
     }
 
-    // 다중 이미지일 경우
+    if (!selectedDate.year || !selectedDate.month || !selectedDate.day) {
+      setNotificationModal({
+        isOpen: true,
+        title: "필수 항목 누락",
+        description: "타임캡슐에는 날짜 지정이 필수입니다.",
+      });
+      return;
+    }
+
+    // 유효성 검사 통과 시 저장 모달 표시
+    setSaveModal(true);
+  };
+
+  const handleConfirmSave = async () => {
+    setIsLoading(true);
     try {
       const channelId = CHANNEL_ID_EVENT;
 
@@ -130,7 +175,7 @@ export default function EventEditorPage() {
           date.setHours(date.getHours() - 9);
           return date.toISOString();
         })(),
-        image: incodingImages, // 인코딩된 문자열 배열
+        image: incodingImages,
       };
 
       const formData = new FormData();
@@ -138,24 +183,30 @@ export default function EventEditorPage() {
       formData.append("channelId", channelId);
 
       const response = await createPost(formData);
-      console.log(response);
-      setSaveModal(true);
       if (response?._id) {
-        setCreatedPostId(response._id);
-        setSaveModal(true);
+        navigate(`/detail/${response._id}`, {
+          state: { fromEditor: true },
+        });
       }
     } catch (error) {
+      setIsLoading(false);
+      setSaveModal(false);
+      setNotificationModal({
+        isOpen: true,
+        title: "저장 실패",
+        description: error instanceof Error ? error.message : "저장 중 오류가 발생했습니다.",
+      });
       console.error("게시물 생성 실패:", error);
     }
   };
 
   return (
     <div className="relative flex flex-col h-dvh">
-      <button className={`py-3 px-6 border-b-2 w-full transition ${"text-[#4D15FF] border-[#4D15FF]"}`}>
+      <button className="w-full px-6 py-3 transition border-b-2 text-primary dark:text-secondary border-primary dark:border-secondary">
         이벤트 타임캡슐
       </button>
 
-      <nav className="flex items-center justify-between px-4 py-3 border-b border-b-gray-100">
+      <nav className="flex items-center justify-between px-4 py-3 border-b border-b-gray-100 dark:border-b-gray-500">
         <div className="flex items-center gap-4">
           <input
             type="file"
@@ -165,22 +216,23 @@ export default function EventEditorPage() {
             onChange={handleFileChange}
             multiple
           />
-          <button onClick={handlePictureClick} className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded">
+          <button
+            onClick={handlePictureClick}
+            className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded dark:bg-gray-300"
+          >
             <img src={pictureIcon} alt="사진 선택 아이콘" />
           </button>
-          {activeTab === "event" && (
-            <button
-              className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded"
-              onClick={() => setShowModal(true)}
-            >
-              <img src={dateIcon} alt="날짜 지정 아이콘" />
-            </button>
-          )}
+          <button
+            className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded dark:bg-gray-300"
+            onClick={() => setShowModal(true)}
+          >
+            <img src={dateIcon} alt="날짜 지정 아이콘" />
+          </button>
         </div>
         <div className="flex items-center gap-4">
           <button
             onClick={handleSaveClick}
-            className="px-4 py-1 text-sm text-white bg-black rounded dark:bg-white dark:text-black"
+            className="px-4 py-1 text-sm text-white rounded dark:text-black bg-primary dark:bg-secondary"
           >
             저장
           </button>
@@ -192,31 +244,50 @@ export default function EventEditorPage() {
             placeholder="제목 없음"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full text-gray-600 placeholder-gray-300 resize-none h-7 focus:outline-none"
+            className="w-full text-gray-600 placeholder-gray-300 bg-white resize-none h-7 focus:outline-none dark:bg-black dark:text-gray-100"
           />
         </h2>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="flex-1 w-full mt-2 overflow-scroll text-gray-600 placeholder-gray-300 whitespace-pre-wrap resize-none h-96 focus:outline-none"
-          placeholder={"타임캡슐을 작성해주세요.\n타임캡슐은 이미지 첨부 및 날짜 지정이 필수입니다."}
+          className="flex-1 w-full mt-2 overflow-x-hidden overflow-y-scroll text-gray-600 placeholder-gray-300 whitespace-pre-wrap bg-white resize-none h-96 focus:outline-none dark:bg-black dark:text-gray-100"
+          placeholder="타임캡슐을 작성해주세요.\n타임캡슐은 이미지 첨부 및 날짜 지정이 필수입니다."
         />
-        <EditPreview
-          images={uploadedImages}
-          showDatePreview={activeTab === "event"}
-          date={selectedDate}
-          onDelete={handleDeleteFile}
-        />
+        <EditPreview images={uploadedImages} showDatePreview={true} date={selectedDate} onDelete={handleDeleteFile} />
       </main>
       {showModal && <EventEditModal onClose={() => setShowModal(false)} onSubmit={handleDateSubmit} />}
       {saveModal && (
         <EditComplete
           isOpen={saveModal}
           onClose={() => setSaveModal(false)}
-          isTimeCapsule={activeTab === "event"}
-          postId={createdPostId!}
+          isTimeCapsule={true}
+          onConfirm={handleConfirmSave}
+          isLoading={isLoading}
         />
       )}
+      {/* 기존 알림 모달 - 유지 */}
+      <NotificationModal
+        isOpen={notificationModal.isOpen}
+        title={notificationModal.title}
+        description={notificationModal.description}
+      >
+        <button
+          onClick={handleCloseModal}
+          className="w-full px-4 py-2 text-white transition-opacity duration-200 rounded-md dark:text-black bg-primary dark:bg-secondary hover:opacity-80"
+        >
+          확인
+        </button>
+      </NotificationModal>
+
+      {/* 이벤트 캡슐 수정 불가 모달 - 추가 */}
+      <NotificationModal isOpen={showEventModal} title="수정 불가" description="이벤트 캡슐은 수정이 불가능합니다">
+        <button
+          onClick={() => setShowEventModal(false)}
+          className="w-full px-4 py-2 text-white transition-opacity duration-200 rounded-md dark:text-black bg-primary dark:bg-secondary hover:opacity-80"
+        >
+          확인
+        </button>
+      </NotificationModal>
     </div>
   );
 }
