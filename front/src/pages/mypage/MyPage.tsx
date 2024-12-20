@@ -58,13 +58,10 @@ export default function MyPage() {
       {isOpen && (
         <NotificationModal isOpen={isOpen} title="알림" description="로그아웃 하시겠습니까?">
           <div className="gap-2 item-between">
-            <button
-              className="w-full h-10 border border-black dark:border-gray-100 dark:text-white rounded-md"
-              onClick={() => setIsOpen(false)}
-            >
+            <button className="w-full h-10 border border-black rounded-md" onClick={() => setIsOpen(false)}>
               취소
             </button>
-            <button className="w-full h-10 text-white bg-gray-300 dark:bg-gray-400 rounded-md" onClick={handleLogout}>
+            <button className="w-full h-10 text-white bg-black rounded-md" onClick={handleLogout}>
               확인
             </button>
           </div>
@@ -72,19 +69,17 @@ export default function MyPage() {
       )}
 
       {isLoading ? (
-        <Loading />
+        <Loading /> // 데이터 로딩 중에는 로딩 화면 표시
       ) : (
-        <div className="flex flex-col min-h-screen">
+        <>
           <ProfileHeader />
-          <div className="flex-1 min-h-[calc(100vh-200px)]">
-            <ProfileContainer />
-          </div>
-          <div className="sticky bottom-0 flex justify-end px-8 py-4 mt-auto bg-white dark:bg-black">
-            <button className="py-4 text-sm text-gray-300 dark:text-gray-400 underline" onClick={handleClick}>
+          <ProfileContainer />
+          <div className="flex justify-end px-8 py-4">
+            <button className="text-sm text-gray-400 underline" onClick={handleClick}>
               로그아웃
             </button>
           </div>
-        </div>
+        </>
       )}
     </>
   );
