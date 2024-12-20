@@ -258,8 +258,22 @@ function ProfileContainer({ userId, fullName }: { userId: string; fullName?: str
                         alt={`일반 포스트 이미지 ${index}`}
                       />
                     ) : (
-                      <div className="w-full aspect-[1] bg-gray-100 rounded-[10px] flex items-start justify-start p-[10px] border border-gray-200">
-                        <p className="text-black text-[14px] font-pretendard font-regular break-words">{textContent}</p>
+                      <div
+                        className="relative w-full rounded-[10px] bg-gray-100 border border-gray-200 overflow-hidden"
+                        style={{
+                          aspectRatio: "1 / 1",
+                        }}
+                      >
+                        <p
+                          className="absolute inset-0 m-[10px] text-black text-[14px] font-pretendard font-regular text-ellipsis overflow-hidden"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 3,
+                          }}
+                        >
+                          {textContent}
+                        </p>
                       </div>
                     )}
                     <div className="mt-2 font-pretendard font-regular text-left text-[14px]">
