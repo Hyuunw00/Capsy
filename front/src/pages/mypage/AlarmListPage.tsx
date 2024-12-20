@@ -17,7 +17,7 @@ interface CapsuleItem {
   closeAt: Date;
 }
 
-function CapsuleListPage() {
+function AlarmListPage() {
   const location = useLocation();
 
   const { items, fullName, title } = location.state as CapsuleListPageState;
@@ -100,4 +100,4 @@ function CapsuleListPage() {
   );
 }
 
-export default CapsuleListPage;
+export default AlarmListPage;
