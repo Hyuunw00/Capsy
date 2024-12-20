@@ -84,11 +84,11 @@ export default function Follow({ userData, onFollowUpdate, targetUserId, classNa
 
   return (
     <button
-      className={`
-        ${followStatus[targetUserId] ? "bg-white border-2 border-primary/30 text-primary dark:bg-gray-50" : "bg-primary text-white dark:bg-secondary"}
-        dark:text-black rounded transition-colors
-        ${className}
-      `.trim()}
+      className={`flex items-center justify-center w-[80px] h-[30px] py-[3px] text-[16px] font-normal rounded-[5px] transition-colors ${
+        followStatus[targetUserId]
+          ? "bg-white border-2 border-primary/30 text-primary dark:bg-gray-50"
+          : "bg-primary text-white dark:bg-secondary"
+      } ${className}`}
       onClick={() => handleFollowClick(targetUserId)}
     >
       {followStatus[targetUserId] ? "팔로잉" : "팔로우"}
