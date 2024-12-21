@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Notification, NotifyModalProps } from "../../types/notification";
 import Button from "../Button";
@@ -27,35 +27,35 @@ const NotifyModal = ({
       }
     }
   };
-  
+
   const handleAcceptFollow = async (notification: Notification) => {
     try {
       await onAcceptFollow(notification);
       onClose();
       navigate(`/userinfo/${followerNames[notification.userId]}`);
     } catch (error) {
-      console.error('팔로우 허용 실패', error);
+      console.error("팔로우 허용 실패", error);
     }
   };
-  
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
-  
+
     if (isVisible) {
       // 모달이 열려있을 때만 이벤트 리스너 추가
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
-  
+
     return () => {
       // 클린업 함수에서 이벤트 리스너 제거
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isVisible, onClose]);
-  
+
   const renderNotification = (notification: Notification) => {
     const notificationKey = `${notification.type}-${notification.userId}-${notification.notificationTypeId}`;
 
@@ -116,7 +116,7 @@ const NotifyModal = ({
     <div
       ref={modalRef}
       className={`
-        absolute top-[62px] left-8 shadow-md z-50 w-[90%] p-4 bg-white rounded-lg
+        absolute top-[62px] left-8 shadow-md z-50 w-[90%] p-4 bg-white dark:bg-gray-600 rounded-lg
         transition-all duration-300 ease-in-out transform
         ${isVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}
       `}
@@ -124,7 +124,7 @@ const NotifyModal = ({
       {notifications?.length > 0 ? (
         notifications.map((notification) => renderNotification(notification))
       ) : (
-        <p className="py-4 text-center text-gray-500">알림이 없습니다</p>
+        <p className="py-4 text-center dark:text-gray-300 text-gray-400">알림이 없습니다</p>
       )}
     </div>
   );
