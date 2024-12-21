@@ -1,4 +1,4 @@
-import { useEffect, useState, KeyboardEvent, useRef } from "react";
+import React, { useEffect, useState, KeyboardEvent, useRef } from "react";
 import axiosInstance from "../../apis/axiosInstance";
 import { CHANNEL_ID_TIMECAPSULE } from "../../apis/apis";
 import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
@@ -11,7 +11,6 @@ import icon_minus from "../../assets/map/ico_minus.png";
 import map_location from "../../assets/map/map-location-icon.svg";
 import Loading from "../../components/Loading";
 import MapSearch from "./MapSearch";
-import pixel_arrow from "../../assets/map/arrow.svg";
 
 interface Place {
   place_name: string;
@@ -37,9 +36,7 @@ interface MapInfo {
     lat: number; // 초기 좌표
     lng: number;
   };
-  isPanto: boolean;
-  isSearch: boolean; //  검색유무
-  image: string;
+  level: number;
 }
 
 export default function MapPage() {
@@ -54,6 +51,12 @@ export default function MapPage() {
 
   // 검색과 연관된 결과를 담는 배열
   const [searchResults, setSearchResults] = useState<Place[]>([]);
+
+  // 검색한 장소의 위치 정보
+  const [selectedPlace, setSelectedPlace] = useState({
+    lat: 37.5666805, // 초기 좌표
+    lng: 126.9784147,
+  });
 
   // 필터링된 타임캡슐
   const [capsuleData, setCapsuleData] = useState<ChannelPost[]>([]);
@@ -74,9 +77,7 @@ export default function MapPage() {
       lat: 37.5666805, // 초기 좌표
       lng: 126.9784147,
     },
-    isPanto: true,
-    isSearch: false, //  검색유무
-    image: "",
+    level: 13,
   });
 
   // 타임캡슐 마커 상태관리
@@ -91,10 +92,13 @@ export default function MapPage() {
   // ----------------------------------------------
 
   // 커스텀 오버레이를 여는 함수
-  const handleMarkerClick = (index: number) => {
+  const handleMarkerClick = (marker: Markers, index: number) => {
+    console.log(index);
+
     // 클릭한 마커의 인덱스를 setState로 저장하여 해당 마커에 오버레이를 표시하도록 설정
+    setMapInfo((prev) => ({ ...prev, level: 3, center: { lat: marker.lat, lng: marker.lng } })); // 상태 강제 업데이트 커스텀 오버레이가 보여지도록
     setOpenMarkerIndex(index);
-    setMapInfo((prev) => ({ ...prev })); // 상태 강제 업데이트 커스텀 오버레이가 보여지도록
+    setFilteredMarkers([]); // 커스텀 오버레이를 열때는 일시적으로 캡슐리스트를 사라지게 조작
   };
   // 커스텀 오버레이를 닫는 함수
   const handleCloseOverlay = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -119,12 +123,12 @@ export default function MapPage() {
 
   // 검색한 장소로 맵 이동
   const handleSelectPlace = (place: Place) => {
-    setMapInfo({
-      ...mapInfo,
-      isSearch: true,
-      // image: "",
-      center: { lng: parseFloat(place.x), lat: parseFloat(place.y) },
-    });
+    setMapInfo((prev) => ({
+      ...prev,
+      level: 3,
+      center: { lat: parseFloat(place.y), lng: parseFloat(place.x) },
+    }));
+    setSelectedPlace((prev) => ({ ...prev, lat: parseFloat(place.y), lng: parseFloat(place.x) }));
     setSearchResults([]);
   };
 
@@ -141,29 +145,33 @@ export default function MapPage() {
       case "Enter":
         e.preventDefault();
         if (selectedIndex >= 0) {
-          setMapInfo({
-            ...mapInfo,
-            isSearch: true,
-            // image: "",
-            center: { lng: +searchResults[selectedIndex].x, lat: +searchResults[selectedIndex].y },
-          });
+          setMapInfo((prev) => ({
+            ...prev,
+            level: 3,
+            center: {
+              lat: parseFloat(searchResults[selectedIndex].y),
+              lng: parseFloat(searchResults[selectedIndex].x),
+            },
+          }));
+          setSelectedPlace((prev) => ({
+            ...prev,
+            lat: parseFloat(searchResults[selectedIndex].y),
+            lng: parseFloat(searchResults[selectedIndex].x),
+          }));
           setSearchInput("");
           setSearchResults([]);
         }
         break;
     }
   };
-  console.log(filteredMarkers);
 
   // 줌인 ,줌 아웃 버튼 동작 함수
   const zoomIn = () => {
-    const map = mapRef.current;
     if (!map) return;
     map.setLevel(map.getLevel() - 1);
   };
 
   const zoomOut = () => {
-    const map = mapRef.current;
     if (!map) return;
     map.setLevel(map.getLevel() + 1);
   };
@@ -209,14 +217,8 @@ export default function MapPage() {
     getTimeCapsule();
   }, []);
 
-  // 장소 검색시  지도 레벨 재설정
+  // capsuleData에 마커 생성
   useEffect(() => {
-    const map = mapRef.current;
-    if (mapInfo.isSearch && map) map.setLevel(3);
-  }, [mapInfo]);
-
-  useEffect(() => {
-    // capsuleData에 마커 생성
     const markers = capsuleData.map((post) => {
       const parsedData = getParse(post.title);
       const closeAt = parsedData.closeAt && new Date(parsedData.closeAt);
@@ -232,30 +234,38 @@ export default function MapPage() {
         addressName: parsedData.address || "주소 정보 없음",
       };
     });
-
     setSelectedMarkers(markers);
   }, [capsuleData]);
 
-  // zoom 변경 처리
+  // 지도의 zoom 값이 변경될때
   useEffect(() => {
+    if (!map) return; //Map 객체가 초기화되지 않았을경우 return
+    map.setLevel(mapInfo.level); // 지도 레벨 설정
+    map.panTo(new kakao.maps.LatLng(mapInfo.center.lat, mapInfo.center.lng)); // 지도 중심을 부드럽게  이동
+
+    // 지도의 zoom이 변경될때마다 실행되는 함수
     const handleZoomChange = () => {
       const level = map.getLevel();
+      console.log(level);
 
       if (level <= 10) {
         // 줌 레벨이 10 이하일 때는 리스트로 표시
         filterMarkersByZoom(level);
         map.setLevel(level);
+        // 줌 레벨이 10 이상일 때는 캡슐 리스트를 숨기기
       }
     };
 
     if (map) {
       map.addListener("zoom_changed", handleZoomChange);
+      map.addListener("center_changed", handleZoomChange);
 
       return () => {
         map.removeListener("zoom_changed", handleZoomChange);
+        map.removeListener("center_changed", handleZoomChange);
       };
     }
-  }, [map]);
+  }, [mapInfo, map]);
 
   // 검색어를 입력하면 연관 검색어들이 리스트업
   useEffect(() => {
@@ -286,7 +296,10 @@ export default function MapPage() {
 
         {/* 지도 */}
         <Map
-          center={mapInfo.center}
+          center={{
+            lat: 37.5666805, // 초기 좌표
+            lng: 126.9784147,
+          }}
           level={13}
           style={{ width: "100%", height: "calc(100vh - 180px)", position: "relative", overflow: "hidden" }}
           ref={mapRef}
@@ -305,31 +318,20 @@ export default function MapPage() {
             minLevel={10} // 클러스터 할 최소 지도 레벨
           >
             {/* 검색된 장소 마커 */}
-            <MapMarker
-              position={mapInfo.center}
-              // image={
-              //   mapInfo.image != ""
-              //     ? {
-              //         src: mapInfo.image, // 이미지가 있을 때 사용자 이미지로 대체
-              //         size: { width: 50, height: 50 },
-              //       }
-              //     : undefined // 이미지가 없으면 기본 마커 사용
-              // }
-            />
+            <MapMarker position={selectedPlace} />
 
             {/* 타임캡슐 마커들 */}
             {selectedMarkers.map((marker, index) => (
-              <>
+              //  반복문 내부의 부모 요소에 key 추가
+              <React.Fragment key={marker._id}>
                 <MapMarker
-                  key={marker._id}
                   position={{ lat: marker.lat, lng: marker.lng }}
-                  onClick={() => handleMarkerClick(index)} // 마커 클릭 시 오버레이 표시
+                  onClick={() => handleMarkerClick(marker, index)} // 마커 클릭 시 오버레이 표시
                   image={{
                     src: marker.isBlur ? img_capsule : marker.image, // 커스텀 이미지 사용
                     size: { width: 50, height: 50 },
                   }}
                 />
-
                 {/* 기본 UI는 제거하고, 클릭된 마커에 대해서만 CustomOverlayMap 표시 */}
                 {openMarkerIndex === index && (
                   <CustomOverlayMap
@@ -393,7 +395,7 @@ export default function MapPage() {
                     </div>
                   </CustomOverlayMap>
                 )}
-              </>
+              </React.Fragment>
             ))}
           </MarkerClusterer>
 
@@ -403,7 +405,7 @@ export default function MapPage() {
               {searchResults.map((place, index) => (
                 <li
                   key={place.id}
-                  className={`p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-500 border-b border-gray-100 dark:border-gray-500 ${index === selectedIndex ? "bg-gray-100" : "hover:bg-gray-50"}`}
+                  className={`p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-500 border-b border-gray-100 dark:border-gray-500 ${index === selectedIndex ? "bg-gray-100 dark:bg-gray-200" : "hover:bg-gray-50"}`}
                   onClick={() => handleSelectPlace(place)}
                 >
                   <div className="font-medium text-[14px]">{place.place_name}</div>
@@ -432,13 +434,11 @@ export default function MapPage() {
                       key={marker._id}
                       className="relative px-2 py-4 transition border-b border-gray-100 dark:border-b-gray-400 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-500 item-between hover:bg-bg-100"
                       onClick={() => {
-                        map.setLevel(3);
-                        setMapInfo({
-                          ...mapInfo,
-                          isSearch: false,
-                          image: marker.isBlur ? img_capsule : marker.image,
+                        setMapInfo((prev) => ({
+                          ...prev,
+                          level: 3,
                           center: { lat: marker.lat, lng: marker.lng },
-                        });
+                        }));
                       }}
                     >
                       <div className="flex items-start justify-start gap-3">
