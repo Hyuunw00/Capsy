@@ -296,10 +296,10 @@ export default function MainPage() {
         yesterdayStart.setHours(0, 0, 0, 0); // 00:00:00 (KST)
         const yesterdayStartUTC = yesterdayStart.toISOString();
 
-        // 오늘의 00:00:00 (KST) → UTC 변환 (UTC 기준 당일 15:00:00)
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0); // 00:00:00 (KST)
-        const todayStartUTC = todayStart.toISOString();
+        // 어제의 23:59:59:99 (KST) → UTC 변환 (UTC 기준 당일 14:59:99.99)
+        const yesterdayEnd = new Date();
+        yesterdayEnd.setHours(23, 59, 59, 99); // 23:59:59.99 (KST)
+        const yesterdayEndUTC = yesterdayEnd.toISOString();
 
         const expiredMessages = allMessages?.filter((message: any) => {
           if (!message?.message) return false;
@@ -307,7 +307,7 @@ export default function MainPage() {
           const parsedMessage = JSON.parse(message.message);
           if (!parsedMessage.openAt) return false;
 
-          return parsedMessage.openAt <= todayStartUTC && parsedMessage.openAt >= yesterdayStartUTC;
+          return parsedMessage.openAt <= yesterdayEndUTC && parsedMessage.openAt >= yesterdayStartUTC;
         });
 
         const displayedNotifications = JSON.parse(sessionStorage.getItem("displayedNotifications") || "[]");
