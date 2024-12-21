@@ -568,7 +568,7 @@ export default function PostDetailPage() {
             취소
           </button>
           <button
-            className="w-full py-2 text-white transition-opacity bg-black rounded hover:opacity-40"
+            className="w-full py-2 text-white dark:text-black transition-opacity bg-primary dark:bg-secondary rounded hover:opacity-40"
             onClick={confirmDelete}
           >
             삭제
