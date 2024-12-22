@@ -56,7 +56,7 @@ export default function MainSearchModal() {
                 return (
                   <li
                     key={user._id}
-                    className="flex items-center gap-4 px-4 transition rounded hover:bg-bg-100 max-[550px]:gap-2 max-[550px]:px-2"
+                    className="flex items-center gap-4 px-4 transition rounded hover:bg-bg-100 dark:hover:bg-gray-650 max-[550px]:gap-2 max-[550px]:px-2"
                   >
                     {/* 프로필 이미지 */}
                     <div
@@ -66,7 +66,7 @@ export default function MainSearchModal() {
                     >
                       <img
                         className="w-full h-full rounded-full object-cover p-0.5 max-[550px]:p-0.5"
-                        src={user.image || "/Capsy.svg"}
+                        src={user.image || "/user.png"}
                         alt="프로필 이미지"
                       />
                     </div>
