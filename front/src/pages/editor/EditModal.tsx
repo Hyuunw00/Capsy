@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { InputWithLabel } from "../../components/InputWithLabel";
-import closeIcon from "../../assets/close-black.svg";
 
 interface EditModalProps {
   onClose: () => void;
@@ -202,7 +201,7 @@ function EditModal({ onClose, onSubmit }: EditModalProps) {
             </div>
             <button
               onClick={handleSubmit}
-              className="px-4 py-2 text-white bg-primary dark:text-black dark:bg-secondary rounded w-fit"
+              className="px-4 py-2 text-white rounded bg-primary dark:text-black dark:bg-secondary w-fit"
             >
               확인
             </button>
