@@ -30,7 +30,6 @@ export default function LoginPage() {
     e.preventDefault();
     const email = emailRef.current?.value.trim();
     const password = passwordRef.current?.value.trim();
-    console.log(email, password);
 
     // 빈값일 경우 return
     if (!email || !password) {
