@@ -9,7 +9,10 @@
 
 ## 프로젝트 기간: 2024.12.05 ~ 2024.12.21
 
-<img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&amp;logo=react&amp;logoColor=black"/><img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&amp;logo=typescript&amp;logoColor=white"/>
+<img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&amp;logo=react&amp;logoColor=black"/>
+<img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&amp;logo=typescript&amp;logoColor=white"/>
+<img src="https://img.shields.io/badge/axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white">
+<img src="https://img.shields.io/badge/tailwindcss-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white">
 
 
 ## 주요 기능
@@ -116,70 +119,6 @@
 - 댓글 알림
 - 타임캡슐 공개 알림
 
-## 폴더 구조
-
-
-```
-Capsy
-├─ .vscode
-│  └─ settings.json
-├─ README.md
-└─ front
-   ├─ .prettierrc
-   ├─ README.md
-   ├─ eslint.config.js
-   ├─ index.html
-   ├─ package-lock.json
-   ├─ package.json
-   ├─ postcss.config.js
-   ├─ public
-   │  └─ vite.svg
-   ├─ src
-   │  ├─ App.tsx
-   │  ├─ assets
-   │  │  └─ check-icon.svg
-   │  ├─ components
-   │  │  ├─ Button.tsx
-   │  │  ├─ CheckBox.tsx
-   │  │  ├─ GlobalInput.tsx
-   │  │  ├─ Input.tsx
-   │  │  ├─ InputWithLabel.tsx
-   │  │  └─ Modal.tsx
-   │  ├─ css
-   │  │  ├─ index.css
-   │  │  └─ tailwind.css
-   │  ├─ layouts
-   │  │  └─ RootLayout.tsx
-   │  ├─ main.tsx
-   │  ├─ pages
-   │  │  ├─ editor
-   │  │  │  └─ EditorPage.tsx
-   │  │  ├─ event
-   │  │  │  └─ Event.tsx
-   │  │  ├─ login
-   │  │  │  └─ LoginPage.tsx
-   │  │  ├─ main
-   │  │  │  ├─ MainPage.tsx
-   │  │  │  └─ MainSearch.tsx
-   │  │  ├─ mypage
-   │  │  │  ├─ MyPage.tsx
-   │  │  │  └─ modal
-   │  │  │     └─ ProfileForm.tsx
-   │  │  ├─ password
-   │  │  │  └─ PasswordPage.tsx
-   │  │  ├─ post
-   │  │  │  └─ PostDetailPage.tsx
-   │  │  └─ signup
-   │  │     └─ SignUpPage.tsx
-   │  └─ vite-env.d.ts
-   ├─ tailwind.config.js
-   ├─ tsconfig.app.json
-   ├─ tsconfig.json
-   ├─ tsconfig.node.json
-   └─ vite.config.ts
-
-```
-
 ## 설치 방법
 
 1. 저장소 복제
@@ -200,4 +139,231 @@ VITE_KAKAO_APP_KEY=your_kakao_api_key
 4. 개발 서버 실행
 ```bash
 npm run dev
+```
+
+## 폴더구조
+
+```
+Capsy
+├─ .DS_Store
+├─ .vscode
+│  └─ settings.json
+├─ README.md
+└─ front
+   ├─ .DS_Store
+   ├─ .env
+   ├─ .prettierrc
+   ├─ README.md
+   ├─ eslint.config.js
+   ├─ index.html
+   ├─ package-lock.json
+   ├─ package.json
+   ├─ postcss.config.js
+   ├─ public
+   │  ├─ Capsy.svg
+   │  └─ user.png
+   ├─ src
+   │  ├─ .DS_Store
+   │  ├─ App.tsx
+   │  ├─ apis
+   │  │  ├─ apis.ts
+   │  │  ├─ auth.ts
+   │  │  └─ axiosInstance.tsx
+   │  ├─ assets
+   │  │  ├─ .DS_Store
+   │  │  ├─ Account.svg
+   │  │  ├─ Dark-mode.svg
+   │  │  ├─ Edit.svg
+   │  │  ├─ Heart_Curved.svg
+   │  │  ├─ Home.svg
+   │  │  ├─ Left.svg
+   │  │  ├─ Light-mode.svg
+   │  │  ├─ Notification-disabled.svg
+   │  │  ├─ Notification-fill.svg
+   │  │  ├─ Notification-white.svg
+   │  │  ├─ Notification.svg
+   │  │  ├─ Search.svg
+   │  │  ├─ alarm.png
+   │  │  ├─ bottom-arrow-white.svg
+   │  │  ├─ bottom-arrow.svg
+   │  │  ├─ check-icon.svg
+   │  │  ├─ close-black.svg
+   │  │  ├─ close-white.svg
+   │  │  ├─ close.svg
+   │  │  ├─ digging.gif
+   │  │  ├─ error-404.png
+   │  │  ├─ event-capsule-icon.svg
+   │  │  ├─ event-thumnail.png
+   │  │  ├─ event-thumnails
+   │  │  │  ├─ event-thumnail-1.svg
+   │  │  │  └─ event-thumnail.svg
+   │  │  ├─ event-timeCapsule-thumbnail.png
+   │  │  ├─ fi-rs-comment.svg
+   │  │  ├─ fi-rs-gift.svg
+   │  │  ├─ fi-rs-trash.svg
+   │  │  ├─ film-icon.svg
+   │  │  ├─ footer-icon-capsule.svg
+   │  │  ├─ footer-logo-secondary.svg
+   │  │  ├─ footer-logo.svg
+   │  │  ├─ heart-fill.svg
+   │  │  ├─ holiday-event-banner.png
+   │  │  ├─ icon_capsule.svg
+   │  │  ├─ left-arrow.svg
+   │  │  ├─ leftArrowCircle.svg
+   │  │  ├─ loading-icon-black.svg
+   │  │  ├─ loading-icon.svg
+   │  │  ├─ location-icon.svg
+   │  │  ├─ login-logo-white.svg
+   │  │  ├─ login-logo.svg
+   │  │  ├─ logo_black.svg
+   │  │  ├─ logo_white.svg
+   │  │  ├─ map
+   │  │  │  ├─ arrow.svg
+   │  │  │  ├─ green_marker.png
+   │  │  │  ├─ ico_minus.png
+   │  │  │  ├─ ico_plus.png
+   │  │  │  ├─ map-location-icon.svg
+   │  │  │  └─ marker.svg
+   │  │  ├─ marker.svg
+   │  │  ├─ more.svg
+   │  │  ├─ password-eyes-close.svg
+   │  │  ├─ password-eyes-open.svg
+   │  │  ├─ passwordIcon
+   │  │  │  ├─ eyes-close.svg
+   │  │  │  └─ eyes-open.svg
+   │  │  ├─ pick-date-icon.svg
+   │  │  ├─ pick-picture-icon.svg
+   │  │  ├─ private-timeCapsule-thumbnail.png
+   │  │  ├─ profile-alarm-black.svg
+   │  │  ├─ profile-alarm-purple.svg
+   │  │  ├─ profile-article-black.svg
+   │  │  ├─ profile-article-purple.svg
+   │  │  ├─ profile-capsule-black.svg
+   │  │  ├─ profile-capsule-purple.svg
+   │  │  ├─ profile-img-edit-icon.svg
+   │  │  ├─ profile-img-sample.jpg
+   │  │  ├─ purple-close.svg
+   │  │  ├─ purple-search.svg
+   │  │  ├─ random-thumnail
+   │  │  │  ├─ random-thumnail-black-1.png
+   │  │  │  ├─ random-thumnail-black-2.png
+   │  │  │  ├─ random-thumnail-black-3.png
+   │  │  │  ├─ random-thumnail-white-1.png
+   │  │  │  ├─ random-thumnail-white-2.png
+   │  │  │  └─ random-thumnail-white-3.png
+   │  │  ├─ rightArrowCircle.svg
+   │  │  ├─ scroll-icon.svg
+   │  │  ├─ search-icon.svg
+   │  │  ├─ sending-icon.svg
+   │  │  ├─ time-capsule-lock.png
+   │  │  ├─ time-capsule.png
+   │  │  └─ user.png
+   │  ├─ components
+   │  │  ├─ AuthInput.tsx
+   │  │  ├─ Button.tsx
+   │  │  ├─ CheckBox.tsx
+   │  │  ├─ Error404.tsx
+   │  │  ├─ Footer.tsx
+   │  │  ├─ GlobalInput.tsx
+   │  │  ├─ Input.tsx
+   │  │  ├─ InputWithLabel.tsx
+   │  │  ├─ Loading.tsx
+   │  │  ├─ Logo.tsx
+   │  │  ├─ Modal.tsx
+   │  │  ├─ NoticeModal.tsx
+   │  │  ├─ NotificationModal.tsx
+   │  │  ├─ TimeCapsuleModal.tsx
+   │  │  ├─ fonts
+   │  │  │  ├─ DungGeunMo.ttf
+   │  │  │  ├─ Galmuri14.ttf
+   │  │  │  └─ Galmuri9.ttf
+   │  │  └─ headers
+   │  │     ├─ Header.tsx
+   │  │     ├─ NotifyModal.tsx
+   │  │     └─ PageHeader.tsx
+   │  ├─ css
+   │  │  ├─ index.css
+   │  │  ├─ map.css
+   │  │  ├─ tailwind.css
+   │  │  └─ variable.css
+   │  ├─ layouts
+   │  │  ├─ NonPrivate.tsx
+   │  │  ├─ Private.tsx
+   │  │  └─ RootLayout.tsx
+   │  ├─ main.tsx
+   │  ├─ pages
+   │  │  ├─ editor
+   │  │  │  ├─ EditComplete.tsx
+   │  │  │  ├─ EditLocationModal.tsx
+   │  │  │  ├─ EditModal.tsx
+   │  │  │  ├─ EditPreview.tsx
+   │  │  │  ├─ EditorPage.tsx
+   │  │  │  ├─ EventEditModal.tsx
+   │  │  │  ├─ EventEditorPage.tsx
+   │  │  │  └─ imageUtils.ts
+   │  │  ├─ event
+   │  │  │  └─ Event.tsx
+   │  │  ├─ login
+   │  │  │  └─ LoginPage.tsx
+   │  │  ├─ main
+   │  │  │  ├─ MainPage.tsx
+   │  │  │  ├─ MainSearch.tsx
+   │  │  │  └─ MainSearchModal.tsx
+   │  │  ├─ maps
+   │  │  │  ├─ MapPage.tsx
+   │  │  │  └─ MapSearch.tsx
+   │  │  ├─ mypage
+   │  │  │  ├─ AlarmListPage.tsx
+   │  │  │  ├─ CapsuleListPage.tsx
+   │  │  │  ├─ MyFollowerPage.tsx
+   │  │  │  ├─ MyFollowingPage.tsx
+   │  │  │  ├─ MyPage.tsx
+   │  │  │  ├─ MySlideContainer.tsx
+   │  │  │  ├─ MySlideHeader.tsx
+   │  │  │  ├─ ProfileContainer.tsx
+   │  │  │  ├─ ProfileHeader.tsx
+   │  │  │  └─ modal
+   │  │  │     ├─ LogoutModal.tsx
+   │  │  │     ├─ ProfileForm.tsx
+   │  │  │     ├─ ProfileImageForm.tsx
+   │  │  │     └─ dummy.json
+   │  │  ├─ password
+   │  │  │  ├─ NewPasswordPage.tsx
+   │  │  │  └─ PasswordResetPage.tsx
+   │  │  ├─ post
+   │  │  │  ├─ ElapsedText.ts
+   │  │  │  ├─ Follow.tsx
+   │  │  │  ├─ PostDetailPage.tsx
+   │  │  │  └─ SimpleDateTimeFormat.ts
+   │  │  ├─ signup
+   │  │  │  ├─ SignUpPage.tsx
+   │  │  │  └─ SignUpSuccessPage.tsx
+   │  │  └─ userinfo
+   │  │     ├─ AllUserList.tsx
+   │  │     ├─ FollowerPage.tsx
+   │  │     ├─ FollowingPage.tsx
+   │  │     ├─ ProfileContainer.tsx
+   │  │     ├─ ProfileHeader.tsx
+   │  │     ├─ SlideContainer.tsx
+   │  │     ├─ SlideHeader.tsx
+   │  │     └─ UserInfoPage.tsx
+   │  ├─ store
+   │  │  ├─ loginStore.ts
+   │  │  ├─ mainSearchStore.ts
+   │  │  └─ themeStore.ts
+   │  ├─ types
+   │  │  ├─ kakao.maps.d.ts
+   │  │  ├─ notification.ts
+   │  │  └─ types.d.ts
+   │  ├─ utils
+   │  │  ├─ profileImage.ts
+   │  │  ├─ regex.ts
+   │  │  └─ token.ts
+   │  └─ vite-env.d.ts
+   ├─ tailwind.config.js
+   ├─ tsconfig.app.json
+   ├─ tsconfig.json
+   ├─ tsconfig.node.json
+   └─ vite.config.ts
+
 ```
