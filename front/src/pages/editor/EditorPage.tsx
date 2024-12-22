@@ -33,7 +33,6 @@ export default function EditorPage() {
   const { postId } = useParams();
   const location = useLocation();
   const isEdit = location.state?.isEdit;
-  const [initialData, setInitialData] = useState(null);
 
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
 
