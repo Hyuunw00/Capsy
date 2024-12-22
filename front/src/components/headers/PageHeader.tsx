@@ -11,6 +11,7 @@ import logo_black from "../../assets/logo_black.svg";
 import NotificationIcon from "../../assets/Notification.svg";
 import LightMode from "../../assets/Light-mode.svg";
 import DarkMode from "../../assets/Dark-mode.svg";
+import { flushSync } from "react-dom";
 
 export default function PageHeader() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export default function PageHeader() {
     handleReadNotification,
     handleMoveToPost,
     closeModal,
-    toggleModal
+    toggleModal,
   } = useNotification();
 
   // 뒤로가기 핸들러
@@ -39,9 +40,11 @@ export default function PageHeader() {
     }
 
     if (location.pathname.startsWith("/detail/")) {
-      const { fromEditor } = location.state || {};
-      if (fromEditor) {
-        navigate("/");
+      const scrollPosition = location.state?.scrollPosition;
+      if (scrollPosition !== undefined) {
+        flushSync(() => {
+          navigate("/", { state: { scrollPosition } });
+        });
         return;
       }
     }
@@ -91,10 +94,7 @@ export default function PageHeader() {
           </button>
 
           {isLoggedIn && (
-            <button
-              onClick={toggleModal}
-              className="relative flex items-center justify-center w-5 h-5"
-            >
+            <button onClick={toggleModal} className="relative flex items-center justify-center w-5 h-5">
               <img src={NotificationIcon} alt="Notification" className="object-contain w-full h-full dark:invert" />
               {notifications.length > 0 && (
                 <div className="absolute w-2 h-2 rounded-full -top-1 -right-1 bg-secondary" />
