@@ -577,8 +577,8 @@ export default function MainPage() {
           {/* 키워드에 대한 검색 결과 */}
           <div>
             {searchInput.length > 0 && (
-              <span>
-                <strong>{searchInput}</strong> 관련된 포스트 결과
+              <span className="text-black dark:text-white">
+                <strong>[{searchInput}]</strong> 관련된 포스트 결과
               </span>
             )}
           </div>
