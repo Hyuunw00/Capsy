@@ -93,8 +93,6 @@ export default function MapPage() {
 
   // 커스텀 오버레이를 여는 함수
   const handleMarkerClick = (marker: Markers, index: number) => {
-    console.log(index);
-
     // 클릭한 마커의 인덱스를 setState로 저장하여 해당 마커에 오버레이를 표시하도록 설정
     setMapInfo((prev) => ({ ...prev, level: 3, center: { lat: marker.lat, lng: marker.lng } })); // 상태 강제 업데이트 커스텀 오버레이가 보여지도록
     setOpenMarkerIndex(index);
@@ -188,7 +186,7 @@ export default function MapPage() {
   };
 
   // 줌 레벨에 따라 마커 필터링 함수
-  const filterMarkersByZoom = (level: number) => {
+  const filterChange = (level: number) => {
     const bounds = map.getBounds();
     if (level < 10) {
       const filtered = selectedMarkers.filter((marker) => {
@@ -237,32 +235,30 @@ export default function MapPage() {
     setSelectedMarkers(markers);
   }, [capsuleData]);
 
-  // 지도의 zoom 값이 변경될때
+  // 지도의 zoom 값, 중심좌표값이 변경될때
   useEffect(() => {
     if (!map) return; //Map 객체가 초기화되지 않았을경우 return
     map.setLevel(mapInfo.level); // 지도 레벨 설정
     map.panTo(new kakao.maps.LatLng(mapInfo.center.lat, mapInfo.center.lng)); // 지도 중심을 부드럽게  이동
 
-    // 지도의 zoom이 변경될때마다 실행되는 함수
-    const handleZoomChange = () => {
+    // 지도의 상태가 변경될때마다 실행되는 함수
+    const handleMapChange = () => {
       const level = map.getLevel();
-      console.log(level);
 
       if (level <= 10) {
         // 줌 레벨이 10 이하일 때는 리스트로 표시
-        filterMarkersByZoom(level);
+        filterChange(level);
         map.setLevel(level);
-        // 줌 레벨이 10 이상일 때는 캡슐 리스트를 숨기기
       }
     };
 
     if (map) {
-      map.addListener("zoom_changed", handleZoomChange);
-      map.addListener("center_changed", handleZoomChange);
+      map.addListener("zoom_changed", handleMapChange);
+      map.addListener("center_changed", handleMapChange);
 
       return () => {
-        map.removeListener("zoom_changed", handleZoomChange);
-        map.removeListener("center_changed", handleZoomChange);
+        map.removeListener("zoom_changed", handleMapChange);
+        map.removeListener("center_changed", handleMapChange);
       };
     }
   }, [mapInfo, map]);
@@ -296,11 +292,8 @@ export default function MapPage() {
 
         {/* 지도 */}
         <Map
-          center={{
-            lat: 37.5666805, // 초기 좌표
-            lng: 126.9784147,
-          }}
-          level={13}
+          center={mapInfo.center}
+          level={mapInfo.level}
           style={{ width: "100%", height: "calc(100vh - 180px)", position: "relative", overflow: "hidden" }}
           ref={mapRef}
         >
@@ -417,10 +410,7 @@ export default function MapPage() {
 
           {/* 클러스터링안의 타임캡슐 목록 */}
           {filteredMarkers.length > 0 && (
-            <div
-              className="absolute bottom-0 right-0 z-10 w-full max-w-[600px]"
-              // onClick={() => setIsListView(false)} // 모달 외부 클릭 시 모달 닫기
-            >
+            <div className="absolute bottom-0 right-0 z-10 w-full max-w-[600px]">
               <div
                 className="w-full px-8 overflow-y-auto bg-white dark:bg-gray-600 shadow-lg rounded-t-3xl h-80"
                 onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 이벤트 전파 방지

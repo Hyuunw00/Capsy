@@ -42,7 +42,7 @@ export default function NewPasswordPage() {
       return;
     }
 
-    // 비밀번호 형식 검사
+    // 비밀번호 유효성 검사
     if (!testPassword(password)) {
       setAuth({ ...auth, isPasswordValid: false, password: "", passwordConfirm: "", isPasswordConfirmValid: false });
       setOpenModal({ isOpen: true, value: "형식에 맞게 입력해주세요!" });
@@ -64,9 +64,6 @@ export default function NewPasswordPage() {
       setSuccessModal(true);
     } catch (error) {
       console.error(error);
-      // setOpenModal({ ...openModal, isOpen: true, value: "비밀번호 오류" });
-    } finally {
-      setAuth({ ...auth, isPasswordConfirmValid: false, isPasswordValid: false, passwordConfirm: "", password: "" });
     }
   };
 
