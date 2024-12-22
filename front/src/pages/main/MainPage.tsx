@@ -288,8 +288,6 @@ export default function MainPage() {
         const response = await axiosInstance.get("/messages", { params: { userId } });
         const allMessages = response.data;
 
-        console.log(new Date().toISOString());
-
         // 어제의 00:00:00 (KST) → UTC 변환 (UTC 기준 전날 15:00:00)
         const yesterdayStart = new Date();
         yesterdayStart.setDate(yesterdayStart.getDate() - 1);
