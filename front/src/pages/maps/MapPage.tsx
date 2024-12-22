@@ -12,6 +12,11 @@ import map_location from "../../assets/map/map-location-icon.svg";
 import Loading from "../../components/Loading";
 import MapSearch from "./MapSearch";
 
+import img_noti from "../../assets/Notification-white.svg";
+import img_fillNoti from "../../assets/map/map-notification-icon-fill.svg";
+import img_noti_disable from "../../assets/Notification-disabled.svg";
+import img_alarm from "../../assets/alarm.png";
+
 interface Place {
   place_name: string;
   address_name: string;
@@ -88,6 +93,24 @@ export default function MapPage() {
 
   // 각각의 타임캡슐 마커의 인덱스(각각의 마커를 클릭했을때 index로 구분)
   const [openMarkerIndex, setOpenMarkerIndex] = useState<number | null>(null);
+
+  // 각 게시물 알림 상태 관리
+  const [notiStatus, setNotiStatus] = useState<{ [key: string]: boolean }>({});
+
+  // 각 게시물 좋아요, 알림 상태 관리
+  const [userData, setUserData] = useState(() => {
+    const storedUserData = sessionStorage.getItem("user");
+    return storedUserData ? JSON.parse(storedUserData) : { likes: [], messages: [] };
+  });
+
+  // 알림 등록 모달을 위한 상태 관리
+  const [showAlarmModal, setShowAlarmModal] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [alarmModalData, setAlarmModalData] = useState({
+    imgSrc: "",
+    neonText: "",
+    whiteText: "",
+  });
 
   // ----------------------------------------------
 
@@ -282,6 +305,139 @@ export default function MapPage() {
     });
   }, [searchInput]);
 
+  const handleNotiClick = (postId: string) => {
+    // 로그인하지 않은 경우 로그인 페이지로 리디렉션
+    if (!userData?._id) {
+      navigate("/login");
+      return;
+    }
+
+    // 이미 해당 게시글에 알림이 설정된 경우
+    const userNoti = userData?.messages.find((message: any) => {
+      try {
+        const parsedMessage = JSON.parse(message.message);
+        return parsedMessage.postId === postId;
+      } catch (error) {
+        return false;
+      }
+    });
+
+    if (userNoti) {
+      alert("해당 게시글 알람을 이미 설정하셨습니다.");
+      return;
+    }
+
+    // 알림을 설정하는 모달
+    setAlarmModalData({
+      imgSrc: img_alarm,
+      neonText: "알림을 설정하면 취소할 수 없습니다",
+      whiteText: "알림을 설정하시겠습니까?",
+    });
+    setShowAlarmModal(true);
+    setSelectedPostId(postId);
+  };
+
+  const handleAlarmCloseModal = () => {
+    setShowAlarmModal(false);
+    setSelectedPostId(null);
+  };
+
+  // 알림 버튼 클릭 이벤트 핸들러
+  const handleConfirm = async () => {
+    if (!selectedPostId) return;
+
+    try {
+      const post = capsuleData.find((post) => post._id === selectedPostId);
+      if (!post) return;
+
+      const userId = userData?._id;
+
+      const openAt = getCloseAt(post.title)?.toISOString();
+
+      // 새로운 메세지 전송
+      const messageResponse = await axiosInstance.post("/messages/create", {
+        message: JSON.stringify({ postId: selectedPostId, openAt }),
+        receiver: userId,
+      });
+
+      const newMessage = messageResponse.data;
+
+      setUserData((prevUserData: any) => {
+        const updatedMessages = [...(prevUserData.messages || []), newMessage];
+        const updatedUserData = {
+          ...prevUserData,
+          messages: updatedMessages,
+        };
+        sessionStorage.setItem("user", JSON.stringify(updatedUserData));
+        return updatedUserData;
+      });
+
+      setNotiStatus((prevStatus: any) => {
+        const updatedStatus = { ...prevStatus, [selectedPostId]: true };
+        sessionStorage.setItem("notiStatus", JSON.stringify(updatedStatus));
+        return updatedStatus;
+      });
+
+      handleAlarmCloseModal();
+    } catch (error: any) {
+      if (error.response && error.response.status === 401) {
+        navigate("/login");
+      }
+    }
+  };
+
+  // 알림 상태가 바뀌면 실행
+  useEffect(() => {
+    const updatedFilterData = capsuleData.map((post) => {
+      const isNotified = userData?.messages?.some((message: any) => {
+        const parsedMessage = message.message ? JSON.parse(message.message) : null;
+        return parsedMessage && parsedMessage.postId === post._id;
+      });
+      return {
+        ...post,
+        isNotified,
+      };
+    });
+
+    const newNotiStatus = updatedFilterData.reduce<{ [key: string]: boolean }>((acc, post) => {
+      acc[post._id] = post.isNotified ?? false;
+      return acc;
+    }, {});
+
+    setNotiStatus(newNotiStatus);
+  }, [capsuleData]);
+
+  // 페이지 로드 시 sessionStorage에서 데이터 가져오기
+  useEffect(() => {
+    const storedUserData = sessionStorage.getItem("user");
+    if (storedUserData) {
+      const parsedUserData = JSON.parse(storedUserData);
+      setUserData(parsedUserData);
+      setNotiStatus(parsedUserData.notifications || {});
+    }
+  }, []);
+
+  // userData가 업데이트될 때마다 sessionStorage에 저장
+  useEffect(() => {
+    if (userData) {
+      sessionStorage.setItem("user", JSON.stringify(userData));
+    }
+  }, [userData]);
+
+  // 타임캡슐의 closeAt 날짜 가져오기
+  const getCloseAt = (jsonString: any): Date | null => {
+    try {
+      const parsedData = JSON.parse(jsonString);
+      if (parsedData.closeAt) {
+        return new Date(parsedData.closeAt);
+      }
+      return null;
+    } catch (error) {
+      console.error("JSON parse error: ", error);
+      return null;
+    }
+  };
+
   if (loading) return <Loading />;
 
   return (
@@ -432,11 +588,35 @@ export default function MapPage() {
                       }}
                     >
                       <div className="flex items-start justify-start gap-3">
-                        <div className="w-20 h-20 overflow-hidden rounded-lg item-middle">
+                        <div className="relative w-20 h-20 overflow-hidden rounded-lg item-middle">
                           <img
                             className="object-cover w-full h-full"
                             src={marker.isBlur ? img_capsule : marker.image}
                           />
+                          <svg
+                            className="absolute bottom-0 right-0 cursor-pointer z-2 w-[31px] h-[31px]"
+                            viewBox="0 0 36 36"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <circle cx="18" cy="18" r="15" className="fill-primary" />
+                            <image
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (marker.isBlur) {
+                                  handleNotiClick(marker._id);
+                                }
+                              }}
+                              href={
+                                !marker.isBlur ? img_noti_disable : notiStatus[marker._id] ? img_fillNoti : img_noti
+                              }
+                              x="8"
+                              y="8"
+                              width="20"
+                              height="20"
+                              className="fill-white dark:fill-black"
+                            />
+                          </svg>
                         </div>
 
                         <div className="flex flex-col justify-between h-20">
@@ -486,6 +666,17 @@ export default function MapPage() {
           neonText={modalData.neonText}
           whiteText={modalData.whiteText}
           onClose={() => setShowModal(false)}
+        />
+      )}
+
+      {showAlarmModal && selectedPostId && (
+        <TimeCapsuleModal
+          imgSrc={alarmModalData.imgSrc}
+          neonText={alarmModalData.neonText}
+          whiteText={alarmModalData.whiteText}
+          onClose={handleAlarmCloseModal}
+          onCancel={handleAlarmCloseModal}
+          onConfirm={handleConfirm}
         />
       )}
     </>
