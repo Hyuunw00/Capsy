@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useMainSearchStore } from "../../store/mainSearchStore";
-import axiosInstance from "../../apis/axiosInstance";
 import img_search from "../../assets/Search.svg";
 import { Link } from "react-router-dom";
+import { userLists } from "../../apis/auth";
 
 export default function MainSearchModal() {
   const searchInput = useMainSearchStore((state) => state.searchInput);
@@ -12,14 +12,13 @@ export default function MainSearchModal() {
   // 검색된 user 목록
   const getUsers = async () => {
     try {
-      // const { data } = await axiosInstance.get(`/search/users/${searchInput.replace(/\s+/g, "")}`);
-      const { data } = await axiosInstance.get("/users/get-users");
+      const { data } = await userLists();
       const filteredData =
         searchInput.trim().length > 0 &&
         data.filter(
-          (item: UserLists) =>
-            item.fullName.toLowerCase().includes(searchInput.toLowerCase().replace(/\s+/g, "")) ||
-            item.username?.toLowerCase().includes(searchInput.toLowerCase().replace(/\s+/g, "")),
+          (user: UserLists) =>
+            user.fullName.toLowerCase().includes(searchInput.toLowerCase().replace(/\s+/g, "")) ||
+            user.username?.toLowerCase().includes(searchInput.toLowerCase().replace(/\s+/g, "")),
         );
       setUsers(filteredData);
     } catch (error) {

@@ -26,11 +26,6 @@ export default function LoginPage() {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  // useEffect(() => {
-  //   if (emailRegex.test(email)) setAuth({...auth,})
-  //   if (passwordRegex.test(password)) setIsPasswordValid(true);
-  // }, [email, password]);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const email = emailRef.current?.value.trim();

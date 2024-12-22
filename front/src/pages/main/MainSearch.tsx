@@ -8,9 +8,6 @@ type Tab1Props = {
 };
 
 const Tab1 = ({ setIsFocused }: Tab1Props) => {
-  // const searchInput = useMainSearchStore((state) => state.searchInput);
-  // const setSearchInput = useMainSearchStore((state) => state.setSearchInput);
-
   return (
     <div className="h-[36px] rounded-[10px] bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-primary)] p-[1px]">
       <div className="flex items-center w-full h-full bg-white rounded-[10px] px-4 overflow-hidden">
@@ -18,8 +15,6 @@ const Tab1 = ({ setIsFocused }: Tab1Props) => {
         <input
           type="text"
           placeholder="사용자 또는 게시글을 검색하세요"
-          // value={searchInput}
-          // onChange={(e) => setSearchInput(e.target.value)}
           className="w-full h-[14px] my-[4px] outline-none"
           onFocus={() => setIsFocused(true)}
         />
@@ -41,7 +36,6 @@ const Tab2 = ({ setIsFocused, onBackClick }: Tab2Props) => {
     if (searchInput.trim() === "") {
       return;
     }
-    console.log("검색어: ", searchInput);
     setIsFocused(false);
   };
 
@@ -50,25 +44,23 @@ const Tab2 = ({ setIsFocused, onBackClick }: Tab2Props) => {
       if (searchInput.trim() === "") {
         return;
       }
-      console.log("Enter 키로 입력: ", searchInput);
       setIsFocused(false);
     }
   };
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const clickedElement = e.relatedTarget as HTMLElement;
+  // const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  //   const clickedElement = e.relatedTarget as HTMLElement;
 
-    if (e.relatedTarget === null || clickedElement?.tagName === "BODY" || clickedElement?.tagName === "HTML") {
-      return;
-    }
-    if (clickedElement.tagName === "BUTTON") {
-      return;
-    }
-    // setIsFocused(false);
-  };
+  //   if (e.relatedTarget === null || clickedElement?.tagName === "BODY" || clickedElement?.tagName === "HTML") {
+  //     return;
+  //   }
+  //   if (clickedElement.tagName === "BUTTON") {
+  //     return;
+  //   }
+  //   // setIsFocused(false);
+  // };
 
   const handleClose = () => {
     setSearchInput("");
-    // setIsFocused(false);
   };
 
   return (
@@ -88,7 +80,7 @@ const Tab2 = ({ setIsFocused, onBackClick }: Tab2Props) => {
             className="w-full h-[14px] my-[4px] outline-none bg-white text-black max-[550px]:text-[12px]"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            onBlur={handleBlur}
+            // onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             autoFocus
             maxLength={23}
