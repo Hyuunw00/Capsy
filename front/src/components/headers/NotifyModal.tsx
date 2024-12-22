@@ -63,11 +63,13 @@ const NotifyModal = ({
       case "FOLLOW":
         return (
           <div key={notificationKey} className="flex items-center justify-between py-2">
-            <p>{followerNames[notification.userId] || notification.userId}님이 회원님을 팔로우했습니다.</p>
+            <p className="dark:text-white">
+              {followerNames[notification.userId] || notification.userId}님이 회원님을 팔로우했습니다.
+            </p>
             <div className="flex gap-2">
               <Button
                 onClick={() => onRejectFollow(notification)}
-                className="px-2 py-0.5 h-7 items-center text-black rounded w-fit border border-black box-border text-sm"
+                className="px-2 py-0.5 h-7 items-center text-black rounded w-fit border border-black box-border text-sm dark:bg-white dark:text-black"
               >
                 확인
               </Button>
