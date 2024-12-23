@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ProfileForm from "./modal/ProfileForm";
 import ProfileImageForm from "./modal/ProfileImageForm";
 import { tokenService } from "../../utils/token";
-import { getMyProfile, uploadUserPhoto } from "../../apis/apis";
+import { getMyProfile } from "../../apis/apis";
 import { useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading"; // 로딩 컴포넌트
 import userImg from "../../assets/user.png";
@@ -61,10 +61,8 @@ export default function ProfileHeader() {
     return () => document.removeEventListener("click", closeDropdown);
   }, []);
 
-  const handleSaveImage = async (image: File) => {
+  const handleSaveImage = async () => {
     try {
-      const response = await uploadUserPhoto(image);
-      // console.log("Uploaded photo response:", response);
       const updatedUser = await getMyProfile();
       setUser(updatedUser);
       setProfileImage(updatedUser.image || null);

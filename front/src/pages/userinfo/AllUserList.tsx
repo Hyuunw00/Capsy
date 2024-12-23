@@ -18,12 +18,6 @@ const AllUsersList = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate(); // navigate 훅 사용
 
-  // 로그인한 유저 정보 추가
-  const [userData, setUserData] = useState(() => {
-    const storedUserData = sessionStorage.getItem("user");
-    return storedUserData ? JSON.parse(storedUserData) : { likes: [], following: [] };
-  });
-
   const fetchAllUserIds = async () => {
     try {
       const users = await getAllUsers();
