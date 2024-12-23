@@ -59,6 +59,7 @@ export default function NewPasswordPage() {
     // 비밀번호 변경 및 로그아웃 API 호출
     try {
       await Promise.all([passwordChangeAuth(password), userLogoutAuth()]);
+      setAuth({ ...auth, isPasswordValid: true, isPasswordConfirmValid: true });
       logout();
       tokenService.clearAll();
       setSuccessModal(true);
