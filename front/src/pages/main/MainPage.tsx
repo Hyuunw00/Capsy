@@ -532,7 +532,11 @@ export default function MainPage() {
   useEffect(() => {
     const getSearchPost = async () => {
       try {
-        const keywordPost = data.filter((post) => post.title.includes(searchInput.replace(/\s+/g, "")));
+        const keywordPost = data.filter(
+          (post) =>
+            getTitle(post.title).includes(searchInput.replace(/\s+/g, "")) ||
+            getContent(post.title).includes(searchInput.replace(/\s+/g, "")),
+        );
         setFilterData(keywordPost);
       } catch (error) {
         console.error(error);
