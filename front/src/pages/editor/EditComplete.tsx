@@ -44,19 +44,28 @@ const EditComplete = ({ isOpen, onClose, isTimeCapsule, onConfirm, isLoading }: 
 
   return (
     <NotificationModal isOpen={isOpen} title="저장하시겠습니까?" description="확인 버튼을 누르면 포스트가 저장됩니다">
-      <button
-        onClick={onConfirm}
-        className="w-full py-2 text-white dark:text-black transition-opacity duration-200 rounded-md bg-primary dark:bg-secondary hover:opacity-80"
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <div className="flex items-center justify-center">
-            <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
-          </div>
-        ) : (
-          "확인"
-        )}
-      </button>
+      <div className="gap-2 item-between">
+        <button
+          onClick={onClose}
+          className="w-full h-10 border border-black rounded-md dark:border-white dark:text-white"
+          disabled={isLoading}
+        >
+          취소
+        </button>
+        <button
+          onClick={onConfirm}
+          className="w-full h-10 text-white transition-opacity duration-200 rounded-md bg-primary dark:bg-secondary dark:text-black hover:opacity-80"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
+            </div>
+          ) : (
+            "확인"
+          )}
+        </button>
+      </div>
     </NotificationModal>
   );
 };
