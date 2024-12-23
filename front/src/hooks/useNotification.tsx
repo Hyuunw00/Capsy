@@ -30,20 +30,15 @@ export const useNotification = () => {
   
     try {
       const response = await getNotifications();
-      // console.log('원본 데이터 :', response);
   
       const formattedNotifications = await Promise.all(
         response
           .filter((notification: any) => !notification.seen)
           .map(async (notification: any) => {
-            // console.log('각 알림 데이터 :', notification);
-            
-            // 알림 타입 결정 로직 수정
-            let type = "LIKE"; // 기본값을 LIKE로 설정
+            // 알림 타입 결정
+            let type = "LIKE"; 
             if (notification.comment) type = "COMMENT";
             if (notification.follow) type = "FOLLOW";
-            
-            // console.log('결정된 타입:', type);
   
             // 게시물 제목 가져오기
             let postTitle;
@@ -57,8 +52,7 @@ export const useNotification = () => {
               }
             }
   
-            // 알림 데이터 형식화
-            const formattedNotification = {
+            return {
               type,
               userId: notification.author._id,
               postId: notification.post,
@@ -69,9 +63,6 @@ export const useNotification = () => {
                 fullName: notification.user.fullName,
               },
             };
-  
-            // console.log('최종 형식', formattedNotification);
-            return formattedNotification;
           })
       );
   
@@ -81,7 +72,7 @@ export const useNotification = () => {
       setNotifications([]);
     }
   }, []);
-
+    
   // 팔로워 이름 가져오는 함수
   const fetchFollowerNames = useCallback(async () => {
     const names: { [key: string]: string } = {};

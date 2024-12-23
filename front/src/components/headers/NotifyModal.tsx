@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Notification, NotifyModalProps } from "../../types/notification";
 import Button from "../Button";
+import { getPostDetail } from "../../apis/apis";
+import { BlockModal } from "./BlockModal";
 
 const NotifyModal = ({
   isVisible,
@@ -15,16 +17,28 @@ const NotifyModal = ({
 }: NotifyModalProps & { onClose: () => void }) => {
   const navigate = useNavigate();
   const modalRef = useRef<HTMLDivElement>(null);
+  const [showBlockModal, setShowBlockModal] = useState(false);
 
   const handleMoveToPost = async (notification: Notification) => {
-    if (notification.postId) {
-      try {
-        await onMoveToPost(notification);
-        onClose();
-        navigate(`/detail/${notification.postId}`);
-      } catch (error) {
-        console.error(error);
+    try {
+      const postDetail = await getPostDetail(notification.postId);
+      const parsedData = JSON.parse(postDetail.title);
+
+      // closeAt이 있고 아직 공개되지 않은 경우
+      if (parsedData.closeAt && new Date(parsedData.closeAt) > new Date()) {
+        // alert 대신 모달 사용
+        setShowBlockModal(true);
+        onMoveToPost(notification); // 알림 읽음 처리
+        return;
       }
+
+      // 공개된 게시물인 경우
+      if (notification.postId) {
+        onMoveToPost(notification); // 알림 읽음 처리
+        navigate(`/detail/${notification.postId}`);
+      }
+    } catch (error) {
+      console.error("포스트 상세 정보 조회 실패:", error);
     }
   };
 
@@ -117,20 +131,30 @@ const NotifyModal = ({
   };
 
   return (
-    <div
-      ref={modalRef}
-      className={`
-        absolute top-[62px] left-8 shadow-md z-50 w-[90%] p-4 bg-white dark:bg-gray-600 rounded-lg
-        transition-all duration-300 ease-in-out transform
-        ${isVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}
-      `}
-    >
-      {notifications?.length > 0 ? (
-        notifications.map((notification) => renderNotification(notification))
-      ) : (
-        <p className="py-4 text-center dark:text-gray-300 text-gray-400">알림이 없습니다</p>
-      )}
-    </div>
+    <>
+      <div
+        ref={modalRef}
+        className={`
+          absolute top-[62px] left-8 shadow-md z-50 w-[90%] p-4 bg-white dark:bg-gray-600 rounded-lg
+          transition-all duration-300 ease-in-out transform
+          ${isVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}
+        `}
+      >
+        {notifications?.length > 0 ? (
+          notifications.map((notification) => renderNotification(notification))
+        ) : (
+          <p className="py-4 text-center text-gray-400 dark:text-gray-300">알림이 없습니다</p>
+        )}
+      </div>
+  
+      <BlockModal
+        isOpen={showBlockModal} 
+        onClose={() => {
+          setShowBlockModal(false);
+          navigate('/');
+        }} 
+      />
+    </>
   );
 };
 

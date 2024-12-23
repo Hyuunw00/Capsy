@@ -1,7 +1,7 @@
 export interface Notification {
   type: "COMMENT" | "FOLLOW" | "LIKE" | "MESSAGE";
   userId: string;
-  postId?: string;
+  postId: string;
   notificationTypeId: string;
   user?: {
     fullName: string;
