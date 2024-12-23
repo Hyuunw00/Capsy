@@ -69,13 +69,14 @@ const NotifyModal = ({
             <div className="flex gap-2">
               <Button
                 onClick={() => onRejectFollow(notification)}
-                className="px-2 py-0.5 h-7 items-center text-black rounded w-fit border border-black box-border text-sm dark:bg-white dark:text-black"
+                className="px-2 py-0.5 h-7 items-center text-black rounded w-fit border border-black box-border text-sm
+                 dark:bg-white dark:text-black hover:bg-gray-200 dark:hover:bg-gray-200"
               >
                 확인
               </Button>
               <Button
                 onClick={() => handleAcceptFollow(notification)}
-                className="px-2 py-0.5 h-7 items-center text-white rounded w-fit bg-black text-sm"
+                className="px-2 py-0.5 h-7 items-center text-white rounded w-fit bg-black text-sm hover:bg-gray-500 dark:hover:bg-gray-500"
               >
                 이동
               </Button>
@@ -85,8 +86,8 @@ const NotifyModal = ({
       case "LIKE":
       case "COMMENT":
         return (
-          <div key={notificationKey} className="flex items-center justify-between py-2 hover:bg-gray-50">
-            <p className="flex-1 mr-4 truncate">
+          <div key={notificationKey} className="flex items-center justify-between py-2 ">
+            <p className="flex-1 mr-4 truncate dark:text-white">
               <strong className="max-w-[150px] truncate inline-block align-bottom">
                 {notification.postTitle || "게시물"}
               </strong>
@@ -96,13 +97,14 @@ const NotifyModal = ({
             <div className="flex gap-2 shrink-0">
               <Button
                 onClick={() => onReadNotification(notification)}
-                className="px-2 py-0.5 h-7 items-center text-black rounded w-fit border border-black box-border text-sm"
+                className="px-2 py-0.5 h-7 items-center text-black rounded w-fit border 
+                border-black box-border text-sm dark:bg-white dark:text-black hover:bg-gray-200 dark:hover:bg-gray-200"
               >
                 확인
               </Button>
               <Button
                 onClick={() => handleMoveToPost(notification)}
-                className="px-2 py-0.5 h-7 items-center text-white rounded w-fit bg-black text-sm"
+                className="px-2 py-0.5 h-7 items-center text-white rounded w-fit bg-black text-sm hover:bg-gray-500 dark:hover:bg-gray-500"
               >
                 이동
               </Button>
