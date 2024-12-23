@@ -1,5 +1,5 @@
 import { useState } from "react";
-import NotificationModal, { NotificationModalProps } from "../../../components/NotificationModal";
+import NotificationModal from "../../../components/NotificationModal";
 import axiosInstance from "../../../apis/axiosInstance";
 import { useNavigate } from "react-router";
 
@@ -7,9 +7,6 @@ import { useNavigate } from "react-router";
 // myPage에 들어갈 내용
 const [isOpen, setIsOpen] = useState(false);
 const navigate = useNavigate();
-const handleClcik = () => {
-  setIsOpen(true);
-};
 
 const handleLogout = async () => {
   try {

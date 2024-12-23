@@ -1,8 +1,7 @@
-import { useState, useRef, KeyboardEvent } from "react";
+import { useState, KeyboardEvent } from "react";
 import Button from "../../components/Button";
 import GlobalInput from "../../components/GlobalInput";
 import searchIcon from "../../assets/search-icon.svg";
-import closeIcon from "../../assets/close-black.svg";
 
 interface Place {
   place_name: string;

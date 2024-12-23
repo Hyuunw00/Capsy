@@ -1,5 +1,4 @@
 import { InputWithLabel } from "../../components/InputWithLabel";
-import closeIcon from "../../assets/close-black.svg";
 
 interface EditModalProps {
   onClose: () => void;
@@ -19,7 +18,7 @@ function EventEditModal({ onClose, onSubmit }: EditModalProps) {
   return (
     <div className="absolute top-32 left-12 shadow-md z-50 w-[80%] p-4 bg-white dark:bg-gray-600 rounded-lg">
       <button className="absolute right-2 top-1" onClick={onClose}>
-      <svg
+        <svg
           width="24"
           height="24"
           viewBox="0 0 24 24"
@@ -46,7 +45,10 @@ function EventEditModal({ onClose, onSubmit }: EditModalProps) {
             <div className="flex-1">
               <InputWithLabel disable={true} label="day" placeholder="day" value={date.day} />
             </div>
-            <button onClick={handleSubmit} className="px-4 py-2 text-white rounded w-fit bg-primary dark:text-black dark:bg-secondary">
+            <button
+              onClick={handleSubmit}
+              className="px-4 py-2 text-white rounded w-fit bg-primary dark:text-black dark:bg-secondary"
+            >
               확인
             </button>
           </div>

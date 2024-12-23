@@ -24,7 +24,6 @@ import Loading from "../../components/Loading";
 import axiosInstance from "../../apis/axiosInstance";
 import NotificationModal from "../../components/NotificationModal";
 import Follow from "./Follow";
-import userImg from "../../assets/user.png";
 
 export default function PostDetailPage() {
   const [commentText, setCommentText] = useState(""); // 댓글 상태 관리
@@ -36,7 +35,7 @@ export default function PostDetailPage() {
   const { postId } = useParams<{ postId: string }>(); // URL 파라미터에서 postId 추출
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const currentUser = tokenService.getUser(); // 현재 로그인한 사용자 정보
-  const [showEventModal, setShowEventModal] = useState(false); // 이벤트 캡슐 수정 불가 모달 (추가 : 윤슬)
+  const [_, setShowEventModal] = useState(false); // 이벤트 캡슐 수정 불가 모달 (추가 : 윤슬)
   const navigate = useNavigate();
   const randomThumbnail = useMemo(() => {
     const thumbnails = [thumbnail1, thumbnail2, thumbnail3, thumbnail4, thumbnail5, thumbnail6];
