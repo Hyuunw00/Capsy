@@ -9,21 +9,27 @@ interface EditPreviewProps {
     month: string;
     day: string;
   };
+  location?: {
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  } | null;
   onDelete: (index: number) => void;
 }
 
-const EditPreview = ({ images, showDatePreview, date, onDelete }: EditPreviewProps) => {
+const EditPreview = ({ images, showDatePreview, date, location, onDelete }: EditPreviewProps) => {
   const isVideo = (file: File) => file.type.startsWith("video/");
 
   return (
-    <ul>
+    <ul className="space-y-4">
       {images.length > 0 && (
         <li>
-          <h3 className="mb-2">이미지 미리보기</h3>
+          <h3 className="mb-2 text-black dark:text-white">이미지 미리보기</h3>
           <div className="flex flex-wrap gap-2">
             {images.map((file, index) => (
               <div key={index} className="relative rounded-md shadow-sm">
-                <div className="absolute z-10 flex items-center justify-center w-5 h-5 rounded-full bg-bg-500 top-2 left-2 ">
+                <div className="absolute z-10 flex items-center justify-center w-5 h-5 rounded-full bg-bg-500 top-2 left-2">
                   <span className="text-sm text-white">{index + 1}</span>
                 </div>
                 <button
@@ -59,11 +65,18 @@ const EditPreview = ({ images, showDatePreview, date, onDelete }: EditPreviewPro
       )}
 
       {showDatePreview && date.year && (
-        <li className="pr-8 mt-4 item-between">
-          <h3 className="mb-2">타임캡슐 오픈 날짜</h3>
-          <span className="px-2 py-0.5 rounded-3xl bg-bg-200">
+        <li className="pr-8 mt-4">
+          <h3 className="mb-2 text-black dark:text-white">타임캡슐 오픈 날짜</h3>
+          <span className="px-2 py-0.5 rounded-3xl bg-bg-200 dark:bg-gray-400 dark:text-white">
             {date.year} / {date.month} / {date.day}
           </span>
+        </li>
+      )}
+
+      {location && (
+        <li className="pr-8 mt-4">
+          <h3 className="mb-2 text-black dark:text-white">선택된 위치</h3>
+          <span className="px-2 py-0.5 rounded-3xl bg-bg-200 dark:bg-gray-400 dark:text-white">{location.name}</span>
         </li>
       )}
     </ul>

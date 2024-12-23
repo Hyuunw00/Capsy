@@ -163,6 +163,8 @@ interface CustomPostData {
   closeAt?: string; // YYYY-MM-DD 형식의 공개 날짜
 }
 interface PostDetail {
+  channel: any;
+  likes?: any;
   _id: string;
   title: string;
   image: string;
@@ -196,6 +198,7 @@ interface PostDetail {
       image?: string;
     };
     comment: string;
+    createdAt: string;
   }>;
   __v: number;
 }
@@ -203,6 +206,8 @@ interface PostDetail {
 interface PostItemProps {
   title: string;
   content?: string;
+  image?: string[];
+  capsuleLocation?: string;
 }
 
 interface CommentItemProps {
@@ -213,6 +218,77 @@ interface CommentItemProps {
   };
   comment: string;
   _id: string;
+  createdAt: string;
   onDelete: (id: string) => void;
   isCurrentUser: boolean;
+}
+
+interface Like {
+  _id: string;
+  user: string;
+  post: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface FollowData {
+  _id: string;
+  user: string;
+  follower: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Channel {
+  authRequired: boolean;
+  posts: string[];
+  _id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Author {
+  role: string;
+  emailVerified: boolean;
+  banned: boolean;
+  isOnline: boolean;
+  posts: string[];
+  likes: string[];
+  comments: string[];
+  followers: string[];
+  following: string[];
+  notifications: string[];
+  messages: string[];
+  _id: string;
+  fullName: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+  username: string | null;
+  image: string;
+  imagePublicId: string;
+}
+
+interface Post {
+  likes: Like[];
+  comments: string[];
+  _id: string;
+  title: string;
+  image?: string;
+  imagePublicId?: string;
+  channel: Channel;
+  author: Author;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Props {
+  userData: {
+    following: FollowData[];
+  };
+  onFollowUpdate?: (userData: any) => void;
+  targetUserId: string;
+  className?: string;
 }

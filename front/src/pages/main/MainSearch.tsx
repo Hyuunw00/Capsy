@@ -8,18 +8,13 @@ type Tab1Props = {
 };
 
 const Tab1 = ({ setIsFocused }: Tab1Props) => {
-  // const searchInput = useMainSearchStore((state) => state.searchInput);
-  // const setSearchInput = useMainSearchStore((state) => state.setSearchInput);
-
   return (
     <div className="h-[36px] rounded-[10px] bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-primary)] p-[1px]">
       <div className="flex items-center w-full h-full bg-white rounded-[10px] px-4 overflow-hidden">
         <img src={img_search} alt="검색" className="pr-2" />
         <input
           type="text"
-          placeholder="열고 싶은 타임 캡슐을 검색하세요."
-          // value={searchInput}
-          // onChange={(e) => setSearchInput(e.target.value)}
+          placeholder="사용자 또는 게시글을 검색하세요"
           className="w-full h-[14px] my-[4px] outline-none"
           onFocus={() => setIsFocused(true)}
         />
@@ -41,7 +36,6 @@ const Tab2 = ({ setIsFocused, onBackClick }: Tab2Props) => {
     if (searchInput.trim() === "") {
       return;
     }
-    console.log("검색어: ", searchInput);
     setIsFocused(false);
   };
 
@@ -50,48 +44,52 @@ const Tab2 = ({ setIsFocused, onBackClick }: Tab2Props) => {
       if (searchInput.trim() === "") {
         return;
       }
-      console.log("Enter 키로 입력: ", searchInput);
       setIsFocused(false);
     }
   };
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const clickedElement = e.relatedTarget as HTMLElement;
+  // const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  //   const clickedElement = e.relatedTarget as HTMLElement;
 
-    if (e.relatedTarget === null || clickedElement?.tagName === "BODY" || clickedElement?.tagName === "HTML") {
-      return;
-    }
-    if (clickedElement.tagName === "BUTTON") {
-      return;
-    }
-    // setIsFocused(false);
-  };
+  //   if (e.relatedTarget === null || clickedElement?.tagName === "BODY" || clickedElement?.tagName === "HTML") {
+  //     return;
+  //   }
+  //   if (clickedElement.tagName === "BUTTON") {
+  //     return;
+  //   }
+  //   // setIsFocused(false);
+  // };
 
   const handleClose = () => {
     setSearchInput("");
-    // setIsFocused(false);
   };
 
   return (
     <div className="flex h-[36px] rounded-[10px]">
-      <img src={img_left} alt="뒤로 가기" onClick={onBackClick} className="cursor-pointer" />
+      <img
+        src={img_left}
+        alt="뒤로 가기"
+        onClick={onBackClick}
+        className="cursor-pointer dark:invert max-[550px]:w-[25px]"
+      />
       <div className="w-full rounded-[10px] bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-primary)] p-[1px]">
         <div className="flex items-center w-full h-full bg-white rounded-[10px] px-4 overflow-hidden">
           <input
             type="text"
             id="search-input"
             name="search"
-            className="w-full h-[14px] my-[4px] outline-none"
+            className="w-full h-[14px] my-[4px] outline-none bg-white text-black max-[550px]:text-[12px]"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            onBlur={handleBlur}
+            // onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             autoFocus
+            maxLength={23}
           />
-          <button className="bg-black w-[15px] h-[14px] rounded-[7px] mr-[4px]" onClick={handleClose}>
-            <img src={img_close} alt="취소" />
+          <button className="bg-bg-400 w-7 h-6 rounded-[50px] mr-2" onClick={handleClose}>
+            <img className="w-full h-full " src={img_close} alt="취소" />
           </button>
-          <button onClick={handleSearch}>
-            <img src={img_search} alt="검색" />
+          <button className="w-6 h-6" onClick={handleSearch}>
+            <img className="w-full h-full" src={img_search} alt="검색" />
           </button>
         </div>
       </div>

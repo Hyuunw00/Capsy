@@ -1,76 +1,33 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../../apis/axiosInstance";
 import { useMainSearchStore } from "../../store/mainSearchStore";
-import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE } from "../../apis/apis";
+import { CHANNEL_ID_POST, CHANNEL_ID_TIMECAPSULE, createNotifications } from "../../apis/apis";
+import { flushSync } from "react-dom";
 
 import MainSearch from "./MainSearch";
 import MainSearchModal from "./MainSearchModal";
 import Loading from "../../components/Loading";
+import TimeCapsuleModal from "../../components/TimeCapsuleModal";
+import { useThemeStore } from "../../store/themeStore";
 
 import img_bottom from "../../assets/bottom-arrow.svg";
+import img_bottom_white from "../../assets/bottom-arrow-white.svg";
 import img_capsule from "../../assets/icon_capsule.svg";
 import img_heart from "../../assets/Heart_Curved.svg";
 import img_fillHeart from "../../assets/heart-fill.svg";
 import img_noti from "../../assets/Notification-white.svg";
 import img_fillNoti from "../../assets/Notification-fill.svg";
-// import img_noti_disable from "../../assets/Notification-disabled.svg";
+import img_noti_disable from "../../assets/Notification-disabled.svg";
 import img_scroll from "../../assets/scroll-icon.svg";
-
-interface Like {
-  _id: string;
-  user: string;
-  post: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Channel {
-  authRequired: boolean;
-  posts: string[];
-  _id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Author {
-  role: string;
-  emailVerified: boolean;
-  banned: boolean;
-  isOnline: boolean;
-  posts: string[];
-  likes: string[];
-  comments: string[];
-  followers: string[];
-  following: string[];
-  notifications: string[];
-  messages: string[];
-  _id: string;
-  fullName: string;
-  email: string;
-  createdAt: string;
-  updatedAt: string;
-  username: string | null;
-  image: string;
-  imagePublicId: string;
-}
-
-interface Post {
-  likes: Like[];
-  comments: string[];
-  _id: string;
-  title: string;
-  image?: string;
-  imagePublicId?: string;
-  channel: Channel;
-  author: Author;
-  createdAt: string;
-  updatedAt: string;
-}
+import img_timeCapsule from "../../assets/time-capsule.png";
+import img_lock_timeCapsule from "../../assets/time-capsule-lock.png";
+import img_alarm from "../../assets/alarm.png";
 
 export default function MainPage() {
+  const location = useLocation();
+  // 다크모드
+  const { isDark } = useThemeStore();
   const navigate = useNavigate();
   // 전체 게시글 데이터 (현재는 dummyData)
   const [data, setData] = useState<Post[]>([]);
@@ -84,17 +41,43 @@ export default function MainPage() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   // 필터링 드롭다운 선택한 옵션
   const [selectedOption, setSelectedOption] = useState<string>("All");
-  // // 각 게시물 알림 상태 관리
-  const [notiStatus, setNotiStatus] = useState<boolean[]>([]);
+  // 각 게시물 알림 상태 관리
+  const [notiStatus, setNotiStatus] = useState<{ [key: string]: boolean }>({});
   // 각 게시물 좋아요, 알림 상태 관리
-  const [userData, _] = useState(() => {
+  const [userData, setUserData] = useState(() => {
     const storedUserData = sessionStorage.getItem("user");
-    return storedUserData ? JSON.parse(storedUserData) : { likes: [] };
+    return storedUserData ? JSON.parse(storedUserData) : { likes: [], messages: [] };
   });
   // 좋아요 상태
   const [likeStatus, setLikeStatus] = useState<{ [key: string]: boolean }>({});
   // 로딩중인지에 대한 상태
   const [loading, setLoading] = useState<boolean>(true);
+  // 미공개 타임캡슐 모달을 위한 상태 관리
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState({ imgSrc: "", neonText: "", whiteText: "" });
+  // 알림 등록 모달을 위한 상태 관리
+  const [showAlarmModal, setShowAlarmModal] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [alarmModalData, setAlarmModalData] = useState({
+    imgSrc: "",
+    neonText: "",
+    whiteText: "",
+  });
+  // 타임캡슐 열린 모달을 위한 상태 관리
+  const [showOpenModal, setShowOpenModal] = useState(false);
+  const [openModalData, setOpenModalData] = useState<{
+    imgSrc: string;
+    neonText: string;
+    whiteText: string;
+    whiteTextClick: () => void;
+  }>({
+    imgSrc: "",
+    neonText: "",
+    whiteText: "",
+    whiteTextClick: () => {},
+  });
+  // 페이지 진입 시 최초 실행 여부 체크
+  const [initialLoad, setInitialLoad] = useState(true);
 
   // 전역 상태 변수
   const isFocused = useMainSearchStore((state) => state.isFocused);
@@ -126,9 +109,39 @@ export default function MainPage() {
     });
   };
 
+  // 포스트 컴포넌트 클릭 시
+  const handleImageClick = (item: any) => {
+    const isCapsuleTest = item.channel?.name === "TIMECAPSULE";
+    const isBeforeCloseAt = new Date().toISOString() < (getCloseAt(item.title)?.toISOString() ?? "");
+
+    if (isCapsuleTest && isBeforeCloseAt) {
+      setModalData({
+        imgSrc: img_lock_timeCapsule,
+        neonText: "미개봉 타임 캡슐입니다!",
+        whiteText: "예약 시 알림을 받을 수 있어요",
+      });
+      setShowModal(true);
+    } else {
+      const scrollPosition = window.scrollY;
+      flushSync(() => {
+        navigate(`/detail/${item._id}`, { state: { scrollPosition } });
+      });
+    }
+  };
+
+  // 타임캡슐 모달 컴포넌트 X 버튼 클릭 시
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  // 오픈된 타임캡슐 있을 시 생기는 모달 컴포넌트 X 버튼 로직
+  const handleOpenTCModal = () => {
+    setShowOpenModal(false);
+  };
+
   // 좋아요 버튼 클릭 이벤트 핸들러
   const handleLikeClick = async (postId: string) => {
-    const userId = userData._id;
+    const userId = userData?._id;
 
     // 전체 데이터와 클릭한 post id 비교
     const post = filterData.find((post) => post._id === postId);
@@ -146,38 +159,223 @@ export default function MainPage() {
         const newLike = {
           _id: response.data._id,
           post: postId,
-          user: userId,
+          user: userId!,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
         post.likes.push(newLike);
-        console.log("좋아요 추가 완료!", post.likes);
         setLikeStatus((prevState) => ({ ...prevState, [postId]: true }));
+
+        // 작성자가 자신의 게시글에 좋아요를 누를때는 알림  x
+        if (post.author._id === userId) return;
+
+        // 좋아요 알림 생성
+        await createNotifications({
+          notificationType: "LIKE",
+          notificationTypeId: response.data._id,
+          userId: post.author._id,
+          postId: post._id,
+        });
       } else {
         // 좋아요를 눌렀었다면 취소
         const likeId = userLikes[0]._id;
         await axiosInstance.delete("/likes/delete", { data: { id: likeId } });
         post.likes = post.likes.filter((like) => like._id !== likeId);
-        console.log("좋아요 취소 완료!", post.likes);
         setLikeStatus((prevState) => ({ ...prevState, [postId]: false }));
       }
     } catch (error: any) {
-      // console.error("좋아요 처리 실패: ", error);
       if (error.response && error.response.status === 401) {
-        console.log("좋아요 처리 실패: 로그인이 필요합니다.");
         navigate("/login");
       }
     }
   };
 
-  // 알림 버튼 클릭 이벤트 핸들러
-  const handleNotiClick = (index: number) => {
-    setNotiStatus((prevNotiStatus) => {
-      const newNotiStatus = [...prevNotiStatus];
-      newNotiStatus[index] = !newNotiStatus[index];
-      return newNotiStatus;
+  const handleNotiClick = (postId: string) => {
+    // 로그인하지 않은 경우 로그인 페이지로 리디렉션
+    if (!userData?._id) {
+      navigate("/login");
+      return;
+    }
+
+    // 이미 해당 게시글에 알림이 설정된 경우
+    const userNoti = userData?.messages.find((message: any) => {
+      try {
+        const parsedMessage = JSON.parse(message.message);
+        return parsedMessage.postId === postId;
+      } catch (error) {
+        return false;
+      }
     });
+
+    if (userNoti) {
+      alert("해당 게시글 알람을 이미 설정하셨습니다.");
+      return;
+    }
+
+    // 알림을 설정하는 모달
+    setAlarmModalData({
+      imgSrc: img_alarm,
+      neonText: "알림을 설정하면 취소할 수 없습니다",
+      whiteText: "알림을 설정하시겠습니까?",
+    });
+    setShowAlarmModal(true);
+    setSelectedPostId(postId);
   };
+
+  const handleAlarmCloseModal = () => {
+    setShowAlarmModal(false);
+    setSelectedPostId(null);
+  };
+
+  // 알림 버튼 클릭 이벤트 핸들러
+  const handleConfirm = async () => {
+    if (!selectedPostId) return;
+
+    try {
+      const post = filterData.find((post) => post._id === selectedPostId);
+      if (!post) return;
+
+      const userId = userData?._id;
+
+      const openAt = getCloseAt(post.title)?.toISOString();
+
+      // 새로운 메세지 전송
+      const messageResponse = await axiosInstance.post("/messages/create", {
+        message: JSON.stringify({ postId: selectedPostId, openAt }),
+        receiver: userId,
+      });
+
+      const newMessage = messageResponse.data;
+
+      setUserData((prevUserData: any) => {
+        const updatedMessages = [...(prevUserData.messages || []), newMessage];
+        const updatedUserData = {
+          ...prevUserData,
+          messages: updatedMessages,
+        };
+        sessionStorage.setItem("user", JSON.stringify(updatedUserData));
+        return updatedUserData;
+      });
+
+      setNotiStatus((prevStatus: any) => {
+        const updatedStatus = { ...prevStatus, [selectedPostId]: true };
+        sessionStorage.setItem("notiStatus", JSON.stringify(updatedStatus));
+        return updatedStatus;
+      });
+
+      handleAlarmCloseModal();
+    } catch (error: any) {
+      if (error.response && error.response.status === 401) {
+        navigate("/login");
+      }
+    }
+  };
+
+  // 알림 리스트 가져오기
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        if (!userData?._id) {
+          return;
+        }
+        // 최초 실행 여부를 확인해서 최초에만 메세지를 가져오도록 제한
+        if (!initialLoad) {
+          return;
+        }
+
+        const userId = userData?._id;
+
+        const response = await axiosInstance.get("/messages", { params: { userId } });
+        const allMessages = response.data;
+
+        // 어제의 00:00:00 (KST) → UTC 변환 (UTC 기준 전날 15:00:00)
+        const yesterdayStart = new Date();
+        yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+        yesterdayStart.setHours(0, 0, 0, 0); // 00:00:00 (KST)
+        const yesterdayStartUTC = yesterdayStart.toISOString();
+
+        // 어제의 23:59:59:99 (KST) → UTC 변환 (UTC 기준 당일 14:59:99.99)
+        const yesterdayEnd = new Date();
+        yesterdayEnd.setHours(23, 59, 59, 99); // 23:59:59.99 (KST)
+        const yesterdayEndUTC = yesterdayEnd.toISOString();
+
+        const expiredMessages = allMessages?.filter((message: any) => {
+          if (!message?.message) return false;
+
+          const parsedMessage = JSON.parse(message.message);
+          if (!parsedMessage.openAt) return false;
+
+          return parsedMessage.openAt <= yesterdayEndUTC && parsedMessage.openAt >= yesterdayStartUTC;
+        });
+
+        const displayedNotifications = JSON.parse(sessionStorage.getItem("displayedNotifications") || "[]");
+
+        // 중복되지 않은 알림만 추가
+        const newNotifications = expiredMessages?.filter((message: any) => {
+          const parsedMessage = JSON.parse(message.message);
+          return !displayedNotifications.includes(parsedMessage.postId);
+        });
+
+        if (newNotifications.length > 0) {
+          console.log("새로 갱신된 게시물 개수: ", newNotifications.length);
+          const newPostIds = newNotifications.map((message: any) => JSON.parse(message.message).postId);
+
+          // 존재하지 않는 게시글에 대한 알림 제거
+          const validPostIds = filterData.map((post) => post._id);
+          const filteredMessages = allMessages.filter((message: any) => {
+            const parsedMessage = JSON.parse(message.message);
+            return validPostIds.includes(parsedMessage.postId);
+          });
+
+          // 세션 스토리지에 message 업데이트
+          const updatedUserData = {
+            ...userData,
+            messages: filteredMessages,
+          };
+          sessionStorage.setItem("user", JSON.stringify(updatedUserData));
+          setUserData(updatedUserData);
+
+          const updatedDisplayedNotifications = [...displayedNotifications, ...newPostIds];
+          sessionStorage.setItem("displayedNotifications", JSON.stringify(updatedDisplayedNotifications));
+
+          if (newNotifications.length === 1) {
+            const parsedMessage = JSON.parse(newNotifications[0].message);
+            setOpenModalData({
+              imgSrc: img_timeCapsule,
+              neonText: "따끈따끈한 타임 캡슐 도착!",
+              whiteText: "지금 확인하러 가기",
+              whiteTextClick: () => navigate(`/detail/${parsedMessage.postId}`),
+            });
+          } else {
+            setOpenModalData({
+              imgSrc: img_timeCapsule,
+              neonText: "따끈따끈한 타임 캡슐 도착!",
+              whiteText: "지금 확인하러 가기",
+              whiteTextClick: () => navigate("/mypage"),
+            });
+          }
+          setShowOpenModal(true);
+        }
+        // userData 업데이트 및 세션 저장
+        const updatedUserData = {
+          ...userData,
+          messages: allMessages,
+        };
+
+        if (updatedUserData._id) {
+          sessionStorage.setItem("user", JSON.stringify(updatedUserData));
+          setUserData(updatedUserData);
+        }
+
+        // 최초 실행 여부를 false로 변경해서 이후 실행 방지
+        setInitialLoad(false);
+      } catch (error) {
+        console.error("메세지를 가져오는 중 오류 발생");
+      }
+    };
+
+    fetchMessages();
+  }, [userData?._id]);
 
   // 게시글 제목 가져오기
   const getTitle = (jsonString: any) => {
@@ -204,6 +402,34 @@ export default function MainPage() {
     }
   };
 
+  // 타임캡슐의 closeAt 날짜 가져오기
+  const getCloseAt = (jsonString: any): Date | null => {
+    try {
+      const parsedData = JSON.parse(jsonString);
+      if (parsedData.closeAt) {
+        return new Date(parsedData.closeAt);
+      }
+      return null;
+    } catch (error) {
+      console.error("JSON parse error: ", error);
+      return null;
+    }
+  };
+
+  // 타임캡슐의 첫번째 이미지 가져오기
+  const getFirstImage = (jsonString: any) => {
+    try {
+      const parsedData = JSON.parse(jsonString);
+      if (parsedData.image) {
+        return parsedData.image[0];
+      }
+      return null;
+    } catch (error) {
+      console.error("JSON parse error: ", error);
+      return null;
+    }
+  };
+
   // 데이터 call
   useEffect(() => {
     const updateData = async (postChannelId: string, capsuleChannelId: string) => {
@@ -215,6 +441,7 @@ export default function MainPage() {
 
         const allData = [...postResponse.data, ...capsuleResponse.data];
 
+        // createdAt 내림차순 정렬
         const sortedData = allData.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
         setData(sortedData);
@@ -239,7 +466,7 @@ export default function MainPage() {
   // 좋아요 상태 바뀌면 실행
   useEffect(() => {
     const updatedFilterData = filterData.map((post) => {
-      const isLiked = post.likes.some((like) => like.user === userData._id);
+      const isLiked = post.likes.some((like) => like.user === userData?._id);
       return {
         ...post,
         isLiked, // 좋아요 상태 업데이트
@@ -252,6 +479,44 @@ export default function MainPage() {
     setLikeStatus(newLikeStatus);
   }, [filterData]);
 
+  // 알림 상태가 바뀌면 실행
+  useEffect(() => {
+    const updatedFilterData = filterData.map((post) => {
+      const isNotified = userData?.messages?.some((message: any) => {
+        const parsedMessage = message.message ? JSON.parse(message.message) : null;
+        return parsedMessage && parsedMessage.postId === post._id;
+      });
+      return {
+        ...post,
+        isNotified,
+      };
+    });
+
+    const newNotiStatus = updatedFilterData.reduce<{ [key: string]: boolean }>((acc, post) => {
+      acc[post._id] = post.isNotified ?? false;
+      return acc;
+    }, {});
+
+    setNotiStatus(newNotiStatus);
+  }, [filterData]);
+
+  // 페이지 로드 시 sessionStorage에서 데이터 가져오기
+  useEffect(() => {
+    const storedUserData = sessionStorage.getItem("user");
+    if (storedUserData) {
+      const parsedUserData = JSON.parse(storedUserData);
+      setUserData(parsedUserData);
+      setNotiStatus(parsedUserData.notifications || {});
+    }
+  }, []);
+
+  // userData가 업데이트될 때마다 sessionStorage에 저장
+  useEffect(() => {
+    if (userData) {
+      sessionStorage.setItem("user", JSON.stringify(userData));
+    }
+  }, [userData]);
+
   // 필터링 로직
   useEffect(() => {
     if (selectedOption === "All") {
@@ -263,19 +528,15 @@ export default function MainPage() {
     }
   }, [selectedOption, data]);
 
-  // 데이터 확인용 console.log
-  useEffect(() => {
-    // console.log("userData", userData);
-    // console.log("filterData", filterData);
-    // console.log("postData", postData);
-    // console.log("capsuleData", capsuleData);
-  }, [data, filterData]);
-
   // 검색된 게시물에대한 코드
   useEffect(() => {
     const getSearchPost = async () => {
       try {
-        const keywordPost = data.filter((post) => post.title.includes(searchInput.replace(/\s+/g, "")));
+        const keywordPost = data.filter(
+          (post) =>
+            getTitle(post.title).includes(searchInput.replace(/\s+/g, "")) ||
+            getContent(post.title).includes(searchInput.replace(/\s+/g, "")),
+        );
         setFilterData(keywordPost);
       } catch (error) {
         console.error(error);
@@ -283,6 +544,18 @@ export default function MainPage() {
     };
     getSearchPost();
   }, [isFocused]);
+
+  // 페이지에 다시 돌아왔을 때 스크롤 복구
+  useEffect(() => {
+    if (!loading) {
+      const scrollPosition = location.state?.scrollPosition;
+      if (scrollPosition !== null) {
+        requestAnimationFrame(() => {
+          window.scrollTo(0, scrollPosition);
+        });
+      }
+    }
+  }, [loading]);
 
   if (isFocused) {
     return (
@@ -306,8 +579,8 @@ export default function MainPage() {
           {/* 키워드에 대한 검색 결과 */}
           <div>
             {searchInput.length > 0 && (
-              <span>
-                <strong>{searchInput}</strong> 관련된 포스트 결과
+              <span className="text-black dark:text-white">
+                <strong>[{searchInput}]</strong> 관련된 포스트 결과
               </span>
             )}
           </div>
@@ -317,21 +590,21 @@ export default function MainPage() {
               <div className="flex justify-end">
                 <button
                   onClick={toggleDropdown}
-                  className="inline-flex items-center justify-around bg-white focus:outline-none"
+                  className="inline-flex items-center justify-around bg-white dark:bg-black dark:text-white focus:outline-none"
                 >
                   {selectedOption}
-                  <img src={img_bottom} alt="선택" />
+                  <img src={isDark ? img_bottom_white : img_bottom} alt="선택" />
                 </button>
               </div>
 
               {isOpen && (
-                <div className="absolute items-center rounded-[6px] mt-2 shadow-300 z-10 right-8 bg-white w-[120px] h-[104px]">
-                  <div className="flex flex-col p-2 flex-nowrap space-y-2">
+                <div className="absolute items-center rounded-[6px] mt-2 shadow-300 z-10 right-8 bg-white dark:bg-black dark:text-white w-[120px] h-[104px]">
+                  <div className="flex flex-col p-2 space-y-2 flex-nowrap">
                     {["All", "포스트", "타임캡슐"].map((option) => (
                       <button
                         key={option}
                         onClick={() => selectOption(option)}
-                        className={`block w-fulltext-sm text-center hover:bg-[rgba(0,0,0,0.04)] ${
+                        className={`block w-fulltext-sm text-center hover:bg-bg-100 dark:hover:bg-gray-500 ${
                           selectedOption === option ? "font-semibold" : ""
                         }`}
                       >
@@ -350,16 +623,34 @@ export default function MainPage() {
           {filterData.map((item, index) => (
             <div
               key={index}
-              className="w-full inline-block break-inside-avoid relative mb-[10px] overflow-hidden cursor-pointer"
-              onClick={() => navigate(`/detail/${item._id}`)}
+              className="w-full inline-block break-inside-avoid relative mb-[10px] overflow-hidden cursor-pointer rounded-[10px]"
+              onClick={() => handleImageClick(item)}
             >
-              {item.image ? (
-                <img src={item.image} alt={item.title} className="w-full h-auto rounded-[10px] object-cover" />
+              {getFirstImage(item.title) || item.image ? (
+                <>
+                  <img
+                    src={item.image ? item.image : getFirstImage(item.title)}
+                    alt={item.title}
+                    className="w-full h-auto rounded-[10px] object-cover"
+                  />
+
+                  {item.channel?.name === "TIMECAPSULE" && (
+                    <>
+                      <div className="absolute top-1.5 right-1.5 bg-black bg-opacity-40 w-[30px] h-[30px] flex items-center justify-center rounded-full">
+                        <img src={img_capsule} alt="캡슐" className="w-[16px]" />
+                      </div>
+
+                      {new Date().toISOString() < (getCloseAt(item.title)?.toISOString() ?? "") && (
+                        <div className="absolute inset-0" style={{ backdropFilter: "blur(10px)" }}></div>
+                      )}
+                    </>
+                  )}
+                </>
               ) : (
                 <div className="w-full h-40 bg-white border border-[#E7E7E7] border-1 rounded-[10px] relative">
                   <div className="px-2.5 py-2.5 text-[16px] ">
                     <p
-                      className="overflow-hidden text-ellipsis whitespace-pre-wrap"
+                      className="overflow-hidden whitespace-pre-wrap text-ellipsis"
                       style={{
                         maxWidth: "calc(30ch)",
                         display: "-webkit-box",
@@ -372,20 +663,19 @@ export default function MainPage() {
                   </div>
                 </div>
               )}
-              {/* {item.channel.name === "TIMECAPSULE" && ( */}
-              {item.channel?.name === "CAPSULETEST" && (
+              {item.channel.name === "TIMECAPSULE" && (
                 <div className="absolute top-1.5 right-1.5 bg-black bg-opacity-40 w-[30px] h-[30px] flex item-center justify-center rounded-full">
                   <img src={img_capsule} alt="캡슐" className="w-[16px]" />
                 </div>
               )}
               <div
-                className={`absolute bottom-0 left-0 px-2.5 py-2 w-full text-white rounded-b-[10px] ${item.image ? "bg-custom-gradient" : "bg-[#674EFF]"}`}
+                className={`absolute bottom-0 left-0 px-2.5 py-2 w-full text-white dark:text-black rounded-b-[10px] ${item.image || getFirstImage(item.title) ? "bg-custom-gradient dark:bg-custom-gradient-dark" : "bg-[#674EFF] dark:bg-secondary"}`}
               >
                 <p
                   className="inline-block font-semibold"
                   onClick={(e) => {
                     e.stopPropagation();
-                    console.log("누른 아이디: ", item.author.fullName);
+                    navigate(`/userinfo/${item.author.fullName}`);
                   }}
                 >
                   @{item.author.fullName}
@@ -403,15 +693,22 @@ export default function MainPage() {
                     handleLikeClick(item._id);
                   }}
                 />
-                {/* {item.channel.name === "TIMECAPSULE" && ( */}
-                {item.channel?.name === "CAPSULETEST" && (
+                {item.channel.name === "TIMECAPSULE" && (
                   <img
-                    src={notiStatus[index] ? img_fillNoti : img_noti}
+                    src={
+                      new Date().toISOString() >= (getCloseAt(item.title)?.toISOString() ?? "")
+                        ? img_noti_disable // 조건을 만족하면 img_noti_disable 사용
+                        : notiStatus[item._id]
+                          ? img_fillNoti
+                          : img_noti
+                    }
                     alt="noti"
                     className="object-contain cursor-pointer flex-shrink-0 w-[21px] h-[21px]"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleNotiClick(index);
+                      if (new Date().toISOString() <= (getCloseAt(item.title)?.toISOString() ?? "")) {
+                        handleNotiClick(item._id);
+                      }
                     }}
                   />
                 )}
@@ -429,6 +726,37 @@ export default function MainPage() {
           </button>
         </div>
       </div>
+
+      {/* 모달 보여주는 부분 */}
+      {showModal && (
+        <TimeCapsuleModal
+          imgSrc={modalData.imgSrc}
+          neonText={modalData.neonText}
+          whiteText={modalData.whiteText}
+          onClose={handleCloseModal}
+        />
+      )}
+
+      {showAlarmModal && selectedPostId && (
+        <TimeCapsuleModal
+          imgSrc={alarmModalData.imgSrc}
+          neonText={alarmModalData.neonText}
+          whiteText={alarmModalData.whiteText}
+          onClose={handleAlarmCloseModal}
+          onCancel={handleAlarmCloseModal}
+          onConfirm={handleConfirm}
+        />
+      )}
+
+      {showOpenModal && (
+        <TimeCapsuleModal
+          imgSrc={openModalData.imgSrc}
+          neonText={openModalData.neonText}
+          whiteText={openModalData.whiteText}
+          whiteTextClick={openModalData.whiteTextClick}
+          onClose={handleOpenTCModal}
+        />
+      )}
     </>
   );
 }

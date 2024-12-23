@@ -1,6 +1,43 @@
 @import "./tailwind.css";
 @import "./variable.css";
+@import "./map.css";
 
+@font-face {
+  font-family: "Galmuri14";
+  src: url("/fonts/Galmuri14.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-galmuri14 {
+  font-family:
+    "Galmuri14",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+}
+
+@font-face {
+  font-family: "Galmuri9";
+  src: url("../components/fonts/Galmuri9.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+.font-galmuri9 {
+  font-family:
+    "Galmuri9",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+}
+
+@font-face {
+  font-family: "DungGeunMo";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
 * {
   box-sizing: border-box;
 }
@@ -12,6 +49,7 @@ body {
   position: relative;
   overflow-y: scroll;
   box-shadow: var(--box-shadow300);
+  font-family: "galmuri9", sans-serif;
 }
 
 @keyframes slideDown {

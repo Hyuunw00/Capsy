@@ -41,6 +41,7 @@ export default function PasswordResetPage() {
     }
     // 유효성 검사
     if (!testEmail(email) || !testPassword(password)) {
+      setOpenModal({ ...openModal, isOpen: true, value: "형식에 맞게 입력해주세요!" });
       setAuth({ ...auth, isEmailValid: false, isPasswordValid: false, email: "", password: "" });
 
       return;
@@ -60,7 +61,7 @@ export default function PasswordResetPage() {
         setUserAuth(true); // 인증성공시 상태값 변환
       }
     } catch (error) {
-      setOpenModal({ ...openModal, isOpen: true, value: "아이디 또는 비밀번호가 틀립니다!" });
+      setOpenModal({ ...openModal, isOpen: true, value: "이메일 또는 비밀번호가 틀립니다!" });
     } finally {
       setAuth({ ...auth, isEmailValid: false, isPasswordValid: false, email: "", password: "" });
     }
@@ -75,38 +76,42 @@ export default function PasswordResetPage() {
           {openModal.value}
         </NoticeModal>
       )}
-      <form onSubmit={handleSubmit} className="px-12">
-        <Logo />
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-1">
-            <AuthInput
-              label="이메일"
-              type="email"
-              value={auth.email}
-              placeholder="이메일"
-              ref={emailRef}
-              onChange={(e) => setAuth({ ...auth, email: e.target.value })}
-              error="이메일 형식"
-              isValid={auth.isEmailValid}
-            />
+      <div className="w-full flex flex-col items-center justify-center min-h-[calc(100vh-115px)]">
+        <div className="w-full max-w-md px-8 py-8 overflow-y-auto">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-[10px]">
+            <Logo />
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1">
+                <AuthInput
+                  label="이메일"
+                  type="email"
+                  value={auth.email}
+                  placeholder="이메일"
+                  ref={emailRef}
+                  onChange={(e) => setAuth({ ...auth, email: e.target.value })}
+                  error="이메일 형식"
+                  isValid={auth.isEmailValid}
+                />
 
-            <AuthInput
-              label="비밀번호"
-              type="password"
-              value={auth.password}
-              onChange={(e) => setAuth({ ...auth, password: e.target.value })}
-              placeholder="비밀번호"
-              error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
-              isValid={auth.isPasswordValid}
-              ref={passwordRef}
-            />
-          </div>
+                <AuthInput
+                  label="비밀번호"
+                  type="password"
+                  value={auth.password}
+                  onChange={(e) => setAuth({ ...auth, password: e.target.value })}
+                  placeholder="비밀번호"
+                  error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
+                  isValid={auth.isPasswordValid}
+                  ref={passwordRef}
+                />
+              </div>
 
-          <Button className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] rounded-[6px] mt-[20px]">
-            인증
-          </Button>
+              <Button className="bg-primary dark:bg-secondary text-white dark:text-black  w-full  h-[47px] py-[13px] px-[21px] rounded-md mt-[20px]">
+                인증
+              </Button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </>
   );
 }

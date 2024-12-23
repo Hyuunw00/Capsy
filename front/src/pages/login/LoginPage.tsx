@@ -26,16 +26,10 @@ export default function LoginPage() {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  // useEffect(() => {
-  //   if (emailRegex.test(email)) setAuth({...auth,})
-  //   if (passwordRegex.test(password)) setIsPasswordValid(true);
-  // }, [email, password]);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const email = emailRef.current?.value.trim();
     const password = passwordRef.current?.value.trim();
-    console.log(email, password);
 
     // 빈값일 경우 return
     if (!email || !password) {
@@ -45,6 +39,7 @@ export default function LoginPage() {
     // 유효성 검사
     if (!testEmail(email) || !testPassword(password)) {
       setAuth({ ...auth, isEmailValid: false, isPasswordValid: false, email: "", password: "" });
+      setOpenModal({ ...openModal, isOpen: true, value: "입력 형식에 맞게 작성해주세요!" });
       return;
     }
     // 고유성 검사
@@ -54,13 +49,7 @@ export default function LoginPage() {
       login(token); // 로그인 상태 업데이트
       navigate(`/`); // 홈으로 이동
     } catch (error) {
-      setOpenModal({ ...openModal, isOpen: true, value: "아이디 또는 비밀번호가 틀립니다!" });
-    } finally {
-      // 입력값 초기화
-      // setPassword("");
-      // setEmail("");
-      // setIsEmailValid(false);
-      // setIsPasswordValid(false);
+      setOpenModal({ ...openModal, isOpen: true, value: "이메일 또는 비밀번호가 틀립니다!" });
       setAuth({ ...auth, isEmailValid: false, isPasswordValid: false, email: "", password: "" });
     }
   };
@@ -72,41 +61,44 @@ export default function LoginPage() {
           {openModal.value}
         </NoticeModal>
       )}
-      <form onSubmit={handleSubmit} className="px-12">
-        <Logo />
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-1">
-            <AuthInput
-              label="이메일"
-              type="email"
-              value={auth.email}
-              placeholder="이메일"
-              ref={emailRef}
-              onChange={(e) => setAuth({ ...auth, email: e.target.value })}
-              error="이메일 형식"
-              isValid={auth.isEmailValid}
-            />
 
-            <AuthInput
-              label="비밀번호"
-              type="password"
-              value={auth.password}
-              onChange={(e) => setAuth({ ...auth, password: e.target.value })}
-              placeholder="비밀번호"
-              error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
-              isValid={auth.isPasswordValid}
-              ref={passwordRef}
-            />
-          </div>
-
-          <Button className=" bg-primary text-[#ffffff]  w-full  h-[47px] py-[13px] px-[21px] rounded-[6px] mt-[20px]">
-            로그인
-          </Button>
-          <Link to="/signup" className="text-center mt-[16px]  text-[#475569] underline">
-            회원가입 바로가기
-          </Link>
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-115px)]">
+        <div className="w-full max-w-md px-8 py-8 overflow-y-auto">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-[10px]">
+            <Logo />
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1">
+                <AuthInput
+                  label="이메일"
+                  type="email"
+                  value={auth.email}
+                  placeholder="이메일"
+                  ref={emailRef}
+                  onChange={(e) => setAuth({ ...auth, email: e.target.value })}
+                  error="이메일 형식"
+                  isValid={auth.isEmailValid}
+                />
+                <AuthInput
+                  label="비밀번호"
+                  type="password"
+                  value={auth.password}
+                  onChange={(e) => setAuth({ ...auth, password: e.target.value })}
+                  placeholder="비밀번호"
+                  error="대/소문자, 특수문자, 숫자 포함 8자리 이상"
+                  isValid={auth.isPasswordValid}
+                  ref={passwordRef}
+                />
+              </div>
+              <Button className="bg-primary dark:bg-secondary text-white dark:text-black w-full h-[47px] py-[13px] px-[21px] rounded-[6px] mt-[20px]">
+                로그인
+              </Button>
+              <Link to="/signup" className="text-center mt-[16px] text-gray-300 dark:text-gray-400 underline">
+                회원가입 바로가기
+              </Link>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </>
   );
 }
