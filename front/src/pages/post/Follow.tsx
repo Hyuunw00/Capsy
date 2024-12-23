@@ -14,7 +14,7 @@ interface FollowData {
 interface Props {
   userData: {
     _id: string;
-    following: FollowData[];
+    following?: FollowData[];
   };
   onFollowUpdate: (updatedUserData: any) => void;
   targetUserId: string;
@@ -25,13 +25,16 @@ export default function Follow({ userData, onFollowUpdate, targetUserId, classNa
   const [followStatus, setFollowStatus] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
-    const isFollowing = userData.following.some((follow: FollowData) => follow.user === targetUserId);
+    // optional chaining 사용
+    const isFollowing = userData?.following?.some((follow: FollowData) => follow.user === targetUserId) ?? false;
     setFollowStatus({ [targetUserId]: isFollowing });
-  }, [targetUserId, userData.following]);
+  }, [targetUserId, userData?.following]);
 
   const handleFollowClick = async (targetUserId: string) => {
     try {
-      const isFollowing = userData.following.some((follow: FollowData) => follow.user === targetUserId);
+      // following이 undefined인 경우 빈 배열로 초기화
+      const following = userData?.following || [];
+      const isFollowing = following.some((follow: FollowData) => follow.user === targetUserId);
 
       if (!isFollowing) {
         const response = await axiosInstance.post("/follow/create", {
@@ -55,13 +58,14 @@ export default function Follow({ userData, onFollowUpdate, targetUserId, classNa
 
         const updatedUserData = {
           ...userData,
-          following: [...userData.following, newFollow],
+          following: [...following, newFollow],
         };
+
         onFollowUpdate(updatedUserData);
         setFollowStatus((prevState) => ({ ...prevState, [targetUserId]: true }));
       } else {
-        const followData = userData.following.find((follow: FollowData) => follow.user === targetUserId);
-
+        const followData = following.find((follow: FollowData) => follow.user === targetUserId);
+        
         if (!followData) {
           throw new Error("팔로우 데이터를 찾을 수 없습니다.");
         }
@@ -72,8 +76,9 @@ export default function Follow({ userData, onFollowUpdate, targetUserId, classNa
 
         const updatedUserData = {
           ...userData,
-          following: userData.following.filter((follow: FollowData) => follow._id !== followData._id),
+          following: following.filter((follow: FollowData) => follow._id !== followData._id),
         };
+
         onFollowUpdate(updatedUserData);
         setFollowStatus((prevState) => ({ ...prevState, [targetUserId]: false }));
       }

@@ -165,7 +165,7 @@ function ProfileContainer({ userId, fullName }: { userId: string; fullName?: str
                 />
               </svg>
             ),
-            label: "내 일반글",
+            label: "일반글",
           },
           {
             tab: "alarms",
