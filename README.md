@@ -1,7 +1,6 @@
 # Capsy - 추억을 공유하는 타임캡슐 SNS
 
 ### [🔗Capsy 데모 사이트](https://caapsy.netlify.app/) 
-### [🔗Capsy 발표자료](https://github.com/kodingzz/Capsy/blob/main/E1I4_Capsy_final.pdf.zip)
 ### [🔗Capsy 시연 영상](https://youtu.be/66i0cLJv6ro?si=QKHATI-MeWiMpgjE)
 
 ### 팀원 구성
