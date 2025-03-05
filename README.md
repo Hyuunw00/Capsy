@@ -6,7 +6,7 @@
 ### 팀원 구성
 |<img src="https://avatars.githubusercontent.com/u/82489360?v=4,mpd253,ChoiYoungKyu,https://github.com/mpd253" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/184810341?v=4,Soorangmanju,,https://github.com/Soorangmanju" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/48465276?v=4,gjwjdals96,,https://github.com/gjwjdals96" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/96560273?v=4,kodingzz,Hyunw00,https://github.com/kodingzz" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/155376060?v=4,miseullang,,https://github.com/miseullang" width="150" height="150"/>
 |:-:|:-:|:-:|:-:|:-:
-|팀장 : [@mpd253](https://github.com/mpd253)|팀원 : [@Soorangmanju](https://github.com/Soorangmanju)|팀원 : [@gjwjdals96](https://github.com/gjwjdals96)|팀원 : [@kodingzz](https://github.com/kodingzz)|팀원 : [@miseullang](https://github.com/miseullang)
+|팀장 : [@mpd253](https://github.com/mpd253)|팀원 : [@Soorangmanju](https://github.com/Soorangmanju)|팀원 : [@gjwjdals96](https://github.com/gjwjdals96)|팀원 : [@hyuunw00](https://github.com/hyuunw00)|팀원 : [@miseullang](https://github.com/miseullang)
 
 ## 프로젝트 기간: 2024.12.05 ~ 2024.12.21
 
